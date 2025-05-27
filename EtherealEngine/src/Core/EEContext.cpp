@@ -15,6 +15,7 @@ namespace EtherealEngine
 
 	void EEContext::Shutdown()
 	{
+		SetRunning(false);
 		//assetManager.reset();
 		//windowSystem.reset();
 		configManager.reset();

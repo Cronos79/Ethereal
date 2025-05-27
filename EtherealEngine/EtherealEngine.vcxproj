@@ -11,19 +11,23 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\Application.cpp" />
     <ClCompile Include="src\Core\ConfigManager.cpp" />
     <ClCompile Include="src\Core\EEContext.cpp" />
     <ClCompile Include="src\Core\EELogger.cpp" />
+    <ClCompile Include="src\Core\StartupManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\Application.h" />
     <ClInclude Include="src\Core\ConfigManager.h" />
     <ClInclude Include="src\Core\EEContext.h" />
     <ClInclude Include="src\Core\EELogger.h" />
     <ClInclude Include="src\Core\EELoggerMacros.h" />
     <ClInclude Include="src\Core\pch.h" />
+    <ClInclude Include="src\Core\StartupManager.h" />
     <ClInclude Include="src\Platform\WinInclude.h" />
     <ClInclude Include="ThirdParty\Core\sdl_wrapper.h" />
   </ItemGroup>
