@@ -5,6 +5,8 @@
 
 #include "Core/EELogger.h"
 #include "Core/ConfigManager.h"
+#include "Assets/AssetManager.h"
+#include "Platform/EEWindow.h"
 
 namespace EtherealEngine
 {
@@ -12,7 +14,7 @@ namespace EtherealEngine
 	{
 		int width = 1280;
 		int height = 720;
-		std::string title = "Unknown";
+		std::wstring title = L"Unknown";
 		bool fullscreen = false;
 	};
 
@@ -27,7 +29,9 @@ namespace EtherealEngine
 		}
 
 		void Initialize();
+		void InitializeWin();
 		void Shutdown();
+		void ProcessEvents();
 
 		// Subsystem accessors
 		EELogger* GetLogger() const
@@ -42,12 +46,13 @@ namespace EtherealEngine
 		//{
 		//	return windowSystem.get();
 		//}
-		//AssetManager* GetAssetManager() const
-		//{
-		//	return assetManager.get();
-		//}
+		AssetManager* GetAssetManager() const
+		{
+			return assetManager.get();
+		}
 
 		std::string GetConfigPath(const std::string& name);
+		std::string GetAssetPath(const std::string& relative);
 
 		int32_t GetWindowWidth() const
 		{
@@ -57,18 +62,26 @@ namespace EtherealEngine
 		{
 			return windowSettings.height;
 		}
-		const std::string& GetWindowTitle() const
+		const std::wstring& GetWindowTitleW() const
 		{
 			return windowSettings.title;
+		}
+		const std::string GetWindowTitle() const
+		{
+			return std::string(windowSettings.title.begin(), windowSettings.title.end());
 		}
 		void SetWindowSize(int32_t width, int32_t height)
 		{
 			windowSettings.width = width;
 			windowSettings.height = height;
 		}
-		void SetWindowTitle(const std::string& title)
+		void SetWindowTitle(const std::wstring& title)
 		{
 			windowSettings.title = title;
+		}
+		void SetWindowTitle(const std::string& title)
+		{
+			windowSettings.title = std::wstring(title.begin(), title.end());
 		}
 		bool IsRunning() const
 		{
@@ -88,7 +101,8 @@ namespace EtherealEngine
 		std::unique_ptr<EELogger> logger;
 		std::unique_ptr<ConfigManager> configManager;
 		//std::unique_ptr<WindowSystem> windowSystem;
-		//std::unique_ptr<AssetManager> assetManager;
+		std::unique_ptr<EEWindow> m_Window;
+		std::unique_ptr<AssetManager> assetManager;
 
 		WindowSettings windowSettings;
 		bool isRunning = false;

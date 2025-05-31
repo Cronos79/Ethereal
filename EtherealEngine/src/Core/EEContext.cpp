@@ -1,7 +1,5 @@
 #include "pch.h"
 #include "EEContext.h"
-//#include "WindowSystem.h"
-//#include "AssetManager.h"
 
 namespace EtherealEngine
 {
@@ -9,17 +7,32 @@ namespace EtherealEngine
 	{
 		logger = std::make_unique<EELogger>();
 		configManager = std::make_unique<ConfigManager>();
-		//windowSystem = std::make_unique<WindowSystem>();
-		//assetManager = std::make_unique<AssetManager>();
+		assetManager = std::make_unique<AssetManager>();
+		assetManager->Initialize();		
+	}
+
+	void EEContext::InitializeWin()
+	{
+		m_Window = std::make_unique<EEWindow>();
+		m_Window->Initialize(windowSettings.title, windowSettings.width, windowSettings.height);
 	}
 
 	void EEContext::Shutdown()
 	{
 		SetRunning(false);
-		//assetManager.reset();
+		assetManager.reset();
 		//windowSystem.reset();
+		m_Window.reset();
 		configManager.reset();
 		logger.reset();
+	}
+
+	void EEContext::ProcessEvents()
+	{
+		if (m_Window)
+		{
+			m_Window->PollEvents();
+		}
 	}
 
 	std::filesystem::path GetExecutableDir()
@@ -33,6 +46,12 @@ namespace EtherealEngine
 	std::string EEContext::GetConfigPath(const std::string& name)
 	{
 		auto configPath = GetExecutableDir() / "config" / name;
+		return configPath.string();
+	}
+
+	std::string EEContext::GetAssetPath(const std::string& relative)
+	{
+		auto configPath = GetExecutableDir() / "Assets" / relative;
 		return configPath.string();
 	}
 

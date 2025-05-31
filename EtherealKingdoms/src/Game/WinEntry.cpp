@@ -1,6 +1,5 @@
 #include "GameApp.h"
 
-
 int main()
 {
 	GameApp app;

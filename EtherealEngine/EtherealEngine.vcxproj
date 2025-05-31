@@ -11,23 +11,35 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Assets\AssetManager.cpp" />
+    <ClCompile Include="src\Assets\Material.cpp" />
+    <ClCompile Include="src\Assets\Mesh.cpp" />
+    <ClCompile Include="src\Assets\ModelAsset.cpp" />
+    <ClCompile Include="src\Assets\Texture.cpp" />
     <ClCompile Include="src\Core\Application.cpp" />
     <ClCompile Include="src\Core\ConfigManager.cpp" />
     <ClCompile Include="src\Core\EEContext.cpp" />
     <ClCompile Include="src\Core\EELogger.cpp" />
     <ClCompile Include="src\Core\StartupManager.cpp" />
+    <ClCompile Include="src\Platform\EEWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Assets\AssetManager.h" />
+    <ClInclude Include="src\Assets\Material.h" />
+    <ClInclude Include="src\Assets\Mesh.h" />
+    <ClInclude Include="src\Assets\ModelAsset.h" />
+    <ClInclude Include="src\Assets\Texture.h" />
     <ClInclude Include="src\Core\Application.h" />
     <ClInclude Include="src\Core\ConfigManager.h" />
     <ClInclude Include="src\Core\EEContext.h" />
     <ClInclude Include="src\Core\EELogger.h" />
     <ClInclude Include="src\Core\EELoggerMacros.h" />
-    <ClInclude Include="src\Core\pch.h" />
+    <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\Core\StartupManager.h" />
+    <ClInclude Include="src\Platform\EEWindow.h" />
     <ClInclude Include="src\Platform\WinInclude.h" />
     <ClInclude Include="ThirdParty\Core\sdl_wrapper.h" />
   </ItemGroup>
@@ -64,6 +76,14 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(SolutionDir)EtherealEngine\ThirdParty\assimp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)EtherealEngine\ThirdParty\assimp\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(SolutionDir)EtherealEngine\ThirdParty\assimp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)EtherealEngine\ThirdParty\assimp\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
@@ -76,7 +96,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)EtherealEngine\ThirdParty;$(SolutionDir)EtherealEngine\src;$(SolutionDir)EtherealEngine\ThirdParty\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /wd4996 /wd4244 /wd4267 /wd4305 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -97,7 +117,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)EtherealEngine\ThirdParty;$(SolutionDir)EtherealEngine\src;$(SolutionDir)EtherealEngine\ThirdParty\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /wd4996 /wd4244 /wd4267 /wd4305 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

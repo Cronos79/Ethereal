@@ -27,6 +27,7 @@ namespace EtherealEngine
 
 		while (EEContext::Get().IsRunning())
 		{
+			EEContext::Get().ProcessEvents();
 			auto now = std::chrono::high_resolution_clock::now();
 			float deltaTime = std::chrono::duration<float>(now - lastTime).count();
 			lastTime = now;
