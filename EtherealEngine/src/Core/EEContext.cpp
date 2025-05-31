@@ -2,29 +2,36 @@
 #include "EEContext.h"
 
 namespace EtherealEngine
-{
-	void EEContext::Initialize()
+{  
+	void EEContext::InitLogger()
 	{
-		logger = std::make_unique<EELogger>();
-		configManager = std::make_unique<ConfigManager>();
-		assetManager = std::make_unique<AssetManager>();
-		assetManager->Initialize();		
+		m_Logger = std::make_unique<EELogger>();
 	}
 
-	void EEContext::InitializeWin()
+	void EEContext::InitConfigManager()
+	{
+		m_ConfigManager = std::make_unique<ConfigManager>();
+	}
+
+	void EEContext::InitAssetManager()
+	{
+		m_AssetManager = std::make_unique<AssetManager>();
+		m_AssetManager->Initialize();
+	}
+
+	void EEContext::InitWindows()
 	{
 		m_Window = std::make_unique<EEWindow>();
-		m_Window->Initialize(windowSettings.title, windowSettings.width, windowSettings.height);
+		m_Window->Initialize(m_WindowSettings.title, m_WindowSettings.width, m_WindowSettings.height);
 	}
 
 	void EEContext::Shutdown()
 	{
 		SetRunning(false);
-		assetManager.reset();
-		//windowSystem.reset();
+		m_AssetManager.reset();
 		m_Window.reset();
-		configManager.reset();
-		logger.reset();
+		m_ConfigManager.reset();
+		m_Logger.reset();
 	}
 
 	void EEContext::ProcessEvents()

@@ -23,10 +23,12 @@ namespace EtherealEngine
 
 	bool StartupManager::Initialize()
 	{
-		EEContext::Get().Initialize();
+		EEContext::Get().InitLogger();
 		LOG_INFO("Ethereal Engine starting");
+		EEContext::Get().InitConfigManager();
+		EEContext::Get().InitAssetManager();
 		LoadWindowSettings();
-		EEContext::Get().InitializeWin();
+		EEContext::Get().InitWindows();
 
 		LOG_INFO("Ethereal Engine initialized successfully");
 		return true;

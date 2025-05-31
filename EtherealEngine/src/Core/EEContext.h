@@ -26,71 +26,72 @@ namespace EtherealEngine
 		{
 			static EEContext instance;
 			return instance;
-		}
-
-		void Initialize();
-		void InitializeWin();
-		void Shutdown();
-		void ProcessEvents();
-
-		// Subsystem accessors
-		EELogger* GetLogger() const
-		{
-			return logger.get();
-		}
-		ConfigManager* GetConfigManager() const
-		{
-			return configManager.get();
-		}
-		//WindowSystem* GetWindowSystem() const
-		//{
-		//	return windowSystem.get();
-		//}
-		AssetManager* GetAssetManager() const
-		{
-			return assetManager.get();
-		}
+		}	
 
 		std::string GetConfigPath(const std::string& name);
 		std::string GetAssetPath(const std::string& relative);
 
+		// Subsystem accessors
+		EELogger* GetLogger() const
+		{
+			return m_Logger.get();
+		}
+		ConfigManager* GetConfigManager() const
+		{
+			return m_ConfigManager.get();
+		}
+		AssetManager* GetAssetManager() const
+		{
+			return m_AssetManager.get();
+		}	
 		int32_t GetWindowWidth() const
 		{
-			return windowSettings.width;
+			return m_WindowSettings.width;
 		}
 		int32_t GetWindowHeight() const
 		{
-			return windowSettings.height;
+			return m_WindowSettings.height;
 		}
 		const std::wstring& GetWindowTitleW() const
 		{
-			return windowSettings.title;
+			return m_WindowSettings.title;
 		}
 		const std::string GetWindowTitle() const
 		{
-			return std::string(windowSettings.title.begin(), windowSettings.title.end());
+			return std::string(m_WindowSettings.title.begin(), m_WindowSettings.title.end());
+		}
+		const HWND GetWindowHandle() const
+		{
+			return m_Window ? m_Window->GetHWND() : nullptr;
 		}
 		void SetWindowSize(int32_t width, int32_t height)
 		{
-			windowSettings.width = width;
-			windowSettings.height = height;
+			m_WindowSettings.width = width;
+			m_WindowSettings.height = height;
 		}
 		void SetWindowTitle(const std::wstring& title)
 		{
-			windowSettings.title = title;
+			m_WindowSettings.title = title;
 		}
 		void SetWindowTitle(const std::string& title)
 		{
-			windowSettings.title = std::wstring(title.begin(), title.end());
+			m_WindowSettings.title = std::wstring(title.begin(), title.end());
 		}
 		bool IsRunning() const
 		{
-			return isRunning;
+			return m_isRunning;
 		}
 		void SetRunning(bool running)
 		{
-			isRunning = running;
+			m_isRunning = running;
 		}
+
+		void InitLogger();
+		void InitConfigManager();
+		void InitAssetManager();
+		void InitWindows();
+		void Shutdown();
+		void ProcessEvents();
 
 	private:
 		EEContext() = default;
@@ -98,13 +99,13 @@ namespace EtherealEngine
 		EEContext(const EEContext&) = delete;
 		EEContext& operator=(const EEContext&) = delete;
 
-		std::unique_ptr<EELogger> logger;
-		std::unique_ptr<ConfigManager> configManager;
+		std::unique_ptr<EELogger> m_Logger;
+		std::unique_ptr<ConfigManager> m_ConfigManager;
 		//std::unique_ptr<WindowSystem> windowSystem;
 		std::unique_ptr<EEWindow> m_Window;
-		std::unique_ptr<AssetManager> assetManager;
+		std::unique_ptr<AssetManager> m_AssetManager;
 
-		WindowSettings windowSettings;
-		bool isRunning = false;
+		WindowSettings m_WindowSettings;
+		bool m_isRunning = false;
 	};
 }
