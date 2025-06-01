@@ -1,5 +1,6 @@
 #include "GameApp.h"
 #include "Core/EELoggerMacros.h"
+#include "imgui.h"
 
 
 
@@ -13,6 +14,8 @@ void GameApp::Update(float deltaTime)
 {
 	// Game logic here
 	//LOG_INFO("Delta time: {:.3f} seconds", deltaTime);
+	// 
+	ImGui::ShowDemoWindow();
 }
 
 void GameApp::Shutdown()

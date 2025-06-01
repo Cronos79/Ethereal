@@ -31,9 +31,9 @@ namespace EtherealEngine
 			auto now = std::chrono::high_resolution_clock::now();
 			float deltaTime = std::chrono::duration<float>(now - lastTime).count();
 			lastTime = now;
-
-			Update(deltaTime);
+			
 			EEContext::Get().GetRenderer()->BeginFrame();
+			Update(deltaTime);
 			EEContext::Get().GetRenderer()->EndFrame();
 			EEContext::Get().GetRenderer()->PresentFrame();
 

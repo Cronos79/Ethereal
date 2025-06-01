@@ -61,7 +61,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)EtherealEngine\ThirdParty\spdlog\include;$(SolutionDir)EtherealEngine\src;$(SolutionDir)EtherealKingdoms\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)EtherealEngine\ThirdParty\imgui;$(SolutionDir)EtherealEngine\ThirdParty\spdlog\include;$(SolutionDir)EtherealEngine\src;$(SolutionDir)EtherealKingdoms\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 /wd4996 /wd4244 /wd4267 /wd4305 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -81,7 +81,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)EtherealEngine\ThirdParty\spdlog\include;$(SolutionDir)EtherealEngine\src;$(SolutionDir)EtherealKingdoms\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)EtherealEngine\ThirdParty\imgui;$(SolutionDir)EtherealEngine\ThirdParty\spdlog\include;$(SolutionDir)EtherealEngine\src;$(SolutionDir)EtherealKingdoms\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 /wd4996 /wd4244 /wd4267 /wd4305 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>

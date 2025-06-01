@@ -2,6 +2,9 @@
 #include "D3D12Renderer.h"
 #include <stdexcept>
 #include "Core/EELoggerMacros.h"
+#include <imgui.h>
+#include <imgui_impl_win32.h>
+#include <imgui_impl_dx12.h>
 
 using Microsoft::WRL::ComPtr;
 
@@ -132,6 +135,26 @@ namespace EtherealEngine
 			return false;
 		}
 
+		// 1. Create ImGui context
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Optional
+
+		// 2. Setup ImGui style
+		ImGui::StyleColorsDark();
+
+		// 3. Initialize ImGui Win32 and DX12 backends
+		ImGui_ImplWin32_Init(hwnd); // hwnd from your swap chain creation
+		ImGui_ImplDX12_Init(
+			m_device->GetDevice().Get(),
+			m_swapChain->GetBufferCount(),
+			m_swapChain->GetFormat(),
+			m_srvHeap.Get(),
+			m_srvHeap->GetCPUDescriptorHandleForHeapStart(),
+			m_srvHeap->GetGPUDescriptorHandleForHeapStart()
+		);
+
 		LOG_INFO("D3D12 Renderer initialized successfully");
 		return true;
 	}
@@ -147,6 +170,10 @@ namespace EtherealEngine
 			m_fenceEvent = nullptr;
 		}
 		m_fence.Reset();
+
+		ImGui_ImplDX12_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
 	}
 
 	bool D3D12Renderer::BeginFrame()
@@ -177,12 +204,20 @@ namespace EtherealEngine
 		const float clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 		m_commandList->GetList()->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 
+		// Before rendering your scene
+		ImGui_ImplDX12_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
 		return true;
 	}
 
 
 	bool D3D12Renderer::EndFrame()
 	{
+		ImGui::Render();
+		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), m_commandList->GetList().Get());
+
 		// Transition back buffer to present
 		D3D12_RESOURCE_BARRIER barrier = {};
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;

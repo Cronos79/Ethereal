@@ -2,6 +2,7 @@
 #include "EEWindow.h"
 #include "./Core/EELoggerMacros.h"
 #include "Core/EEContext.h"
+#include <imgui_impl_win32.h>
 
 using namespace EtherealEngine;
 
@@ -75,8 +76,12 @@ void EEWindow::PollEvents()
 	}
 }
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK EEWindow::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam))
+		return true;
+
 	EEWindow* window = nullptr;
 
 	if (uMsg == WM_NCCREATE)
