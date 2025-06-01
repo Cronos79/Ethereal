@@ -29,6 +29,7 @@ namespace EtherealEngine
 		EEContext::Get().InitAssetManager();
 		LoadWindowSettings();
 		EEContext::Get().InitWindows();
+		EEContext::Get().InitRenderer();
 
 		LOG_INFO("Ethereal Engine initialized successfully");
 		return true;

@@ -7,6 +7,7 @@
 #include "Core/ConfigManager.h"
 #include "Assets/AssetManager.h"
 #include "Platform/EEWindow.h"
+#include <Renderer/DX12/D3D12Renderer.h>
 
 namespace EtherealEngine
 {
@@ -64,6 +65,14 @@ namespace EtherealEngine
 		{
 			return m_Window ? m_Window->GetHWND() : nullptr;
 		}
+		EEWindow* GetWindow() const
+		{
+			return m_Window.get();
+		}
+		D3D12Renderer* GetRenderer() const
+		{
+			return m_Renderer.get();
+		}
 		void SetWindowSize(int32_t width, int32_t height)
 		{
 			m_WindowSettings.width = width;
@@ -90,6 +99,7 @@ namespace EtherealEngine
 		void InitConfigManager();
 		void InitAssetManager();
 		void InitWindows();
+		void InitRenderer();
 		void Shutdown();
 		void ProcessEvents();
 
@@ -104,6 +114,7 @@ namespace EtherealEngine
 		//std::unique_ptr<WindowSystem> windowSystem;
 		std::unique_ptr<EEWindow> m_Window;
 		std::unique_ptr<AssetManager> m_AssetManager;
+		std::unique_ptr<D3D12Renderer> m_Renderer; 
 
 		WindowSettings m_WindowSettings;
 		bool m_isRunning = false;

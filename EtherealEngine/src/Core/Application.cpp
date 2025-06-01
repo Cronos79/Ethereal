@@ -33,6 +33,9 @@ namespace EtherealEngine
 			lastTime = now;
 
 			Update(deltaTime);
+			EEContext::Get().GetRenderer()->BeginFrame();
+			EEContext::Get().GetRenderer()->EndFrame();
+			EEContext::Get().GetRenderer()->PresentFrame();
 
 			// temporary sleep to prevent high CPU usage
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));

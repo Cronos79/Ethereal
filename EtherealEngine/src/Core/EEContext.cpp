@@ -25,9 +25,16 @@ namespace EtherealEngine
 		m_Window->Initialize(m_WindowSettings.title, m_WindowSettings.width, m_WindowSettings.height);
 	}
 
+	void EEContext::InitRenderer()
+	{
+		m_Renderer = std::make_unique<D3D12Renderer>();
+		m_Renderer->Initialize();
+	}
+
 	void EEContext::Shutdown()
 	{
 		SetRunning(false);
+		m_Renderer.reset();
 		m_AssetManager.reset();
 		m_Window.reset();
 		m_ConfigManager.reset();
