@@ -1,11 +1,24 @@
 #include "pch.h"
-#include "AssetManager.h"
-#include "./Core/EELoggerMacros.h"
-#include "ModelAsset.h"
-#include "Core/EEContext.h"
+#include "Assets/AssetManager.h"
+#include "Core/EELoggerMacros.h"
+#include "Assets/ModelAsset.h"
+#include <nlohmann/json.hpp>
+
+#include <fstream>
 
 namespace EtherealEngine
 {
+
+	AssetManager::AssetManager()
+	{
+
+	}
+
+	AssetManager::~AssetManager()
+	{
+
+	}
+
 	void AssetManager::Initialize()
 	{
 		LOG_INFO("AssetManager initialized.");

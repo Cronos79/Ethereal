@@ -1,23 +1,17 @@
 #pragma once
-
 #include <unordered_map>
 #include <string>
 #include <memory>
-#include <nlohmann/json.hpp>
-#include "Core/EELoggerMacros.h"
+#include "IAsset.h"
 
 namespace EtherealEngine
 {
-
-	class IAsset
-	{
-	public:
-		virtual ~IAsset() = default;
-	};
-
 	class AssetManager
 	{
 	public:
+		AssetManager();
+		~AssetManager();
+
 		void Initialize();
 		void Shutdown();
 

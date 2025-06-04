@@ -1,10 +1,10 @@
 #pragma once
 #pragma once
 #include <string>
-#include "AssetManager.h"
-#include "Mesh.h"
+#include "Assets/Mesh.h"
 #include <assimp/scene.h>
-#include "Material.h"
+#include "Assets/Material.h"
+#include "IAsset.h"
 
 namespace EtherealEngine
 {

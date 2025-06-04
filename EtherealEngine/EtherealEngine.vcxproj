@@ -23,6 +23,7 @@
     <ClCompile Include="src\Core\EELogger.cpp" />
     <ClCompile Include="src\Core\StartupManager.cpp" />
     <ClCompile Include="src\Game\EEGameObject.cpp" />
+    <ClCompile Include="src\Game\EEScene.cpp" />
     <ClCompile Include="src\Platform\EEWindow.cpp" />
     <ClCompile Include="src\Renderer\DX12\D3D12Renderer.cpp" />
     <ClCompile Include="src\Renderer\DX12\EECommandAllocator.cpp" />
@@ -65,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Assets\AssetManager.h" />
+    <ClInclude Include="src\Assets\IAsset.h" />
     <ClInclude Include="src\Assets\Material.h" />
     <ClInclude Include="src\Assets\Mesh.h" />
     <ClInclude Include="src\Assets\ModelAsset.h" />
@@ -75,6 +77,7 @@
     <ClInclude Include="src\Core\EELogger.h" />
     <ClInclude Include="src\Core\EELoggerMacros.h" />
     <ClInclude Include="src\Game\EEGameObject.h" />
+    <ClInclude Include="src\Game\EEScene.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\Core\StartupManager.h" />
     <ClInclude Include="src\Platform\EEWindow.h" />

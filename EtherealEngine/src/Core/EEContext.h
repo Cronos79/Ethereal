@@ -2,10 +2,9 @@
 
 #include <memory>
 #include <stdint.h>
-
 #include "Core/EELogger.h"
-#include "Core/ConfigManager.h"
 #include "Assets/AssetManager.h"
+#include "Core/ConfigManager.h"
 #include "Platform/EEWindow.h"
 #include <Renderer/DX12/D3D12Renderer.h>
 
@@ -111,7 +110,6 @@ namespace EtherealEngine
 
 		std::unique_ptr<EELogger> m_Logger;
 		std::unique_ptr<ConfigManager> m_ConfigManager;
-		//std::unique_ptr<WindowSystem> windowSystem;
 		std::unique_ptr<EEWindow> m_Window;
 		std::unique_ptr<AssetManager> m_AssetManager;
 		std::unique_ptr<D3D12Renderer> m_Renderer; 

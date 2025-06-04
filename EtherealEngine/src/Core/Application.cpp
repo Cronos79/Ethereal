@@ -17,6 +17,7 @@ namespace EtherealEngine
 			return -1;
 		}
 
+		m_CurrentScene = std::make_unique<EEScene>();
 		if (!Initialize())
 		{
 			LOG_ERROR("Game-specific initialization failed.");
@@ -24,7 +25,7 @@ namespace EtherealEngine
 		}
 
 		auto lastTime = std::chrono::high_resolution_clock::now();
-
+		
 		while (EEContext::Get().IsRunning())
 		{
 			EEContext::Get().ProcessEvents();
@@ -33,7 +34,14 @@ namespace EtherealEngine
 			lastTime = now;
 			
 			EEContext::Get().GetRenderer()->BeginFrame();
-			Update(deltaTime);
+			
+			if (m_CurrentScene)
+			{
+				Update(deltaTime);
+				m_CurrentScene->Update(deltaTime);
+				m_CurrentScene->Draw();
+				m_CurrentScene->DrawUI();
+			}
 			EEContext::Get().GetRenderer()->EndFrame();
 			EEContext::Get().GetRenderer()->PresentFrame();
 		}
@@ -57,6 +65,7 @@ namespace EtherealEngine
 
 	void Application::Shutdown()
 	{
+		m_CurrentScene.reset();
 		LOG_INFO("Base Application shutdown.");		
 	}
 

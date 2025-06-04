@@ -140,6 +140,8 @@ namespace EtherealEngine
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Optional
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 		// 2. Setup ImGui style
 		ImGui::StyleColorsDark();
@@ -216,6 +218,8 @@ namespace EtherealEngine
 	bool D3D12Renderer::EndFrame()
 	{
 		ImGui::Render();
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), m_commandList->GetList().Get());
 
 		// Transition back buffer to present

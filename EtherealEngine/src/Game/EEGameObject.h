@@ -2,6 +2,7 @@
 #include <string>
 #include <memory>
 #include <DirectXMath.h>
+#include "Assets/ModelAsset.h"
 
 namespace EtherealEngine
 {
@@ -31,6 +32,16 @@ namespace EtherealEngine
 			return m_Name;
 		}
 
+		// Model asset accessors
+		void SetModel(const std::shared_ptr<ModelAsset>& model)
+		{
+			m_Model = model;
+		}
+		const std::shared_ptr<ModelAsset>& GetModel() const
+		{
+			return m_Model;
+		}
+
 		// Update and draw stubs
 		virtual void Update(float deltaTime);
 		virtual void Draw();
@@ -39,6 +50,6 @@ namespace EtherealEngine
 	protected:
 		std::string m_Name;
 		DirectX::XMFLOAT3 m_Position{ 0.0f, 0.0f, 0.0f };
-		// Add mesh/material/components as needed
+		std::shared_ptr<ModelAsset> m_Model;
 	};
 }

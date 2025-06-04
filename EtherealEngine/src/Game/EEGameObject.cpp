@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "EEGameObject.h"
+#include "Assets/ModelAsset.h"
 
 namespace EtherealEngine
 {
