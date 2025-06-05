@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "EEScene.h"
+#include "Assets/ModelAsset.h"
+#include "Renderer/DX12/D3D12Renderer.h"
 
 namespace EtherealEngine
 {
@@ -38,7 +40,9 @@ namespace EtherealEngine
 	{
 		for (auto& obj : m_GameObjects)
 		{
-			obj->Draw();
+			auto model = obj->GetModel();
+			if (model)
+				EEContext::Get().GetRenderer()->Draw(model.get());
 		}
 	}
 

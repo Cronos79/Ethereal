@@ -5,6 +5,10 @@
 #include <imgui.h>
 #include <imgui_impl_win32.h>
 #include <imgui_impl_dx12.h>
+#include "Assets/ModelAsset.h"
+#include "Assets/VertexShaderAsset.h"
+#include "Core/EEContext.h"
+#include "Assets/PixelShaderAsset.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -23,7 +27,6 @@ namespace EtherealEngine
 	{
 		LOG_INFO("Initializing D3D12 Renderer...");
 #if defined(_DEBUG)
-		// Enable the D3D12 debug layer if available
 		ComPtr<ID3D12Debug> debugController;
 		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
 		{
@@ -37,7 +40,6 @@ namespace EtherealEngine
 			LOG_ERROR("Failed to create D3D12 factory");
 			return false;
 		}
-		// Get the best adapter from the factory
 		auto adapter = m_factory->GetBestAdapter();
 		if (!adapter)
 		{
@@ -52,7 +54,6 @@ namespace EtherealEngine
 			return false;
 		}
 
-		// Create the command queue
 		m_commandQueue = std::make_unique<EECommandQueue>(m_device->GetDevice());
 		if (!m_commandQueue)
 		{
@@ -60,7 +61,6 @@ namespace EtherealEngine
 			return false;
 		}
 
-		// --- Swap Chain Creation ---
 		HWND hwnd = EEContext::Get().GetWindowHandle();
 		int width = EEContext::Get().GetWindowWidth();
 		int height = EEContext::Get().GetWindowHeight();
@@ -114,7 +114,7 @@ namespace EtherealEngine
 
 		// Create SRV descriptor heap (shader-visible, for ImGui and textures)
 		D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-		srvHeapDesc.NumDescriptors = 64; // Or higher if you plan to use more textures
+		srvHeapDesc.NumDescriptors = 64;
 		srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 		m_device->GetDevice()->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&m_srvHeap));
@@ -135,19 +135,15 @@ namespace EtherealEngine
 			return false;
 		}
 
-		// 1. Create ImGui context
+		// ImGui setup
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Optional
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-
-		// 2. Setup ImGui style
 		ImGui::StyleColorsDark();
-
-		// 3. Initialize ImGui Win32 and DX12 backends
-		ImGui_ImplWin32_Init(hwnd); // hwnd from your swap chain creation
+		ImGui_ImplWin32_Init(hwnd);
 		ImGui_ImplDX12_Init(
 			m_device->GetDevice().Get(),
 			m_swapChain->GetBufferCount(),
@@ -156,6 +152,56 @@ namespace EtherealEngine
 			m_srvHeap->GetCPUDescriptorHandleForHeapStart(),
 			m_srvHeap->GetGPUDescriptorHandleForHeapStart()
 		);
+
+		m_camera.SetPerspective(DirectX::XM_PIDIV4, float(width) / float(height), 0.1f, 100.0f);
+		m_camera.SetLookAt({ 0, 0, -5 }, { 0, 0, 0 }, { 0, 1, 0 });
+
+		// Root Signature with 1 CBV (b0)
+		CD3DX12_ROOT_PARAMETER rootParameters[1];
+		rootParameters[0].InitAsConstantBufferView(0); // b0
+
+		CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
+		rootSignatureDesc.Init(
+			1, rootParameters,
+			0, nullptr,
+			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+		ComPtr<ID3DBlob> signatureBlob, errorBlob;
+		hr = D3D12SerializeRootSignature(
+			&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1,
+			&signatureBlob, &errorBlob);
+		if (FAILED(hr)) return false;
+
+		hr = m_device->GetDevice()->CreateRootSignature(
+			0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(),
+			IID_PPV_ARGS(&m_rootSignature));
+		if (FAILED(hr)) return false;
+
+		// Create MVP constant buffer (256-byte aligned)
+		D3D12_RESOURCE_DESC cbDesc = {};
+		cbDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+		cbDesc.Width = (sizeof(MVPBuffer) + 255) & ~255; // 256-byte aligned
+		cbDesc.Height = 1;
+		cbDesc.DepthOrArraySize = 1;
+		cbDesc.MipLevels = 1;
+		cbDesc.SampleDesc.Count = 1;
+		cbDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+		CD3DX12_HEAP_PROPERTIES cbHeapProps(D3D12_HEAP_TYPE_UPLOAD);
+
+		hr = m_device->GetDevice()->CreateCommittedResource(
+			&cbHeapProps,
+			D3D12_HEAP_FLAG_NONE,
+			&cbDesc,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(&m_mvpBuffer)
+		);
+		if (FAILED(hr))
+		{
+			LOG_ERROR("Failed to create MVP constant buffer");
+			return false;
+		}
 
 		LOG_INFO("D3D12 Renderer initialized successfully");
 		return true;
@@ -180,11 +226,9 @@ namespace EtherealEngine
 
 	bool D3D12Renderer::BeginFrame()
 	{
-		// Reset allocator and command list
 		m_commandAllocator->GetAllocator()->Reset();
 		m_commandList->GetList()->Reset(m_commandAllocator->GetAllocator().Get(), nullptr);
 
-		// Transition back buffer to render target
 		D3D12_RESOURCE_BARRIER barrier = {};
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
@@ -194,26 +238,21 @@ namespace EtherealEngine
 		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 		m_commandList->GetList()->ResourceBarrier(1, &barrier);
 
-		// Set render target
 		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = GetCurrentRTV();
 		m_commandList->GetList()->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 
-		// Set descriptor heaps (for ImGui, etc.)
 		ID3D12DescriptorHeap* heaps[] = { m_srvHeap.Get() };
 		m_commandList->GetList()->SetDescriptorHeaps(_countof(heaps), heaps);
 
-		// Optionally clear the render target
 		const float clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 		m_commandList->GetList()->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 
-		// Before rendering your scene
 		ImGui_ImplDX12_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
 		return true;
 	}
-
 
 	bool D3D12Renderer::EndFrame()
 	{
@@ -222,7 +261,6 @@ namespace EtherealEngine
 		ImGui::RenderPlatformWindowsDefault();
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), m_commandList->GetList().Get());
 
-		// Transition back buffer to present
 		D3D12_RESOURCE_BARRIER barrier = {};
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
@@ -232,7 +270,6 @@ namespace EtherealEngine
 		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 		m_commandList->GetList()->ResourceBarrier(1, &barrier);
 
-		// Close and execute command list
 		m_commandList->GetList()->Close();
 		ID3D12CommandList* cmdLists[] = { m_commandList->GetList().Get() };
 		m_commandQueue->GetQueue()->ExecuteCommandLists(1, cmdLists);
@@ -242,32 +279,203 @@ namespace EtherealEngine
 
 	bool D3D12Renderer::PresentFrame()
 	{
-		// Present
 		HRESULT hr = m_swapChain->GetSwapChain()->Present(1, 0);
 		if (FAILED(hr))
 		{
 			LOG_ERROR("SwapChain Present failed");
 			return false;
 		}
-
-		// Move to next frame (fence sync and update frame index)
 		MoveToNextFrame();
 		return true;
 	}
 
+	void D3D12Renderer::Draw(ModelAsset* model)
+	{
+		if (!model) return;
+
+		// Update the MVP buffer with the latest camera/view/proj
+		UpdateMVPBuffer();
+
+		auto& meshes = model->GetMeshes();
+		auto& materials = model->GetMaterials();
+		auto* device = m_device->GetDevice().Get();
+		auto* cmdList = m_commandList->GetList().Get();
+		auto* assetManager = EEContext::Get().GetAssetManager();
+
+		int width = EEContext::Get().GetWindowWidth();
+		int height = EEContext::Get().GetWindowHeight();
+
+		D3D12_VIEWPORT viewport = { 0, 0, (float)width, (float)height, 0.0f, 1.0f };
+		D3D12_RECT scissorRect = { 0, 0, width, height };
+		cmdList->RSSetViewports(1, &viewport);
+		cmdList->RSSetScissorRects(1, &scissorRect);
+
+		for (auto& mesh : meshes)
+		{
+			if (mesh.GetVertices().empty() || mesh.GetIndices().empty())
+				continue;
+
+			// 1. Get the material for this mesh
+			const auto& material = materials[mesh.GetMaterialIndex()];
+
+			// 2. Build the PSO key (vertex shader only for now)
+			PSOKey key{ material.GetVertexShader(), material.GetPixelShader() };
+
+			// 3. Find or create the PSO
+			ComPtr<ID3D12PipelineState> pso;
+			auto it = m_psoCache.find(key);
+			if (it != m_psoCache.end())
+			{
+				pso = it->second;
+			}
+			else
+			{
+				// 4. Load vertex and pixel shader bytecode from assets
+				auto vs = assetManager->Get<VertexShaderAsset>(key.vertexShader);
+				auto ps = assetManager->Get<PixelShaderAsset>(key.pixelShader); 
+				if (!vs)
+				{
+					LOG_ERROR("Shader asset(s) missing: VS='{}'", key.vertexShader);
+					continue;
+				}
+				if (!ps)
+				{
+					LOG_ERROR("Shader asset(s) missing: PS='{}'", key.pixelShader);
+					continue;
+				}
+
+				// 5. Fill out the PSO desc (pixel shader is a dummy for now)
+				D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
+					{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(EtherealEngine::Vertex, position), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+					{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(EtherealEngine::Vertex, normal),   D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+					{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, offsetof(EtherealEngine::Vertex, texcoord), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+				};
+
+				D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+				psoDesc.InputLayout = { inputLayout, _countof(inputLayout) };
+				psoDesc.pRootSignature = m_rootSignature.Get();
+				psoDesc.VS = vs->GetShaderBytecode();
+				psoDesc.PS = ps->GetShaderBytecode();
+				psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+				psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+				psoDesc.DepthStencilState.DepthEnable = FALSE;
+				psoDesc.DepthStencilState.StencilEnable = FALSE;
+				psoDesc.SampleMask = UINT_MAX;
+				psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+				psoDesc.NumRenderTargets = 1;
+				psoDesc.RTVFormats[0] = m_swapChain->GetFormat();
+				psoDesc.SampleDesc.Count = 1;
+
+				HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pso));
+				if (FAILED(hr))
+				{
+					std::string errorMsg = "Failed to create PSO for VS='" + key.vertexShader + "'";
+					LOG_HRERROR(hr, errorMsg);
+					continue;
+				}
+				m_psoCache[key] = pso;
+			}
+
+			// 6. Set the PSO and root signature			
+			cmdList->SetPipelineState(pso.Get());
+			cmdList->SetGraphicsRootSignature(m_rootSignature.Get());
+
+			// 7. Set up vertex/index buffers (as you already do)
+			if (!mesh.m_vertexBuffer)
+			{
+				D3D12_RESOURCE_DESC vbDesc = {};
+				vbDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+				vbDesc.Width = sizeof(EtherealEngine::Vertex) * mesh.GetVertices().size();
+				vbDesc.Height = 1;
+				vbDesc.DepthOrArraySize = 1;
+				vbDesc.MipLevels = 1;
+				vbDesc.SampleDesc.Count = 1;
+				vbDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+				CD3DX12_HEAP_PROPERTIES vbHeapProps(D3D12_HEAP_TYPE_UPLOAD);
+
+				HRESULT hr = device->CreateCommittedResource(
+					&vbHeapProps,
+					D3D12_HEAP_FLAG_NONE,
+					&vbDesc,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					nullptr,
+					IID_PPV_ARGS(mesh.m_vertexBuffer.GetAddressOf())
+				);
+				if (FAILED(hr))
+				{
+					LOG_HRERROR(hr, "Failed to create vertex buffer resource");
+					EEContext::Get().SetRunning(false);
+					return;
+				}
+
+				void* pVertexData = nullptr;
+				mesh.m_vertexBuffer->Map(0, nullptr, &pVertexData);
+				memcpy(pVertexData, mesh.GetVertices().data(), vbDesc.Width);
+				mesh.m_vertexBuffer->Unmap(0, nullptr);
+			}
+
+			if (!mesh.m_indexBuffer)
+			{
+				D3D12_RESOURCE_DESC ibDesc = {};
+				ibDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+				ibDesc.Width = sizeof(uint32_t) * mesh.GetIndices().size();
+				ibDesc.Height = 1;
+				ibDesc.DepthOrArraySize = 1;
+				ibDesc.MipLevels = 1;
+				ibDesc.SampleDesc.Count = 1;
+				ibDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+				CD3DX12_HEAP_PROPERTIES ibHeapProps(D3D12_HEAP_TYPE_UPLOAD);
+
+				HRESULT hr = device->CreateCommittedResource(
+					&ibHeapProps,
+					D3D12_HEAP_FLAG_NONE,
+					&ibDesc,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					nullptr,
+					IID_PPV_ARGS(mesh.m_indexBuffer.GetAddressOf())
+				);
+				if (FAILED(hr))
+				{
+					LOG_HRERROR(hr, "Failed to create index buffer resource");
+					EEContext::Get().SetRunning(false);
+					return;
+				}
+
+				void* pIndexData = nullptr;
+				mesh.m_indexBuffer->Map(0, nullptr, &pIndexData);
+				memcpy(pIndexData, mesh.GetIndices().data(), ibDesc.Width);
+				mesh.m_indexBuffer->Unmap(0, nullptr);
+			}
+
+			D3D12_VERTEX_BUFFER_VIEW vbView = {};
+			vbView.BufferLocation = mesh.m_vertexBuffer->GetGPUVirtualAddress();
+			vbView.SizeInBytes = static_cast<UINT>(sizeof(EtherealEngine::Vertex) * mesh.GetVertices().size());
+			vbView.StrideInBytes = sizeof(EtherealEngine::Vertex);
+
+			D3D12_INDEX_BUFFER_VIEW ibView = {};
+			ibView.BufferLocation = mesh.m_indexBuffer->GetGPUVirtualAddress();
+			ibView.SizeInBytes = static_cast<UINT>(sizeof(uint32_t) * mesh.GetIndices().size());
+			ibView.Format = DXGI_FORMAT_R32_UINT;
+
+			cmdList->SetGraphicsRootConstantBufferView(0, m_mvpBuffer->GetGPUVirtualAddress());
+
+			cmdList->IASetVertexBuffers(0, 1, &vbView);
+			cmdList->IASetIndexBuffer(&ibView);
+			cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			cmdList->DrawIndexedInstanced(static_cast<UINT>(mesh.GetIndices().size()), 1, 0, 0, 0);
+		}
+	}
 
 	void D3D12Renderer::SignalCommandQueue()
 	{
 		m_commandQueue->GetQueue()->Signal(m_fence.Get(), m_fenceValue);
 	}
 
-
 	void D3D12Renderer::WaitForGPU()
 	{
-		// Schedule a Signal command in the queue.
 		SignalCommandQueue();
-
-		// Wait until the fence has been processed.
 		if (m_fence->GetCompletedValue() < m_fenceValue)
 		{
 			m_fence->SetEventOnCompletion(m_fenceValue, m_fenceEvent);
@@ -276,22 +484,36 @@ namespace EtherealEngine
 		m_fenceValue++;
 	}
 
-
 	void D3D12Renderer::MoveToNextFrame()
 	{
-		// Signal and increment the fence value.
 		const UINT64 currentFenceValue = m_fenceValue;
 		SignalCommandQueue();
-
 		m_frameIndex = m_swapChain->GetSwapChain()->GetCurrentBackBufferIndex();
-
-		// Wait until the next frame is ready.
 		if (m_fence->GetCompletedValue() < currentFenceValue)
 		{
 			m_fence->SetEventOnCompletion(currentFenceValue, m_fenceEvent);
 			WaitForSingleObject(m_fenceEvent, INFINITE);
 		}
 		m_fenceValue++;
+	}
+
+	void D3D12Renderer::UpdateMVPBuffer()
+	{
+		using namespace DirectX;
+		XMMATRIX model = XMMatrixIdentity();
+		XMMATRIX view = m_camera.GetView();
+		XMMATRIX proj = m_camera.GetProj();
+		XMMATRIX mvp = XMMatrixTranspose(model * view * proj);
+		XMStoreFloat4x4(&m_mvpData.u_MVP, mvp);
+
+		printf("UpdateMVPBuffer: eye=(%f,%f,%f) at=(%f,%f,%f)\n",
+			m_camera.GetEye().x, m_camera.GetEye().y, m_camera.GetEye().z,
+			m_camera.GetAt().x, m_camera.GetAt().y, m_camera.GetAt().z);
+
+		void* pData = nullptr;
+		m_mvpBuffer->Map(0, nullptr, &pData);
+		memcpy(pData, &m_mvpData, sizeof(MVPBuffer));
+		m_mvpBuffer->Unmap(0, nullptr);
 	}
 
 }

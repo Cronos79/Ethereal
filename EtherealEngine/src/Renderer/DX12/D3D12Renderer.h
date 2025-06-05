@@ -13,9 +13,38 @@
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "d3dcompiler.lib")
+
+#include <unordered_map>
+#include <string>
+#include <tuple>
+#include "Camera.h"
+
+struct PSOKey {
+	std::string vertexShader;
+	std::string pixelShader;
+	// Add more fields if needed (input layout, blend state, etc.)
+
+	bool operator==(const PSOKey& other) const
+	{
+		return vertexShader == other.vertexShader && pixelShader == other.pixelShader;
+	}
+};
+
+namespace std
+{
+	template <>
+	struct hash<PSOKey> {
+		std::size_t operator()(const PSOKey& k) const
+		{
+			return hash<string>()(k.vertexShader) ^ (hash<string>()(k.pixelShader) << 1);
+		}
+	};
+}
 
 namespace EtherealEngine
 {
+	class ModelAsset; // Forward declaration of ModelAsset class
 	class D3D12Renderer
 	{
 	public:
@@ -30,10 +59,14 @@ namespace EtherealEngine
 		bool EndFrame();
 		bool PresentFrame();
 
+		void Draw(ModelAsset* model);
+
 	protected:
 		void SignalCommandQueue();
 		void WaitForGPU();
 		void MoveToNextFrame();
+
+		void UpdateMVPBuffer();
 
 	public:
 		// Accessors
@@ -74,6 +107,12 @@ namespace EtherealEngine
 			return CD3DX12_GPU_DESCRIPTOR_HANDLE(m_srvHeap->GetGPUDescriptorHandleForHeapStart(), index, m_srvDescriptorSize);
 		}
 
+		// Get main Camera
+		Camera& GetCamera()
+		{
+			return m_camera;
+		}
+
 	public:
 		ID3D12Resource* GetCurrentBackBuffer() const
 		{
@@ -105,5 +144,22 @@ namespace EtherealEngine
 		Microsoft::WRL::ComPtr<ID3D12Fence> m_fence;
 		UINT64 m_fenceValue = 0;
 		HANDLE m_fenceEvent = nullptr;
+
+		Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignature;
+		Microsoft::WRL::ComPtr<ID3D12PipelineState> m_pipelineState;
+
+		std::unordered_map<PSOKey, Microsoft::WRL::ComPtr<ID3D12PipelineState>> m_psoCache;
+
+		// MVP constant buffer struct
+		struct MVPBuffer
+		{
+			DirectX::XMFLOAT4X4 u_MVP;
+		};
+
+		Microsoft::WRL::ComPtr<ID3D12Resource> m_mvpBuffer;
+		D3D12_GPU_VIRTUAL_ADDRESS m_mvpBufferAddress = 0;
+		MVPBuffer m_mvpData;
+
+		Camera m_camera;
 	};
 }

@@ -16,7 +16,9 @@
     <ClCompile Include="src\Assets\Material.cpp" />
     <ClCompile Include="src\Assets\Mesh.cpp" />
     <ClCompile Include="src\Assets\ModelAsset.cpp" />
+    <ClCompile Include="src\Assets\PixelShaderAsset.cpp" />
     <ClCompile Include="src\Assets\Texture.cpp" />
+    <ClCompile Include="src\Assets\VertexShaderAsset.cpp" />
     <ClCompile Include="src\Core\Application.cpp" />
     <ClCompile Include="src\Core\ConfigManager.cpp" />
     <ClCompile Include="src\Core\EEContext.cpp" />
@@ -25,6 +27,7 @@
     <ClCompile Include="src\Game\EEGameObject.cpp" />
     <ClCompile Include="src\Game\EEScene.cpp" />
     <ClCompile Include="src\Platform\EEWindow.cpp" />
+    <ClCompile Include="src\Renderer\DX12\Camera.cpp" />
     <ClCompile Include="src\Renderer\DX12\D3D12Renderer.cpp" />
     <ClCompile Include="src\Renderer\DX12\EECommandAllocator.cpp" />
     <ClCompile Include="src\Renderer\DX12\EECommandList.cpp" />
@@ -70,7 +73,9 @@
     <ClInclude Include="src\Assets\Material.h" />
     <ClInclude Include="src\Assets\Mesh.h" />
     <ClInclude Include="src\Assets\ModelAsset.h" />
+    <ClInclude Include="src\Assets\PixelShaderAsset.h" />
     <ClInclude Include="src\Assets\Texture.h" />
+    <ClInclude Include="src\Assets\VertexShaderAsset.h" />
     <ClInclude Include="src\Core\Application.h" />
     <ClInclude Include="src\Core\ConfigManager.h" />
     <ClInclude Include="src\Core\EEContext.h" />
@@ -82,6 +87,7 @@
     <ClInclude Include="src\Core\StartupManager.h" />
     <ClInclude Include="src\Platform\EEWindow.h" />
     <ClInclude Include="src\Platform\WinInclude.h" />
+    <ClInclude Include="src\Renderer\DX12\Camera.h" />
     <ClInclude Include="src\Renderer\DX12\D3D12Renderer.h" />
     <ClInclude Include="src\Renderer\DX12\EECommandAllocator.h" />
     <ClInclude Include="src\Renderer\DX12\EECommandList.h" />
@@ -98,6 +104,20 @@
     <ClInclude Include="ThirdParty\imgui\imstb_rectpack.h" />
     <ClInclude Include="ThirdParty\imgui\imstb_textedit.h" />
     <ClInclude Include="ThirdParty\imgui\imstb_truetype.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="src\Shaders\TestPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.7</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.7</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="src\Shaders\TestVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.7</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.7</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

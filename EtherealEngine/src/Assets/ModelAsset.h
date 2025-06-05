@@ -16,11 +16,11 @@ namespace EtherealEngine
 
 		bool LoadFromFile(const std::string& path);
 
-		const std::vector<Mesh>& GetMeshes() const
+		std::vector<Mesh>& GetMeshes()
 		{
 			return m_Meshes;
 		}
-		const std::vector<Material>& GetMaterials() const
+		std::vector<Material>& GetMaterials()
 		{
 			return m_Materials;
 		}

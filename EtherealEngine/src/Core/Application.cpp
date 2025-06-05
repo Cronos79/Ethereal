@@ -41,8 +41,9 @@ namespace EtherealEngine
 				m_CurrentScene->Update(deltaTime);
 				m_CurrentScene->Draw();
 				m_CurrentScene->DrawUI();
+				DrawUI();
 			}
-			EEContext::Get().GetRenderer()->EndFrame();
+-			EEContext::Get().GetRenderer()->EndFrame();
 			EEContext::Get().GetRenderer()->PresentFrame();
 		}
 
@@ -61,6 +62,11 @@ namespace EtherealEngine
 	void Application::Update(float deltaTime)
 	{
 		// Default does nothing
+	}
+
+	void Application::DrawUI()
+	{
+
 	}
 
 	void Application::Shutdown()

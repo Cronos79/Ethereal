@@ -20,11 +20,6 @@ namespace EtherealEngine
 
 	}
 
-	void EEGameObject::Draw()
-	{
-
-	}
-
 	void EEGameObject::DrawUI()
 	{
 

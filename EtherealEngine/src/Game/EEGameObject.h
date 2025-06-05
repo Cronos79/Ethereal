@@ -40,11 +40,10 @@ namespace EtherealEngine
 		const std::shared_ptr<ModelAsset>& GetModel() const
 		{
 			return m_Model;
-		}
+		}		
 
 		// Update and draw stubs
 		virtual void Update(float deltaTime);
-		virtual void Draw();
 		virtual void DrawUI();
 
 	protected:

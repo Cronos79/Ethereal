@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <DirectXMath.h>
+#include <d3d12.h>
+#include <wrl/client.h>
 
 namespace EtherealEngine
 {
@@ -46,10 +48,13 @@ namespace EtherealEngine
 		}
 
 		// Future: Add material reference, bounding box, etc.
+	public:
+		Microsoft::WRL::ComPtr<ID3D12Resource> m_vertexBuffer;
+		Microsoft::WRL::ComPtr<ID3D12Resource> m_indexBuffer;
 
 	private:
 		std::vector<Vertex> m_Vertices;
-		std::vector<uint32_t> m_Indices;
+		std::vector<uint32_t> m_Indices;	
 		uint32_t m_MaterialIndex = 0;
 	};
 }

@@ -17,6 +17,8 @@ namespace EtherealEngine
 
 		bool LoadRegistry(const std::string& jsonPath);
 		bool LoadModel(const std::string& name);
+		bool LoadVertexShader(const std::string& name);
+		bool LoadPixelShader(const std::string& name);
 
 		template<typename T>
 		std::shared_ptr<T> Get(const std::string& name)

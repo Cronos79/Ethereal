@@ -73,6 +73,23 @@ namespace EtherealEngine
 			return m_NormalTexture;
 		}
 
+		void SetVertexShader(const std::string& name)
+		{
+			m_VertexShaderName = name;
+		}
+		void SetPixelShader(const std::string& name)
+		{
+			m_PixelShaderName = name;
+		}
+		const std::string& GetVertexShader() const
+		{
+			return m_VertexShaderName;
+		}
+		const std::string& GetPixelShader() const
+		{
+			return m_PixelShaderName;
+		}
+
 	private:
 		// Base colors
 		DirectX::XMFLOAT3 m_DiffuseColor{ 1.0f, 1.0f, 1.0f };
@@ -84,5 +101,8 @@ namespace EtherealEngine
 		std::string m_DiffuseTexture;
 		std::string m_SpecularTexture;
 		std::string m_NormalTexture;
+
+		std::string m_VertexShaderName;
+		std::string m_PixelShaderName;
 	};
 }
