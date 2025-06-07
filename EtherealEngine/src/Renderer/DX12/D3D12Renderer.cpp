@@ -506,9 +506,9 @@ namespace EtherealEngine
 		XMMATRIX mvp = XMMatrixTranspose(model * view * proj);
 		XMStoreFloat4x4(&m_mvpData.u_MVP, mvp);
 
-		printf("UpdateMVPBuffer: eye=(%f,%f,%f) at=(%f,%f,%f)\n",
+		/*printf("UpdateMVPBuffer: eye=(%f,%f,%f) at=(%f,%f,%f)\n",
 			m_camera.GetEye().x, m_camera.GetEye().y, m_camera.GetEye().z,
-			m_camera.GetAt().x, m_camera.GetAt().y, m_camera.GetAt().z);
+			m_camera.GetAt().x, m_camera.GetAt().y, m_camera.GetAt().z);*/
 
 		void* pData = nullptr;
 		m_mvpBuffer->Map(0, nullptr, &pData);

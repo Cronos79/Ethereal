@@ -27,6 +27,8 @@
     <ClCompile Include="src\Game\EEGameObject.cpp" />
     <ClCompile Include="src\Game\EEScene.cpp" />
     <ClCompile Include="src\Platform\EEWindow.cpp" />
+    <ClCompile Include="src\Platform\Keyboard.cpp" />
+    <ClCompile Include="src\Platform\Mouse.cpp" />
     <ClCompile Include="src\Renderer\DX12\Camera.cpp" />
     <ClCompile Include="src\Renderer\DX12\D3D12Renderer.cpp" />
     <ClCompile Include="src\Renderer\DX12\EECommandAllocator.cpp" />
@@ -86,6 +88,8 @@
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\Core\StartupManager.h" />
     <ClInclude Include="src\Platform\EEWindow.h" />
+    <ClInclude Include="src\Platform\Keyboard.h" />
+    <ClInclude Include="src\Platform\Mouse.h" />
     <ClInclude Include="src\Platform\WinInclude.h" />
     <ClInclude Include="src\Renderer\DX12\Camera.h" />
     <ClInclude Include="src\Renderer\DX12\D3D12Renderer.h" />

@@ -4,6 +4,7 @@
 #include "Core/StartupManager.h"
 #include <chrono>
 #include <thread>
+#include "Platform/EEWindow.h"
 
 namespace EtherealEngine
 {
@@ -36,7 +37,10 @@ namespace EtherealEngine
 			EEContext::Get().GetRenderer()->BeginFrame();
 			
 			if (m_CurrentScene)
-			{
+			{				
+				HandleKeyboard(deltaTime);
+				EEContext::Get().GetWindow()->GetKeyboard().Update();
+				EEContext::Get().GetWindow()->GetMouse().Update();
 				Update(deltaTime);
 				m_CurrentScene->Update(deltaTime);
 				m_CurrentScene->Draw();
@@ -57,6 +61,11 @@ namespace EtherealEngine
 	{
 		LOG_INFO("Base Application initialized.");
 		return true;
+	}
+
+	void Application::HandleKeyboard(float deltaTime)
+	{
+
 	}
 
 	void Application::Update(float deltaTime)

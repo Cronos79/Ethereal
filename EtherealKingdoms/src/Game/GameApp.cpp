@@ -4,6 +4,9 @@
 #include "Game/EEScene.h"
 #include "Core/EEContext.h"
 #include "TestObject.h"
+#include "Platform/EEWindow.h"
+#include "Platform/Keyboard.h"
+#include "Platform/Mouse.h"
 
 bool GameApp::Initialize()
 {
@@ -15,6 +18,21 @@ bool GameApp::Initialize()
 	auto obj = std::make_shared<TestObject>();
 	m_CurrentScene->AddGameObject(obj);
 	return true;
+}
+
+void GameApp::HandleKeyboard(float deltaTime)
+{
+	auto keyboard = EtherealEngine::EEContext::Get().GetWindow()->GetKeyboard();
+	auto mouse = EtherealEngine::EEContext::Get().GetWindow()->GetMouse();
+	if(keyboard.IsKeyPressed('W'))
+	{
+		LOG_INFO("W pressed");
+	}
+	if (mouse.IsButtonPressed(EtherealEngine::Mouse::Button::Left))
+	{
+		std::string mousePos = "Mouse Position: (" + std::to_string(mouse.GetX()) + ", " + std::to_string(mouse.GetY()) + ")";
+		LOG_INFO(mousePos);
+	}
 }
 
 void GameApp::Update(float deltaTime)

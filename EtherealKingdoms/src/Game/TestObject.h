@@ -44,7 +44,7 @@ public:
 	}
 	~TestObject()
 	{
-		LOG_INFO("TestObject: Destroyed");
+		//LOG_INFO("TestObject: Destroyed");
 	}
 	void DrawUI() override
 	{

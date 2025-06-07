@@ -14,6 +14,7 @@ namespace EtherealEngine
 
 	protected:
 		virtual bool Initialize();           // Called once at start
+		virtual void HandleKeyboard(float deltaTime); // Called every frame for keyboard input
 		virtual void Update(float deltaTime); // Called every frame
 		virtual void DrawUI();           // Called every frame for UI
 		virtual void Shutdown();            // Called once at end

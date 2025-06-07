@@ -3,6 +3,7 @@
 #include "./Core/EELoggerMacros.h"
 #include "Core/EEContext.h"
 #include <imgui_impl_win32.h>
+#include <windowsx.h>
 
 using namespace EtherealEngine;
 
@@ -106,7 +107,42 @@ LRESULT CALLBACK EEWindow::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			return 0;
+		case WM_SYSKEYDOWN:
+		case WM_KEYDOWN:
+			if (!(lParam & 0x40000000)) // Only on initial press, not repeat
+				window->m_Keyboard.OnKeyDown(static_cast<uint8_t>(wParam));
+			break;
+		case WM_SYSKEYUP:
+		case WM_KEYUP:
+			window->m_Keyboard.OnKeyUp(static_cast<uint8_t>(wParam));
+			break;
+		case WM_LBUTTONDOWN:
+			window->m_Mouse.OnButtonDown(Mouse::Left);
+			break;
+		case WM_LBUTTONUP:
+			window->m_Mouse.OnButtonUp(Mouse::Left);
+			break;
+		case WM_RBUTTONDOWN:
+			window->m_Mouse.OnButtonDown(Mouse::Right);
+			break;
+		case WM_RBUTTONUP:
+			window->m_Mouse.OnButtonUp(Mouse::Right);
+			break;
+		case WM_MBUTTONDOWN:
+			window->m_Mouse.OnButtonDown(Mouse::Middle);
+			break;
+		case WM_MBUTTONUP:
+			window->m_Mouse.OnButtonUp(Mouse::Middle);
+			break;
+		case WM_MOUSEMOVE:
+		{
+			int x = GET_X_LPARAM(lParam);
+			int y = GET_Y_LPARAM(lParam);
+			window->m_Mouse.OnMove(x, y);
+			break;
 		}
+		}
+
 	}
 
 	return DefWindowProcW(hwnd, uMsg, wParam, lParam);

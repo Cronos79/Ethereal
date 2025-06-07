@@ -1,6 +1,8 @@
 #pragma once
 #include "WinInclude.h" // Include the necessary Windows headers
 #include <string>
+#include "Keyboard.h"
+#include "Mouse.h"
 
 namespace EtherealEngine
 {
@@ -25,6 +27,14 @@ namespace EtherealEngine
 		{
 			return m_Height;
 		}
+		Keyboard& GetKeyboard()
+		{
+			return m_Keyboard;
+		}
+		Mouse& GetMouse()
+		{
+			return m_Mouse;
+		}
 
 	private:
 		static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -33,5 +43,7 @@ namespace EtherealEngine
 		std::wstring m_Title;
 		int m_Width = 1280;
 		int m_Height = 720;
+		Keyboard m_Keyboard;
+		Mouse m_Mouse;
 	};
 }
