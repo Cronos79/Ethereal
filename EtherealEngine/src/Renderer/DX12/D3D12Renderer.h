@@ -113,7 +113,6 @@ namespace EtherealEngine
 			return m_camera;
 		}
 
-	public:
 		ID3D12Resource* GetCurrentBackBuffer() const
 		{
 			return m_backBuffers[m_frameIndex].Get();
@@ -123,6 +122,15 @@ namespace EtherealEngine
 			return CD3DX12_CPU_DESCRIPTOR_HANDLE(
 				m_rtvHeap->GetCPUDescriptorHandleForHeapStart(),
 				m_frameIndex, m_rtvDescriptorSize);
+		}
+
+		ID3D12Resource* GetDepthStencilBuffer() const
+		{
+			return m_depthStencilBuffer.Get();
+		}
+		D3D12_CPU_DESCRIPTOR_HANDLE GetDSV() const
+		{
+			return m_dsvHeap->GetCPUDescriptorHandleForHeapStart();
 		}
 
 	protected:
@@ -144,6 +152,11 @@ namespace EtherealEngine
 		Microsoft::WRL::ComPtr<ID3D12Fence> m_fence;
 		UINT64 m_fenceValue = 0;
 		HANDLE m_fenceEvent = nullptr;
+
+		// Depth stencil members
+		Microsoft::WRL::ComPtr<ID3D12Resource> m_depthStencilBuffer;
+		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
+		UINT m_dsvDescriptorSize = 0;
 
 		Microsoft::WRL::ComPtr<ID3D12RootSignature> m_rootSignature;
 		Microsoft::WRL::ComPtr<ID3D12PipelineState> m_pipelineState;

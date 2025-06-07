@@ -135,6 +135,54 @@ namespace EtherealEngine
 			return false;
 		}
 
+		// Create DSV descriptor heap
+		D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+		dsvHeapDesc.NumDescriptors = 1;
+		dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+		dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+		m_device->GetDevice()->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_dsvHeap));
+		m_dsvDescriptorSize = m_device->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+
+		// Create depth stencil buffer
+		D3D12_RESOURCE_DESC depthDesc = {};
+		depthDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+		depthDesc.Width = static_cast<UINT>(width);
+		depthDesc.Height = static_cast<UINT>(height);
+		depthDesc.DepthOrArraySize = 1;
+		depthDesc.MipLevels = 1;
+		depthDesc.Format = DXGI_FORMAT_D32_FLOAT;
+		depthDesc.SampleDesc.Count = 1;
+		depthDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+		depthDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+		D3D12_CLEAR_VALUE clearValue = {};
+		clearValue.Format = DXGI_FORMAT_D32_FLOAT;
+		clearValue.DepthStencil.Depth = 1.0f;
+		clearValue.DepthStencil.Stencil = 0;
+
+		CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
+
+		hr = m_device->GetDevice()->CreateCommittedResource(
+			&heapProps,
+			D3D12_HEAP_FLAG_NONE,
+			&depthDesc,
+			D3D12_RESOURCE_STATE_DEPTH_WRITE,
+			&clearValue,
+			IID_PPV_ARGS(&m_depthStencilBuffer)
+		);
+		if (FAILED(hr))
+		{
+			LOG_ERROR("Failed to create depth stencil buffer");
+			return false;
+		}
+
+		// Create depth stencil view
+		D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+		dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+		dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+		dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
+		m_device->GetDevice()->CreateDepthStencilView(m_depthStencilBuffer.Get(), &dsvDesc, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+
 		// ImGui setup
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -239,13 +287,15 @@ namespace EtherealEngine
 		m_commandList->GetList()->ResourceBarrier(1, &barrier);
 
 		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = GetCurrentRTV();
-		m_commandList->GetList()->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+		D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = GetDSV();
+		m_commandList->GetList()->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
 
 		ID3D12DescriptorHeap* heaps[] = { m_srvHeap.Get() };
 		m_commandList->GetList()->SetDescriptorHeaps(_countof(heaps), heaps);
 
 		const float clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 		m_commandList->GetList()->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+		m_commandList->GetList()->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 		ImGui_ImplDX12_NewFrame();
 		ImGui_ImplWin32_NewFrame();
@@ -344,7 +394,7 @@ namespace EtherealEngine
 					continue;
 				}
 
-				// 5. Fill out the PSO desc (pixel shader is a dummy for now)
+				// 5. 
 				D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
 					{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(EtherealEngine::Vertex, position), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 					{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, offsetof(EtherealEngine::Vertex, normal),   D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -358,8 +408,7 @@ namespace EtherealEngine
 				psoDesc.PS = ps->GetShaderBytecode();
 				psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 				psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-				psoDesc.DepthStencilState.DepthEnable = FALSE;
-				psoDesc.DepthStencilState.StencilEnable = FALSE;
+				psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 				psoDesc.SampleMask = UINT_MAX;
 				psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 				psoDesc.NumRenderTargets = 1;
