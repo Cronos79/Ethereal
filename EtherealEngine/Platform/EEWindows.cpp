@@ -44,6 +44,8 @@ namespace Ethereal
 		// Adjust window rect to account for the window title and borders
 		int32_t windowWidth = EEContext::Get().GetWidth();
 		int32_t windowHeight = EEContext::Get().GetHeight();
+		m_windowTitle = EEContext::Get().GetWindowTitle();
+
 		RECT windowRect = { 0, 0, windowWidth, windowHeight }; // Default size
 		auto style = WS_OVERLAPPEDWINDOW; // Default window style
 		AdjustWindowRect(&windowRect, style, FALSE); // Adjust the rectangle for the window style

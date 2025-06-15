@@ -159,12 +159,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Assets\GameConfig.cpp" />
+    <ClCompile Include="Core\AssetManager.cpp" />
     <ClCompile Include="Core\EEApplication.cpp" />
     <ClCompile Include="Core\EEContext.cpp" />
     <ClCompile Include="Core\Logger.cpp" />
     <ClCompile Include="Platform\EEWindows.cpp" />
     <ClCompile Include="Platform\Keyboard.cpp" />
     <ClCompile Include="Platform\Mouse.cpp" />
+    <ClCompile Include="Renderer\GameObject.cpp" />
+    <ClCompile Include="Renderer\RendererDX11.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui_demo.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui_draw.cpp" />
@@ -175,15 +179,22 @@
     <ClCompile Include="ThirdParty\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Assets\GameConfig.h" />
+    <ClInclude Include="Core\AssetManager.h" />
     <ClInclude Include="Core\EEApplication.h" />
     <ClInclude Include="Core\EEContext.h" />
+    <ClInclude Include="Core\EngineUtils.h" />
     <ClInclude Include="Core\EtherealEngine.h" />
     <ClInclude Include="Core\EtherealIncludes.h" />
+    <ClInclude Include="Core\IAsset.h" />
     <ClInclude Include="Core\Logger.h" />
     <ClInclude Include="Platform\EEWindows.h" />
     <ClInclude Include="Platform\EEWinIncludes.h" />
     <ClInclude Include="Platform\Keyboard.h" />
     <ClInclude Include="Platform\Mouse.h" />
+    <ClInclude Include="Renderer\GameObject.h" />
+    <ClInclude Include="Renderer\Renderer.h" />
+    <ClInclude Include="Renderer\RendererDX11.h" />
     <ClInclude Include="ThirdParty\imgui\imconfig.h" />
     <ClInclude Include="ThirdParty\imgui\imgui.h" />
     <ClInclude Include="ThirdParty\imgui\imgui_impl_dx11.h" />
