@@ -1,6 +1,7 @@
 #include "Platform/EEWindows.h"
 #include "Core/Logger.h"
 #include "Core/EEContext.h"
+#include <windowsx.h>
 
 
 namespace Ethereal
@@ -118,6 +119,20 @@ namespace Ethereal
 	// Windows procedure function to handle messages
 	LRESULT CALLBACK EEWindows::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
+		EEWindows* pEEWin = nullptr;
+		if (uMsg == WM_NCCREATE)
+		{
+			// Store the pointer to EEWindows in the window user data
+			CREATESTRUCT* cs = reinterpret_cast<CREATESTRUCT*>(lParam);
+			pEEWin = static_cast<EEWindows*>(cs->lpCreateParams);
+			SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pEEWin));
+		}
+		else
+		{
+			// Retrieve the pointer to EEWindows
+			pEEWin = reinterpret_cast<EEWindows*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+		}
+
 		switch (uMsg)
 		{
 		case WM_DESTROY:
@@ -128,6 +143,63 @@ namespace Ethereal
 			LOG_INFO("WM_CLOSE received, posting quit message.");
 			PostQuitMessage(0); // Post a quit message to exit the application
 			return 0;
+		case WM_SYSKEYDOWN:
+		case WM_KEYDOWN:
+			if (pEEWin)
+			{
+				unsigned char key = static_cast<unsigned char>(wParam);
+				pEEWin->GetKeyboard().OnKeyDown(key);
+			} break;
+		case WM_SYSKEYUP:
+		case WM_KEYUP:
+			if (pEEWin)
+			{
+				unsigned char key = static_cast<unsigned char>(wParam);
+				pEEWin->GetKeyboard().OnKeyUp(key);
+			} break;
+		case WM_CHAR:
+			if (pEEWin)
+			{
+				unsigned int character = static_cast<unsigned int>(wParam);
+				pEEWin->GetKeyboard().OnChar(character);
+			} break;
+		case WM_MOUSEMOVE:
+			if (pEEWin)
+			{
+				int x = GET_X_LPARAM(lParam);
+				int y = GET_Y_LPARAM(lParam);
+				pEEWin->GetMouse().OnMove(x, y);
+			} break;
+		case WM_LBUTTONDOWN:
+			if (pEEWin)
+				pEEWin->GetMouse().OnButtonDown(Mouse::Left);
+			break;
+		case WM_LBUTTONUP:
+			if (pEEWin)
+				pEEWin->GetMouse().OnButtonUp(Mouse::Left);
+			break;
+		case WM_RBUTTONDOWN:
+			if (pEEWin)
+				pEEWin->GetMouse().OnButtonDown(Mouse::Right);
+			break;
+		case WM_RBUTTONUP:
+			if (pEEWin)
+				pEEWin->GetMouse().OnButtonUp(Mouse::Right);
+			break;
+		case WM_MBUTTONDOWN:
+			if (pEEWin)
+				pEEWin->GetMouse().OnButtonDown(Mouse::Middle);
+			break;
+		case WM_MBUTTONUP:
+			if (pEEWin)
+				pEEWin->GetMouse().OnButtonUp(Mouse::Middle);
+			break;
+		case WM_MOUSEWHEEL:
+			if (pEEWin)
+			{
+				int delta = GET_WHEEL_DELTA_WPARAM(wParam);
+				pEEWin->GetMouse().OnWheel(delta);
+			} break;
 		default:
 			return DefWindowProc(hwnd, uMsg, wParam, lParam); // Default window procedure for unhandled messages
 		}

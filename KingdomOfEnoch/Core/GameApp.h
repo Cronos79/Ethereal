@@ -7,13 +7,9 @@ public:
 	GameApp();
 	~GameApp();
 
-
 	void OnInitialize() override;
-
-
+	void OnHandleInput() override;
 	void OnUpdate() override;
-
-
 	void OnShutdown() override;
 
 private:

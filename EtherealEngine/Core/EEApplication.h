@@ -13,6 +13,7 @@ namespace Ethereal
 		void Shutdown();
 
 		virtual void OnInitialize() = 0;
+		virtual void OnHandleInput() = 0;
 		virtual void OnUpdate() = 0;
 		virtual void OnShutdown() = 0;
 	};

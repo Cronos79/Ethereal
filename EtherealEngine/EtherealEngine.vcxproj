@@ -163,6 +163,8 @@
     <ClCompile Include="Core\EEContext.cpp" />
     <ClCompile Include="Core\Logger.cpp" />
     <ClCompile Include="Platform\EEWindows.cpp" />
+    <ClCompile Include="Platform\Keyboard.cpp" />
+    <ClCompile Include="Platform\Mouse.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui_demo.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui_draw.cpp" />
@@ -180,6 +182,8 @@
     <ClInclude Include="Core\Logger.h" />
     <ClInclude Include="Platform\EEWindows.h" />
     <ClInclude Include="Platform\EEWinIncludes.h" />
+    <ClInclude Include="Platform\Keyboard.h" />
+    <ClInclude Include="Platform\Mouse.h" />
     <ClInclude Include="ThirdParty\imgui\imconfig.h" />
     <ClInclude Include="ThirdParty\imgui\imgui.h" />
     <ClInclude Include="ThirdParty\imgui\imgui_impl_dx11.h" />

@@ -28,6 +28,7 @@ namespace Ethereal
 			  EEContext::Get().SetRunning(false);
 			  break;
 		  }
+		  OnHandleInput();
 		  OnUpdate();
 	  }
 	  Shutdown();
