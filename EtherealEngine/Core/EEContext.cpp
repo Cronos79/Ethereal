@@ -19,8 +19,11 @@ namespace Ethereal
 	{
 		// Initialize the Logger
 		Logger::Init();
+		// Load config files with window title, size and other settings
+		
 		// Initialize the unique pointers
 		m_Window = std::make_unique<EEWindows>();
+		m_Window->Initialize();
 
 		LOG_INFO("Ethereal Engine Context Initialized");
 	}

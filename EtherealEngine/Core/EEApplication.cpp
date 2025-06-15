@@ -21,7 +21,15 @@ namespace Ethereal
   void EEApplication::Run()
   {
 	  Initialize();
-	  OnUpdate();
+	  while (EEContext::Get().IsRunning())
+	  {
+		  if (!EEContext::Get().GetWindow().ProcessMessages())
+		  {
+			  EEContext::Get().SetRunning(false);
+			  break;
+		  }
+		  OnUpdate();
+	  }
 	  Shutdown();
   }
   void EEApplication::Shutdown()
