@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <string>
 #include <memory>
-#include "Core/IAsset.h"
+#include "Assets/IAsset.h"
 #include "Assets/Shaders.h"
 
 namespace Ethereal

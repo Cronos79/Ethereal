@@ -1,6 +1,6 @@
 #pragma once
 #include "Core/EtherealIncludes.h"
-#include "Core/IAsset.h"
+#include "Assets/IAsset.h"
 #include <wrl/client.h>
 #include <d3d11.h>
 #include <memory>
@@ -16,7 +16,7 @@ namespace Ethereal
 		GameObject();
 		~GameObject();
 
-		virtual bool Load(const std::string& path) override;
+		bool Load(const std::string& path);
 
 		
 		// Assessors

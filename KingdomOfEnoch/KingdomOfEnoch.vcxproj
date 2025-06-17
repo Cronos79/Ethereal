@@ -160,12 +160,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Core\GameApp.cpp" />
-    <ClCompile Include="Game\TestGameObject.cpp" />
     <ClCompile Include="Platform\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\GameApp.h" />
-    <ClInclude Include="Game\TestGameObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EtherealEngine\EtherealEngine.vcxproj">

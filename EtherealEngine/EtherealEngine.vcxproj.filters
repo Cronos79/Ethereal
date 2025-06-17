@@ -137,7 +137,7 @@
     <ClInclude Include="Platform\Mouse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\IAsset.h">
+    <ClInclude Include="Assets\IAsset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\AssetManager.h">

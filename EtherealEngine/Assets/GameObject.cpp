@@ -1,10 +1,8 @@
 #include "Assets/GameObject.h"
 #include "Core/Logger.h"
-#include "Core/EngineUtils.h"
 
 namespace Ethereal
 {
-
 	GameObject::GameObject()
 	{
 		
@@ -28,12 +26,18 @@ namespace Ethereal
 		{
 			LOG_ERROR("Mesh is nullptr");
 		}
-
-		std::filesystem::path fullPath = GetAssetsDirectory();
-		fullPath /= "";
-		m_Material->Load(fullPath.string());
+		if (!m_Material->Initialize())
+		{
+			LOG_ERROR("Failed to initialize material");
+			return false;
+		}
+		auto* vert = m_Material->GetVertexShader();
+		if (!m_Mesh->Initialize(vert))
+		{
+			LOG_ERROR("Failed to initialize mesh");
+			return false;
+		}
 
 		return true;
 	}
-
 }

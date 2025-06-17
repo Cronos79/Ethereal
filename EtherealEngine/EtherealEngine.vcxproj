@@ -194,7 +194,7 @@
     <ClInclude Include="Core\EngineUtils.h" />
     <ClInclude Include="Core\EtherealEngine.h" />
     <ClInclude Include="Core\EtherealIncludes.h" />
-    <ClInclude Include="Core\IAsset.h" />
+    <ClInclude Include="Assets\IAsset.h" />
     <ClInclude Include="Core\Logger.h" />
     <ClInclude Include="Platform\EEWindows.h" />
     <ClInclude Include="Platform\EEWinIncludes.h" />

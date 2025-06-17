@@ -7,6 +7,5 @@ namespace Ethereal
 	{
 	public:
 		virtual ~IAsset() = default;
-		virtual bool Load(const std::string& path) = 0;
 	};
 }

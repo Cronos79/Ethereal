@@ -125,7 +125,18 @@ namespace Ethereal
 
 	void RendererDX11::Draw(GameObject obj)
 	{
+		m_Context->IASetInputLayout(obj.GetMesh()->GetInputLayout());
+		m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_POINTLIST);
 
+		m_Context->VSSetShader(obj.GetMaterial()->GetVertexShader()->GetVertexShader(), NULL, 0);
+		m_Context->PSSetShader(obj.GetMaterial()->GetPixelShader()->GetPixelShader(), NULL, 0);
+
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+		ID3D11Buffer* vb = obj.GetMesh()->GetVertexBuffer();
+		m_Context->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
+
+		m_Context->Draw(4, 0);
 	}
 
 	void RendererDX11::EndFrame()

@@ -2,6 +2,7 @@
 #include "EEContext.h"
 #include "Logger.h"
 #include "Renderer/Renderer.h"
+#include "Assets/GameObject.h"
 
 namespace Ethereal
 {
@@ -22,6 +23,9 @@ namespace Ethereal
   {
 	  Initialize();
 	  auto renderer = EEContext::Get().GetRenderer();
+
+	  GameObject* obj = new GameObject();
+	  obj->Load("Hi");
 	  while (EEContext::Get().IsRunning())
 	  {
 		  if (!EEContext::Get().GetWindow().ProcessMessages())
@@ -32,7 +36,7 @@ namespace Ethereal
 		  renderer->BeginFrame();
 		  OnHandleInput();
 		  OnUpdate();
-		  //renderer->Draw();
+		  renderer->Draw(*obj);
 		  renderer->EndFrame();
 	  }
 	  renderer->Shutdown();

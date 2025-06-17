@@ -1,6 +1,6 @@
 #pragma once
 #include "Core/EtherealIncludes.h"
-#include "Core/IAsset.h"
+#include "Assets/IAsset.h"
 #include <string>
 
 namespace Ethereal
@@ -11,7 +11,7 @@ namespace Ethereal
 		GameConfig();
 		virtual ~GameConfig();
 
-		virtual bool Load(const std::string& path) override;
+		bool Load(const std::string& path);
 
 		// Assessors
 		std::string GetWindowsTitle()
