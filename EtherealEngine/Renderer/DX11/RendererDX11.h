@@ -1,13 +1,13 @@
 #pragma once
 #include "Core/EtherealIncludes.h"
 #include "Renderer/Renderer.h"
-#include "Renderer/GameObject.h"
 #include "Platform/EEWinIncludes.h"
 #include <wrl/client.h>
 #include "Renderer/DX11/AdapterReader.h"
 #include <memory>
 
 #include "Assets/Shaders.h"
+#include "Assets/GameObject.h"
 
 namespace Ethereal
 {
@@ -18,7 +18,6 @@ namespace Ethereal
 		~RendererDX11();
 
 		void Initialize() override;
-		void InitializeShaders();
 		void BeginFrame() override;
 		void Draw(GameObject obj) override;
 		void EndFrame() override;
@@ -45,11 +44,6 @@ namespace Ethereal
 		{
 			return m_DepthStencilView.Get();
 		}
-		ID3D11InputLayout* GetInputLayout() const
-		{
-			return m_InputLayout.Get();
-		}
-
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Device> m_Device;
@@ -61,9 +55,9 @@ namespace Ethereal
 		Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_DepthStencilView;
 
 
-		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_InputLayout;
+		
 		//Microsoft::WRL::ComPtr<ID3D11VertexShader> m_VertexShader;
-		Microsoft::WRL::ComPtr<ID3D10Blob> m_VertexBuffer;
+	
 		Microsoft::WRL::ComPtr<ID3D11PixelShader> m_PixelShader;	
 
 		std::shared_ptr<Shaders> m_VertexShaderAsset;

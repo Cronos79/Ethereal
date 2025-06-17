@@ -1,6 +1,6 @@
 #pragma once
 #include "Core/EtherealIncludes.h"
-#include "GameObject.h"
+#include "Assets/GameObject.h"
 
 namespace Ethereal
 {

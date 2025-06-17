@@ -13,13 +13,11 @@ namespace Ethereal
 	void AssetManager::Initialize()
 	{
 		m_Initialized = true;
-		LOG_INFO("AssetManager initialized.");
 	}
 
 	void AssetManager::Shutdown()
 	{
 		m_Assets.clear();
-		LOG_INFO("AssetManager shutdown.");
 	}
 
 	bool AssetManager::LoadRegistry(const std::string& path)
@@ -84,7 +82,7 @@ namespace Ethereal
 		shader->LoadShader(fullPath.string(), shaderType);
 
 		m_Assets[name] = shader;
-		LOG_INFO("Loaded shader '{}' of type '{}'", name, static_cast<int>(shaderType));
+		LOG_INFO("Loaded shader '{}' of type '{}'", name, ShaderTypeToString(shaderType));
 		return true;
 	}
 

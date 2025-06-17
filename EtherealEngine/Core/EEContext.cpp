@@ -43,8 +43,6 @@ namespace Ethereal
 
 		m_Renderer = std::make_unique<RendererDX11>();
 		m_Renderer->Initialize();
-
-		LOG_INFO("Ethereal Engine Context Initialized");
 	}
 
 } // namespace Ethereal

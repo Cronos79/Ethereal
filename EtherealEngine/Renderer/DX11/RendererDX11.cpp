@@ -20,7 +20,6 @@ namespace Ethereal
 	void RendererDX11::Initialize()
 	{	
 		std::vector<AdapterData> adapters = AdapterReader::GetAdapters();
-		LOG_INFO("Found {} adapters", adapters.size());
 
 		// Get adapter with most dedicated memory
 		AdapterData bestAdapter = adapters[0];
@@ -106,38 +105,17 @@ namespace Ethereal
 
 		m_Context->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), nullptr); // Set the render target view
 
-		InitializeShaders(); // Initialize shaders
+		D3D11_VIEWPORT viewport;
+		ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
+		viewport.TopLeftX = 0.0f; // Start at the top-left corner
+		viewport.TopLeftY = 0.0f; // Start at the top-left corner
+		viewport.Width = static_cast<float>(width); // Use default width
+		viewport.Height = static_cast<float>(height); // Use default height
+
+		m_Context->RSSetViewports(1, &viewport); // Set the viewport
 
 		// Finished initializing DirectX 11
-		LOG_INFO("DirectX 11 initialized successfully");
-	}
-
-	void RendererDX11::InitializeShaders()
-	{
-		// D3D11_APPEND_ALIGNED_ELEMENT
-		D3D11_INPUT_ELEMENT_DESC layout[] = 
-		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-		};
-		
-		EEContext::Get().GetAssetManager().LoadShader("VertexShader", ShaderType::VERTEX_SHADER);
-		// make uniqe_ptr to the shader asset
-		m_VertexShaderAsset = EEContext::Get().GetAssetManager().Get<Shaders>("VertexShader");
-		m_VertexBuffer = m_VertexShaderAsset->GetShaderBuffer();
-
-		HRESULT hr = m_Device->CreateInputLayout(
-			layout,
-			ARRAYSIZE(layout),
-			m_VertexBuffer->GetBufferPointer(), // Shader bytecode will be provided later
-			m_VertexBuffer->GetBufferSize(), // Size of the shader bytecode
-			&m_InputLayout // Output input layout
-		);
-		if (FAILED(hr))
-		{
-			LOG_ERROR("Failed to create input layout: {}", hr);
-			return;
-		}
-	}
+	}	
 
 	void RendererDX11::BeginFrame()
 	{

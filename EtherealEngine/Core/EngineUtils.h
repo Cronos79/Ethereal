@@ -4,6 +4,7 @@
 #include <string>
 #include <locale>
 #include <codecvt>
+#include "Assets/Shaders.h"
 
 inline std::filesystem::path GetExecutableDirectory()
 {
@@ -37,4 +38,18 @@ inline std::wstring StringToWChar(const std::string& str)
 	std::wstring wstrTo(size_needed - 1, 0); // exclude null terminator
 	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wstrTo[0], size_needed);
 	return wstrTo;
+}
+
+inline const char* ShaderTypeToString(Ethereal::ShaderType type)
+{
+	switch (type)
+	{
+	case Ethereal::ShaderType::VERTEX_SHADER:   return "VERTEX_SHADER";
+	case Ethereal::ShaderType::PIXEL_SHADER:    return "PIXEL_SHADER";
+	case Ethereal::ShaderType::GEOMETRY_SHADER: return "GEOMETRY_SHADER";
+	case Ethereal::ShaderType::HULL_SHADER:     return "HULL_SHADER";
+	case Ethereal::ShaderType::DOMAIN_SHADER:   return "DOMAIN_SHADER";
+	case Ethereal::ShaderType::COMPUTE_SHADER:  return "COMPUTE_SHADER";
+	default:                          return "UNKNOWN_SHADER";
+	}
 }

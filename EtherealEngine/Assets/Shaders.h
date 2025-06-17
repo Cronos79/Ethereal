@@ -26,11 +26,14 @@ namespace Ethereal
 
 		ID3D11VertexShader* GetVertexShader() const;
 		ID3D11PixelShader* GetPixelShader() const;
-		ID3D10Blob* GetShaderBuffer() const;
+		ID3D10Blob* GetVertexShaderBuffer() const;		
+		ID3D10Blob* GetPixelShaderBuffer() const;
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11VertexShader> m_VertexShader;
 		Microsoft::WRL::ComPtr<ID3D11PixelShader> M_PixelShader;
-		Microsoft::WRL::ComPtr<ID3D10Blob> m_ShaderBuffer;
+		Microsoft::WRL::ComPtr<ID3D10Blob> m_VertexShaderBuffer;
+		Microsoft::WRL::ComPtr<ID3D10Blob> m_PixelShaderBuffer;
+		
 	};
 }

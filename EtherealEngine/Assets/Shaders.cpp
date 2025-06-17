@@ -17,19 +17,19 @@ namespace Ethereal
 		{
 			return false;
 		}
-
-		HRESULT hr = D3DReadFileToBlob(StringToWChar(path).c_str(), &m_ShaderBuffer);
-		if (FAILED(hr))
-		{
-			LOG_ERROR("Failed to read shader file: {}", path);
-			return false;
-		}
-
+		HRESULT hr;
 		auto device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());
 
 		if (type == ShaderType::VERTEX_SHADER)
 		{
-			hr = device->CreateVertexShader(m_ShaderBuffer->GetBufferPointer(), m_ShaderBuffer->GetBufferSize(), nullptr, &m_VertexShader);
+			hr = D3DReadFileToBlob(StringToWChar(path).c_str(), &m_VertexShaderBuffer);
+			if (FAILED(hr))
+			{
+				LOG_ERROR("Failed to read shader file: {}", path);
+				return false;
+			}
+
+			hr = device->CreateVertexShader(m_VertexShaderBuffer->GetBufferPointer(), m_VertexShaderBuffer->GetBufferSize(), nullptr, &m_VertexShader);
 			if (FAILED(hr))
 			{
 				LOG_ERROR("Failed to create vertex shader from file: {}", path);
@@ -38,7 +38,14 @@ namespace Ethereal
 		}
 		else if (type == ShaderType::PIXEL_SHADER)
 		{
-			hr = device->CreatePixelShader(m_ShaderBuffer->GetBufferPointer(), m_ShaderBuffer->GetBufferSize(), nullptr, &M_PixelShader);
+			hr = D3DReadFileToBlob(StringToWChar(path).c_str(), &m_PixelShaderBuffer);
+			if (FAILED(hr))
+			{
+				LOG_ERROR("Failed to read shader file: {}", path);
+				return false;
+			}
+
+			hr = device->CreatePixelShader(m_PixelShaderBuffer->GetBufferPointer(), m_PixelShaderBuffer->GetBufferSize(), nullptr, &M_PixelShader);
 			if (FAILED(hr))
 			{
 				LOG_ERROR("Failed to create pixel shader from file: {}", path);
@@ -60,10 +67,16 @@ namespace Ethereal
 	{
 		return M_PixelShader.Get();
 	}
-	ID3D10Blob* Shaders::GetShaderBuffer() const
+	ID3D10Blob* Shaders::GetVertexShaderBuffer() const
 	{
-		return m_ShaderBuffer.Get();
+		return m_VertexShaderBuffer.Get();
 	}
+
+	ID3D10Blob* Shaders::GetPixelShaderBuffer() const
+	{
+		return m_PixelShaderBuffer.Get();
+	}
+
 } // namespace Ethereal
 
 

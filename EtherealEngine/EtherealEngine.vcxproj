@@ -160,6 +160,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Assets\GameConfig.cpp" />
+    <ClCompile Include="Assets\GameObject.cpp" />
+    <ClCompile Include="Assets\Material.cpp" />
+    <ClCompile Include="Assets\Mesh.cpp" />
     <ClCompile Include="Assets\Shaders.cpp" />
     <ClCompile Include="Core\AssetManager.cpp" />
     <ClCompile Include="Core\EEApplication.cpp" />
@@ -169,7 +172,6 @@
     <ClCompile Include="Platform\Keyboard.cpp" />
     <ClCompile Include="Platform\Mouse.cpp" />
     <ClCompile Include="Renderer\DX11\AdapterReader.cpp" />
-    <ClCompile Include="Renderer\GameObject.cpp" />
     <ClCompile Include="Renderer\DX11\RendererDX11.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui_demo.cpp" />
@@ -182,6 +184,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Assets\GameConfig.h" />
+    <ClInclude Include="Assets\GameObject.h" />
+    <ClInclude Include="Assets\Material.h" />
+    <ClInclude Include="Assets\Mesh.h" />
     <ClInclude Include="Assets\Shaders.h" />
     <ClInclude Include="Core\AssetManager.h" />
     <ClInclude Include="Core\EEApplication.h" />
@@ -197,7 +202,6 @@
     <ClInclude Include="Platform\Mouse.h" />
     <ClInclude Include="Renderer\DX11\AdapterReader.h" />
     <ClInclude Include="Renderer\DX11\Vertex.h" />
-    <ClInclude Include="Renderer\GameObject.h" />
     <ClInclude Include="Renderer\Renderer.h" />
     <ClInclude Include="Renderer\DX11\RendererDX11.h" />
     <ClInclude Include="ThirdParty\imgui\imconfig.h" />

@@ -3,6 +3,7 @@
 #include "Core/EEContext.h"
 #include "Platform/EEWindows.h"
 #include "Platform/Keyboard.h"
+#include "Game/TestGameObject.h"
 
 GameApp::GameApp()
 {
@@ -17,6 +18,7 @@ GameApp::~GameApp()
 void GameApp::OnInitialize()
 {
 	GAME_LOG_INFO("GameApp initialized successfully.");
+	TestGameObject* test = new TestGameObject();
 }
 
 void GameApp::OnHandleInput()

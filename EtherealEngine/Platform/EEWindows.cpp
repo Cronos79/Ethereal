@@ -8,15 +8,12 @@ namespace Ethereal
 {
 
 	EEWindows::EEWindows()
-	{
-		LOG_INFO("Windows platform initialized.");
+	{		
 		m_windowTitle = EEContext::Get().GetWindowTitle();
 	}
 
 	bool EEWindows::Initialize()
 	{
-		// Perform initialization for the Windows platform here
-		LOG_INFO("Windows platform is initializing.");
 		// Windows class
 		WNDCLASSEX wc = { 0 };
 		wc.cbSize = sizeof(WNDCLASSEX);
@@ -38,8 +35,6 @@ namespace Ethereal
 			LOG_ERROR("Failed to register window class. Error code: {}", error);
 			return false;
 		}
-
-		LOG_INFO("Window class registered successfully.");
 
 		// Adjust window rect to account for the window title and borders
 		int32_t windowWidth = EEContext::Get().GetWidth();
@@ -69,7 +64,6 @@ namespace Ethereal
 			LOG_ERROR("Failed to create window. Error code: {}", error);
 			return false; // Return false if window creation fails
 		}
-		LOG_INFO("Window created successfully.");
 
 		// Show the window
 		ShowWindow(m_hWnd, SW_SHOW);
