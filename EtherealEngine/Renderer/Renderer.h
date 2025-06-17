@@ -12,5 +12,7 @@ namespace Ethereal
 		virtual void Draw(GameObject obj) = 0;
 		virtual void EndFrame() = 0;
 		virtual void Shutdown() = 0;
+
+		virtual void* GetDevice() const = 0;
 	};
 }

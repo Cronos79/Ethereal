@@ -1,6 +1,7 @@
 #include "Core/EEApplication.h"
 #include "EEContext.h"
 #include "Logger.h"
+#include "Renderer/Renderer.h"
 
 namespace Ethereal
 {
@@ -21,6 +22,7 @@ namespace Ethereal
   void EEApplication::Run()
   {
 	  Initialize();
+	  auto renderer = EEContext::Get().GetRenderer();
 	  while (EEContext::Get().IsRunning())
 	  {
 		  if (!EEContext::Get().GetWindow().ProcessMessages())
@@ -28,9 +30,13 @@ namespace Ethereal
 			  EEContext::Get().SetRunning(false);
 			  break;
 		  }
+		  renderer->BeginFrame();
 		  OnHandleInput();
 		  OnUpdate();
+		  //renderer->Draw();
+		  renderer->EndFrame();
 	  }
+	  renderer->Shutdown();
 	  Shutdown();
   }
   void EEApplication::Shutdown()

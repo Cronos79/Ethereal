@@ -33,5 +33,6 @@ namespace Ethereal
 		std::string m_windowClassName = "EtherealEngineWindowClass";
 		Keyboard m_keyboard;
 		Mouse m_Mouse;
+		HWND m_hWnd = nullptr;
 	};
 }

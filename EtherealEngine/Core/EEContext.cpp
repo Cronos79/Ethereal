@@ -2,6 +2,7 @@
 #include "Core/Logger.h"
 #include "Core/EngineUtils.h"
 #include "Assets/GameConfig.h"
+#include "Renderer/DX11/RendererDX11.h"
 
 namespace Ethereal
 {
@@ -39,6 +40,9 @@ namespace Ethereal
 		// Initialize the unique pointers
 		m_Window = std::make_unique<EEWindows>();
 		m_Window->Initialize();
+
+		m_Renderer = std::make_unique<RendererDX11>();
+		m_Renderer->Initialize();
 
 		LOG_INFO("Ethereal Engine Context Initialized");
 	}

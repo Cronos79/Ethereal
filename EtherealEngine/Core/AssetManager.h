@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include "Core/IAsset.h"
+#include "Assets/Shaders.h"
 
 namespace Ethereal
 {
@@ -14,7 +15,8 @@ namespace Ethereal
 		void Shutdown();
 
 		bool LoadRegistry(const std::string& path);
-		bool LoadGameConfig(const std::string& name);;
+		bool LoadGameConfig(const std::string& name);
+		bool LoadShader(const std::string& name, ShaderType shaderType);
 
 		template<typename T>
 		std::shared_ptr<T> Get(const std::string& name)

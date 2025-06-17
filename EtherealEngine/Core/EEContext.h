@@ -8,6 +8,8 @@
 // Standard library includes
 #include <memory>
 #include <string>
+#include "spdlog/fmt/bundled/format.h"
+#include "Renderer/Renderer.h"
 
 struct GameSettings
 {
@@ -20,6 +22,8 @@ struct GameSettings
 // Singleton for managing the context of the application
 namespace Ethereal
 {
+	class Renderer; // Forward declare your renderer 
+
 	class ETHEREAL_API EEContext
 	{
 	public:
@@ -42,12 +46,24 @@ namespace Ethereal
 		void Initialize(); // Method to initialize the context
 
 		// Assessors
+		AssetManager& GetAssetManager() const // Get the asset manager
+		{
+			if (!m_AssetManager)
+			{
+				throw std::runtime_error("AssetManager is not initialized. Please initialize it first.");
+			}
+			return *m_AssetManager;
+		} // Get the asset manager object
 		EEWindows& GetWindow() const
 		{
 			return *m_Window;
 		} // Get the window object
 		HWND GetWindowHandle() const
 		{
+			if (!m_hWnd) // If the window handle is not set, retrieve it from the window object
+			{
+				throw std::runtime_error("Window handle is not set. Please initialize the window first.");
+			}
 			return m_hWnd;
 		} // Get the handle to the window
 		void SetWindowHandle(HWND hWnd) // Set the handle to the window
@@ -94,11 +110,27 @@ namespace Ethereal
 		{
 			m_GameSettings.FullScreen = fullScreen;
 		}
+		// get the renderer
+		std::shared_ptr<Renderer> GetRenderer() const
+		{
+			return m_Renderer;
+		}
+		// Get Device from renderer
+		void* GetDevice() const
+		{
+			if (m_Renderer)
+			{
+				return m_Renderer->GetDevice();
+			}
+			throw std::runtime_error("Renderer is not initialized.");
+		}
+
 	private:
 		std::unique_ptr<EEWindows> m_Window; // Pointer to the window object
 		std::unique_ptr<AssetManager> m_AssetManager;
+		std::shared_ptr<Renderer> m_Renderer;
 
-		HWND m_hWnd; // Handle to the window
+		HWND m_hWnd = nullptr; // Handle to the window
 		bool m_IsRunning = true; // Flag to check if the application is running
 		GameSettings m_GameSettings;
 	};

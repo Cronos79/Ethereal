@@ -51,7 +51,7 @@ namespace Ethereal
 		AdjustWindowRect(&windowRect, style, FALSE); // Adjust the rectangle for the window style
 
 		// Create a window
-		HWND hwnd = CreateWindowExA(
+		m_hWnd = CreateWindowExA(
 			0, // Optional window styles
 			m_windowClassName.c_str(), // Window class name
 			m_windowTitle.c_str(), // Window title
@@ -63,7 +63,7 @@ namespace Ethereal
 			this // Additional application data
 		);
 
-		if (!hwnd)
+		if (!m_hWnd)
 		{
 			DWORD error = GetLastError();
 			LOG_ERROR("Failed to create window. Error code: {}", error);
@@ -72,10 +72,10 @@ namespace Ethereal
 		LOG_INFO("Window created successfully.");
 
 		// Show the window
-		ShowWindow(hwnd, SW_SHOW);
-		UpdateWindow(hwnd);
+		ShowWindow(m_hWnd, SW_SHOW);
+		UpdateWindow(m_hWnd);
 
-		EEContext::Get().SetWindowHandle(hwnd);
+		EEContext::Get().SetWindowHandle(m_hWnd);
 
 		return true; // Return true if initialization is successful
 	}

@@ -5,6 +5,7 @@
 #include <fstream>
 #include "Core/EngineUtils.h"
 #include "Assets/GameConfig.h"
+#include "Assets/Shaders.h"
 
 namespace Ethereal
 {
@@ -64,6 +65,26 @@ namespace Ethereal
 		gameConfig->Load(fullPath.string());
 
 		m_Assets[name] = gameConfig;
+		return true;
+	}
+
+	bool AssetManager::LoadShader(const std::string& name, ShaderType shaderType)
+	{
+		auto it = m_Registry.find(name);
+		if (it == m_Registry.end())
+		{
+			LOG_ERROR("GameConfig '{}' not found in registry.", name);
+			return false;
+		}
+
+		std::filesystem::path fullPath = GetAssetsDirectory();
+		fullPath /= it->second;
+
+		auto shader = std::make_shared<Shaders>();
+		shader->LoadShader(fullPath.string(), shaderType);
+
+		m_Assets[name] = shader;
+		LOG_INFO("Loaded shader '{}' of type '{}'", name, static_cast<int>(shaderType));
 		return true;
 	}
 
