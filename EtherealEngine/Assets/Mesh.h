@@ -23,9 +23,14 @@ namespace Ethereal
 		{
 			return m_VertexBuffer.Get();
 		}
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetTexture() const
+		{
+			return m_MyTexture;
+		}
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_InputLayout;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> m_VertexBuffer;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_MyTexture;
 	};
 }

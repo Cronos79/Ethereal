@@ -26,6 +26,7 @@ namespace Ethereal
 
 		bool Initialize();
 		bool ProcessMessages();
+		void Resize(int width, int height, RECT& wr, long style);
 
 		static LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	private:

@@ -13,6 +13,8 @@
 #include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui_impl_dx11.h"
 
+#include <WICTextureLoader.h> // For WIC texture loading
+
 namespace Ethereal
 {
 	class ETHEREAL_API RendererDX11 : public Renderer
@@ -70,5 +72,8 @@ namespace Ethereal
 
 		std::shared_ptr<Shaders> m_VertexShaderAsset;
 		std::shared_ptr<Shaders> m_PixelShaderAsset;
+
+		Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState;
+	
 	};
 }

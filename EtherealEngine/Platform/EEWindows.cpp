@@ -40,14 +40,15 @@ namespace Ethereal
 			return false;
 		}
 
+
+		auto style = WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU; // Default window style
+		RECT wr;
+		Resize(EEContext::Get().GetWidth(), EEContext::Get().GetHeight(), wr, style);
+
 		// Adjust window rect to account for the window title and borders
 		int32_t windowWidth = EEContext::Get().GetWidth();
 		int32_t windowHeight = EEContext::Get().GetHeight();
 		m_windowTitle = EEContext::Get().GetWindowTitle();
-
-		RECT windowRect = { 0, 0, windowWidth, windowHeight }; // Default size
-		auto style = WS_OVERLAPPEDWINDOW; // Default window style
-		AdjustWindowRect(&windowRect, style, FALSE); // Adjust the rectangle for the window style
 
 		// Create a window
 		m_hWnd = CreateWindowExA(
@@ -55,7 +56,7 @@ namespace Ethereal
 			m_windowClassName.c_str(), // Window class name
 			m_windowTitle.c_str(), // Window title
 			style, // Window style
-			CW_USEDEFAULT, CW_USEDEFAULT, windowWidth, windowHeight, // Size and position
+			wr.left, wr.top, windowWidth, windowHeight, // Size and position
 			NULL, // Parent window
 			NULL, // Menu
 			GetModuleHandle(NULL), // Instance handle
@@ -109,6 +110,33 @@ namespace Ethereal
 			}
 		}
 		return true; // Continue processing messages
+	}
+
+	void EEWindows::Resize(int width, int height, RECT& wr, long style)
+	{
+		// Make top and left center of the screen
+	// Get the screen dimensions
+		RECT desktopRect;
+		GetClientRect(GetDesktopWindow(), &desktopRect);
+		int screenWidth = desktopRect.right - desktopRect.left;
+		int screenHeight = desktopRect.bottom - desktopRect.top;
+		// Calculate the position to center the window
+		int posX = (screenWidth - width) / 2; // Center horizontally
+		int posY = (screenHeight - height) / 2; // Center vertically
+
+		wr.left = posX; // Left position
+		wr.top = posY; // Top position
+		wr.right = wr.left + width; // Right position
+		wr.bottom = wr.top + height; // Bottom position
+		//= { 0, 0, windowWidth, windowHeight }; // Default size
+		
+		AdjustWindowRect(&wr, style, FALSE); // Adjust the rectangle for the window style
+
+		width = wr.right - wr.left; // Adjusted width
+		height = wr.bottom - wr.top; // Adjusted height
+
+		EEContext::Get().SetHeight(height); // Set the adjusted size in the context
+		EEContext::Get().SetWidth(width); // Set the adjusted size in the context
 	}
 
 	EEWindows::~EEWindows()

@@ -175,6 +175,24 @@ namespace Ethereal
 			return;
 		}
 
+		// Create sampler state
+		D3D11_SAMPLER_DESC samplerDesc;
+		ZeroMemory(&samplerDesc, sizeof(D3D11_SAMPLER_DESC));
+		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; // Linear filtering
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP; // Wrap texture coordinates in U direction
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP; // Wrap texture coordinates in V direction
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP; // Wrap texture coordinates in W direction
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER; // Always pass comparison
+		samplerDesc.MinLOD = 0.0f; // Minimum LOD level
+		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX; // Maximum LOD level
+
+		hr = m_Device->CreateSamplerState(&samplerDesc, &m_SamplerState);
+		if (FAILED(hr))
+		{
+			LOG_ERROR("Failed to create sampler state: {}", hr);
+			return;
+		}
+
 		InitImGui(hwnd); // Initialize ImGui with the main window handle
 		// Finished initializing DirectX 11
 	}
@@ -229,19 +247,23 @@ namespace Ethereal
 	void RendererDX11::Draw(GameObject obj)
 	{
 		m_Context->IASetInputLayout(obj.GetMesh()->GetInputLayout());
-		m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+		m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_Context->RSSetState(m_RasterizerState.Get()); // Set the rasterizer state
-
+	
+		m_Context->OMSetDepthStencilState(m_DepthStencilState.Get(), 1); // Set the depth stencil state
+		m_Context->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf()); // Set the sampler state
 		m_Context->VSSetShader(obj.GetMaterial()->GetVertexShader()->GetVertexShader(), NULL, 0);
 		m_Context->PSSetShader(obj.GetMaterial()->GetPixelShader()->GetPixelShader(), NULL, 0);
-		m_Context->OMSetDepthStencilState(m_DepthStencilState.Get(), 1); // Set the depth stencil state
+
+		m_Context->PSSetShaderResources(0, 1, obj.GetMesh()->GetTexture().GetAddressOf());
 
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
+
 		ID3D11Buffer* vb = obj.GetMesh()->GetVertexBuffer();
 		m_Context->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
 
-		m_Context->Draw(3, 0);
+		m_Context->Draw(6, 0);
 
 		bool show_demo_window = true; // Show ImGui demo window for debugging
 		if (show_demo_window)

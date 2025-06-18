@@ -21,6 +21,7 @@ namespace Ethereal
   }
   void EEApplication::Run()
   {
+	  CoInitialize(NULL);
 	  Initialize();
 	  auto renderer = EEContext::Get().GetRenderer();
 
