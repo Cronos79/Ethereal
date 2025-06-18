@@ -81,6 +81,9 @@
     <ClCompile Include="Assets\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Assets\Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\EtherealEngine.h">
@@ -171,6 +174,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Assets\Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Assets\Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

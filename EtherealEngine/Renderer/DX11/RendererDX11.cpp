@@ -119,14 +119,14 @@ namespace Ethereal
 
 	void RendererDX11::BeginFrame()
 	{
-		float bgcolor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+		float bgcolor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		m_Context->ClearRenderTargetView(m_RenderTargetView.Get(), bgcolor); // Clear the render target view
 	}
 
 	void RendererDX11::Draw(GameObject obj)
 	{
 		m_Context->IASetInputLayout(obj.GetMesh()->GetInputLayout());
-		m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_POINTLIST);
+		m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 		m_Context->VSSetShader(obj.GetMaterial()->GetVertexShader()->GetVertexShader(), NULL, 0);
 		m_Context->PSSetShader(obj.GetMaterial()->GetPixelShader()->GetPixelShader(), NULL, 0);
@@ -136,7 +136,7 @@ namespace Ethereal
 		ID3D11Buffer* vb = obj.GetMesh()->GetVertexBuffer();
 		m_Context->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
 
-		m_Context->Draw(4, 0);
+		m_Context->Draw(3, 0);
 	}
 
 	void RendererDX11::EndFrame()
