@@ -51,6 +51,8 @@ namespace Ethereal
 		Microsoft::WRL::ComPtr<IDXGISwapChain> m_SwapChain;
 		Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_RenderTargetView;
 
+		Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_RasterizerState;
+
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> m_DepthStencilBuffer;
 		Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_DepthStencilView;
 

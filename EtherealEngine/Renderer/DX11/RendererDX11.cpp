@@ -114,6 +114,19 @@ namespace Ethereal
 
 		m_Context->RSSetViewports(1, &viewport); // Set the viewport
 
+		// Create Rasterizer State
+		D3D11_RASTERIZER_DESC rasterizerDesc;
+		ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID; // Solid fill mode
+		rasterizerDesc.CullMode = D3D11_CULL_BACK; // Back-face culling
+		rasterizerDesc.FrontCounterClockwise = FALSE; // Clockwise front face
+		hr = m_Device->CreateRasterizerState(&rasterizerDesc, &m_RasterizerState);
+		if (FAILED(hr))
+		{
+			LOG_ERROR("Failed to create rasterizer state: {}", hr);
+			return;
+		}
+
 		// Finished initializing DirectX 11
 	}	
 
@@ -127,6 +140,7 @@ namespace Ethereal
 	{
 		m_Context->IASetInputLayout(obj.GetMesh()->GetInputLayout());
 		m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+		m_Context->RSSetState(m_RasterizerState.Get()); // Set the rasterizer state
 
 		m_Context->VSSetShader(obj.GetMaterial()->GetVertexShader()->GetVertexShader(), NULL, 0);
 		m_Context->PSSetShader(obj.GetMaterial()->GetPixelShader()->GetPixelShader(), NULL, 0);
