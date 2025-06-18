@@ -103,7 +103,53 @@ namespace Ethereal
 			return;
 		}
 
-		m_Context->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), nullptr); // Set the render target view
+		// Create depth stencil
+		D3D11_TEXTURE2D_DESC depthStencilDesc;
+		ZeroMemory(&depthStencilDesc, sizeof(D3D11_TEXTURE2D_DESC));
+		depthStencilDesc.Width = width; // Use default width
+		depthStencilDesc.Height = height; // Use default height
+		depthStencilDesc.MipLevels = 1; // Single mip level
+		depthStencilDesc.ArraySize = 1; // Single array size
+		depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // 24-bit depth, 8-bit stencil
+		depthStencilDesc.SampleDesc.Count = 1; // No multisampling
+		depthStencilDesc.SampleDesc.Quality = 0; // No multisampling quality
+		depthStencilDesc.Usage = D3D11_USAGE_DEFAULT; // Default usage
+		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL; // Bind as depth stencil
+		depthStencilDesc.CPUAccessFlags = 0; // No CPU access
+		depthStencilDesc.MiscFlags = 0; // No special options
+
+		hr = m_Device->CreateTexture2D(&depthStencilDesc, NULL, &m_DepthStencilBuffer);
+		if (FAILED(hr))
+		{
+			LOG_ERROR("Failed to create depth stencil buffer: {}", hr);
+			return;
+		}
+
+		// Create depth stencil view
+		D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+		ZeroMemory(&depthStencilViewDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+		depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // Match the depth stencil format
+		depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D; // 2D texture
+		depthStencilViewDesc.Texture2D.MipSlice = 0; // Use the first mip level
+		depthStencilViewDesc.Flags = 0; // No special flags
+
+		m_Device->CreateDepthStencilView(m_DepthStencilBuffer.Get(), &depthStencilViewDesc, &m_DepthStencilView);
+
+		m_Context->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get()); // Set the render target view	
+
+		// Create Depth Stencil State
+		D3D11_DEPTH_STENCIL_DESC depthstencildesc;
+		ZeroMemory(&depthstencildesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+		depthstencildesc.DepthEnable = TRUE; // Enable depth testing
+		depthstencildesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL; // Write to depth buffer	
+		depthstencildesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL; // Use less comparison for depth
+
+		hr = m_Device->CreateDepthStencilState(&depthstencildesc, &m_DepthStencilState);
+		if (FAILED(hr))
+		{
+			LOG_ERROR("Failed to create depth stencil state: {}", hr);
+			return;
+		}
 
 		D3D11_VIEWPORT viewport;
 		ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
@@ -111,6 +157,8 @@ namespace Ethereal
 		viewport.TopLeftY = 0.0f; // Start at the top-left corner
 		viewport.Width = static_cast<float>(width); // Use default width
 		viewport.Height = static_cast<float>(height); // Use default height
+		viewport.MinDepth = 0.0f; // Minimum depth
+		viewport.MaxDepth = 1.0f; // Maximum depth
 
 		m_Context->RSSetViewports(1, &viewport); // Set the viewport
 
@@ -127,13 +175,55 @@ namespace Ethereal
 			return;
 		}
 
+		InitImGui(hwnd); // Initialize ImGui with the main window handle
 		// Finished initializing DirectX 11
-	}	
+	}
+	void RendererDX11::InitImGui(HWND hwnd)
+	{
+		// Setup Dear ImGui context
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+		//io.ConfigViewportsNoAutoMerge = true;
+		//io.ConfigViewportsNoTaskBarIcon = true;
+		//io.ConfigViewportsNoDefaultParent = true;
+		//io.ConfigDockingAlwaysTabBar = true;
+		//io.ConfigDockingTransparentPayload = true;
+		//io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleFonts;     // FIXME-DPI: Experimental. THIS CURRENTLY DOESN'T WORK AS EXPECTED. DON'T USE IN USER APP!
+		//io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleViewports; // FIXME-DPI: Experimental.
+
+		// Setup Dear ImGui style
+		ImGui::StyleColorsDark();
+		//ImGui::StyleColorsLight();
+
+		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+		ImGuiStyle& style = ImGui::GetStyle();
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			style.WindowRounding = 0.0f;
+			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		}
+
+		// Setup Platform/Renderer backends
+		ImGui_ImplWin32_Init(hwnd);
+		ImGui_ImplDX11_Init(m_Device.Get(), m_Context.Get());
+	}
+
 
 	void RendererDX11::BeginFrame()
 	{
 		float bgcolor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		m_Context->ClearRenderTargetView(m_RenderTargetView.Get(), bgcolor); // Clear the render target view
+		m_Context->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0); // Clear the depth stencil view
+
+		// Start the Dear ImGui frame
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
 	}
 
 	void RendererDX11::Draw(GameObject obj)
@@ -144,6 +234,7 @@ namespace Ethereal
 
 		m_Context->VSSetShader(obj.GetMaterial()->GetVertexShader()->GetVertexShader(), NULL, 0);
 		m_Context->PSSetShader(obj.GetMaterial()->GetPixelShader()->GetPixelShader(), NULL, 0);
+		m_Context->OMSetDepthStencilState(m_DepthStencilState.Get(), 1); // Set the depth stencil state
 
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
@@ -151,10 +242,27 @@ namespace Ethereal
 		m_Context->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
 
 		m_Context->Draw(3, 0);
+
+		bool show_demo_window = true; // Show ImGui demo window for debugging
+		if (show_demo_window)
+			ImGui::ShowDemoWindow(&show_demo_window);
 	}
 
 	void RendererDX11::EndFrame()
 	{
+		ImGui::Render();
+		
+		//g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
+		//g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		// Update and Render additional Platform Windows
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+		}
+
 		m_SwapChain->Present(1, 0); // Present the swap chain
 	}
 

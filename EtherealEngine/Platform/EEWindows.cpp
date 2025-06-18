@@ -2,7 +2,11 @@
 #include "Core/Logger.h"
 #include "Core/EEContext.h"
 #include <windowsx.h>
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_win32.h"
 
+// Forward declare message handler from imgui_impl_win32.cpp
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace Ethereal
 {
@@ -115,6 +119,9 @@ namespace Ethereal
 	// Windows procedure function to handle messages
 	LRESULT CALLBACK EEWindows::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
+		if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam))
+			return true;
+
 		EEWindows* pEEWin = nullptr;
 		if (uMsg == WM_NCCREATE)
 		{

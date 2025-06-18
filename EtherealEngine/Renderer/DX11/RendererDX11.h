@@ -9,6 +9,10 @@
 #include "Assets/Shaders.h"
 #include "Assets/GameObject.h"
 
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_win32.h"
+#include "imgui/imgui_impl_dx11.h"
+
 namespace Ethereal
 {
 	class ETHEREAL_API RendererDX11 : public Renderer
@@ -18,6 +22,7 @@ namespace Ethereal
 		~RendererDX11();
 
 		void Initialize() override;
+		void InitImGui(HWND hwnd);
 		void BeginFrame() override;
 		void Draw(GameObject obj) override;
 		void EndFrame() override;
@@ -55,6 +60,7 @@ namespace Ethereal
 
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> m_DepthStencilBuffer;
 		Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_DepthStencilView;
+		Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_DepthStencilState;
 
 
 		
