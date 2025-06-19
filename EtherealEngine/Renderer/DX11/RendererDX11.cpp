@@ -255,17 +255,31 @@ namespace Ethereal
 		m_Context->VSSetShader(obj.GetMaterial()->GetVertexShader()->GetVertexShader(), NULL, 0);
 		m_Context->PSSetShader(obj.GetMaterial()->GetPixelShader()->GetPixelShader(), NULL, 0);
 
-		m_Context->PSSetShaderResources(0, 1, obj.GetMesh()->GetTexture().GetAddressOf());
+		m_Context->PSSetShaderResources(0, 1, obj.GetMaterial()->GetTexture().GetAddressOf());
 
-		UINT stride = sizeof(Vertex);
-		UINT offset = 0;
+		UINT offset = 0;		
 
+		//Update Constant Buffer
+		static float YOffset = 0.0f; // Offset for the Y position of the square
+		//YOffset -= 0.001f; // Increment the Y offset for animation
+		obj.GetMesh()->GetConstantBuffer().data.xOffset = 0.0f;
+		obj.GetMesh()->GetConstantBuffer().data.yOffset = YOffset;
+		if (!obj.GetMesh()->GetConstantBuffer().ApplyChanges())
+		{
+			LOG_ERROR("Failed to apply changes to constant buffer");
+			return;
+		}
+		
+		m_Context->VSSetConstantBuffers(0, 1, obj.GetMesh()->GetConstantBuffer().GetAddressOf());
+
+		// Square
 		ID3D11Buffer* vb = obj.GetMesh()->GetVertexBuffer();
-		m_Context->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
+		m_Context->IASetVertexBuffers(0, 1, &vb, obj.GetMesh()->GetStridePtr(), &offset);
+		m_Context->IASetIndexBuffer(obj.GetMesh()->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0); // Set the index buffer
 
-		m_Context->Draw(6, 0);
+		m_Context->DrawIndexed((UINT)obj.GetMesh()->GetIndexCount(), 0, 0); // Draw the indexed geometry
 
-		bool show_demo_window = true; // Show ImGui demo window for debugging
+		bool show_demo_window = false; // Show ImGui demo window for debugging
 		if (show_demo_window)
 			ImGui::ShowDemoWindow(&show_demo_window);
 	}

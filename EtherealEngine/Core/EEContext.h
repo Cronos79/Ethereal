@@ -125,6 +125,15 @@ namespace Ethereal
 			throw std::runtime_error("Renderer is not initialized.");
 		}
 
+		void* GetContext() const
+		{
+			if (m_Renderer)
+			{
+				return m_Renderer->GetContext();
+			}
+			throw std::runtime_error("Renderer is not initialized.");
+		}
+
 	private:
 		std::unique_ptr<EEWindows> m_Window; // Pointer to the window object
 		std::unique_ptr<AssetManager> m_AssetManager;

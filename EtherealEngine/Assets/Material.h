@@ -26,11 +26,16 @@ namespace Ethereal
 		{
 			return m_PixelShaderAsset.get();
 		}
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetTexture() const
+		{
+			return m_MyTexture;
+		}
 	private:
 		std::shared_ptr<Shaders> m_VertexShaderAsset;
 		Microsoft::WRL::ComPtr<ID3D10Blob> m_VertexBlob;
 
 		std::shared_ptr<Shaders> m_PixelShaderAsset;
 		Microsoft::WRL::ComPtr<ID3D10Blob> m_PixelBlob;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_MyTexture;
 	};
 }

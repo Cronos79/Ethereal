@@ -13,8 +13,6 @@
 #include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui_impl_dx11.h"
 
-#include <WICTextureLoader.h> // For WIC texture loading
-
 namespace Ethereal
 {
 	class ETHEREAL_API RendererDX11 : public Renderer
@@ -35,7 +33,7 @@ namespace Ethereal
 		{
 			return m_Device.Get();
 		}
-		ID3D11DeviceContext* GetContext() const
+		void* GetContext() const override
 		{
 			return m_Context.Get();
 		}

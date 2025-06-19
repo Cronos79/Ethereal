@@ -14,5 +14,6 @@ namespace Ethereal
 		virtual void Shutdown() = 0;
 
 		virtual void* GetDevice() const = 0;
+		virtual void* GetContext() const = 0;
 	};
 }

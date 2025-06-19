@@ -6,6 +6,11 @@
 #include <memory>
 #include "Shaders.h"
 #include "Renderer/DX11/Vertex.h"
+#include "Renderer/DX11/VertexBuffer.h"
+#include "Renderer/DX11/IndexBuffer.h"
+
+#include "Renderer/DX11/ConstantBufferTypes.h"
+#include "Renderer/DX11/ConstantBuffer.h"
 
 namespace Ethereal
 {
@@ -23,14 +28,30 @@ namespace Ethereal
 		{
 			return m_VertexBuffer.Get();
 		}
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetTexture() const
+		const UINT* GetStridePtr() const
 		{
-			return m_MyTexture;
+			return m_VertexBuffer.StridePtr();
+		}
+
+		ID3D11Buffer* GetIndexBuffer() const
+		{
+			return m_IndexBuffer.Get();
+		}
+
+		UINT GetIndexCount() const
+		{
+			return m_IndexBuffer.IndexCount();
+		}	
+
+		ConstantBuffer<CB_VS_vertexshader>& GetConstantBuffer()
+		{
+			return m_ConstantBuffer;
 		}
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_InputLayout;
-		Microsoft::WRL::ComPtr<ID3D11Buffer> m_VertexBuffer;
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_MyTexture;
+		VertexBuffer<Vertex> m_VertexBuffer;
+		IndexBuffer m_IndexBuffer;	
+		ConstantBuffer<CB_VS_vertexshader> m_ConstantBuffer;
 	};
 }

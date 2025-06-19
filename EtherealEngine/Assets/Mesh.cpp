@@ -1,8 +1,6 @@
 #include "Assets/Mesh.h"
 #include "Core/Logger.h"
 #include "Core/EEContext.h"
-#include <WICTextureLoader.h> // For WIC texture loading
-#include "Core/EngineUtils.h"
 
 namespace Ethereal
 {
@@ -42,41 +40,39 @@ namespace Ethereal
 		//Textured Square
 		Vertex v[] =
 		{
-			Vertex(-0.5f,  -0.5f, 1.0f, 0.0f, 1.0f), //Bottom Left 
-			Vertex(-0.5f,   0.5f, 1.0f, 0.0f, 0.0f), //Top Left
-			Vertex(0.5f,   0.5f, 1.0f, 1.0f, 0.0f), //Top Right
-
-			Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 1.0f), //Bottom Left 
-			Vertex(0.5f,   0.5f, 1.0f, 1.0f, 0.0f), //Top Right
-			Vertex(0.5f,  -0.5f, 1.0f, 1.0f, 1.0f), //Bottom Right
+			Vertex(-0.5f,  -0.5f, 1.0f, 0.0f, 1.0f), //Bottom Left 0
+			Vertex(-0.5f,   0.5f, 1.0f, 0.0f, 0.0f), //Top Left 1
+			Vertex(0.5f,   0.5f, 1.0f, 1.0f, 0.0f), //Top Right 2
+			Vertex(0.5f,  -0.5f, 1.0f, 1.0f, 1.0f), //Bottom Right 3
 		};
 
-		D3D11_BUFFER_DESC bufferDesc = {};
-		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		bufferDesc.ByteWidth = sizeof(Vertex) * ARRAYSIZE(v);
-		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		bufferDesc.CPUAccessFlags = 0;
-		bufferDesc.MiscFlags = 0;
-
-		D3D11_SUBRESOURCE_DATA vertexBufferData = {};
-		vertexBufferData.pSysMem = v;
-
 		ID3D11Device* device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());
-		HRESULT hr = device->CreateBuffer(&bufferDesc, &vertexBufferData, &m_VertexBuffer);
+		ID3D11DeviceContext* context = static_cast<ID3D11DeviceContext*>(EEContext::Get().GetContext());
+		HRESULT hr = m_VertexBuffer.Initialize(device, v, ARRAYSIZE(v));
 		if (FAILED(hr))
 		{
 			LOG_ERROR("Failed to create vertex buffer: {}", hr);
 			return false;
 		}
 
-		// Get the file path with GetAssetsDirectory()
-		std::wstring texturePath = StringToWChar(GetAssetsDirectory().string()) + L"\\Textures\\Test.png";
+		DWORD indices[] =
+		{
+			0, 1, 2, // First triangle
+			0, 2, 3  // Second triangle
+		};
 
-		hr = DirectX::CreateWICTextureFromFile(device, texturePath.c_str(), nullptr, m_MyTexture.GetAddressOf());
-
+		hr = m_IndexBuffer.Initialize(device, indices, ARRAYSIZE(indices));
 		if (FAILED(hr))
 		{
-			LOG_ERROR("Failed to create WIC texture from file: {}", hr);
+			LOG_ERROR("Failed to create index buffer: {}", hr);
+			return false;
+		}
+
+		// Initialize the Constant Buffer
+		hr = m_ConstantBuffer.Initialize(device, context);
+		if (FAILED(hr))
+		{
+			LOG_ERROR("Failed to create constant buffer: {}", hr);
 			return false;
 		}
 

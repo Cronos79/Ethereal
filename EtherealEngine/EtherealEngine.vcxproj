@@ -203,7 +203,11 @@
     <ClInclude Include="Platform\Keyboard.h" />
     <ClInclude Include="Platform\Mouse.h" />
     <ClInclude Include="Renderer\DX11\AdapterReader.h" />
+    <ClInclude Include="Renderer\DX11\ConstantBuffer.h" />
+    <ClInclude Include="Renderer\DX11\ConstantBufferTypes.h" />
+    <ClInclude Include="Renderer\DX11\IndexBuffer.h" />
     <ClInclude Include="Renderer\DX11\Vertex.h" />
+    <ClInclude Include="Renderer\DX11\VertexBuffer.h" />
     <ClInclude Include="Renderer\Renderer.h" />
     <ClInclude Include="Renderer\DX11\RendererDX11.h" />
     <ClInclude Include="ThirdParty\imgui\imconfig.h" />
