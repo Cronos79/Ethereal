@@ -238,7 +238,12 @@ namespace Ethereal
 		m_Context->ClearRenderTargetView(m_RenderTargetView.Get(), bgcolor); // Clear the render target view
 		m_Context->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0); // Clear the depth stencil view
 
+		int32_t windowWidth = EEContext::Get().GetWidth(); // Get the current window width
+		int32_t windowHeight = EEContext::Get().GetHeight(); // Get the current window height)
 		// Start the Dear ImGui frame
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize = ImVec2((float)windowWidth, (float)windowHeight); // Your actual window size in pixels
+		io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f); // For most cases, unless you have DPI scaling
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
@@ -259,16 +264,21 @@ namespace Ethereal
 
 		UINT offset = 0;		
 
-		//Update Constant Buffer
-		static float YOffset = 0.0f; // Offset for the Y position of the square
-		//YOffset -= 0.001f; // Increment the Y offset for animation
-		obj.GetMesh()->GetConstantBuffer().data.xOffset = 0.0f;
-		obj.GetMesh()->GetConstantBuffer().data.yOffset = YOffset;
-		if (!obj.GetMesh()->GetConstantBuffer().ApplyChanges())
-		{
-			LOG_ERROR("Failed to apply changes to constant buffer");
-			return;
-		}
+		// Scale by 1.2
+		DirectX::XMMATRIX scale = DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f);
+
+		// Rotate 45 degrees around Y axis (for 3D, use Z for 2D)
+		DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(0.0f));
+
+		// Move up by 0.5 units
+		DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+
+		// Combine: scale, then rotate, then translate
+		DirectX::XMMATRIX world = scale * rotation * translation;	
+		
+		auto& camera = EEContext::Get().GetCameraManager().GetCurrentCamera(); // Get the current camera from the context
+
+		obj.GetMesh()->Update(world, camera.GetViewMatrix(), camera.GetProjectionMatrix());
 		
 		m_Context->VSSetConstantBuffers(0, 1, obj.GetMesh()->GetConstantBuffer().GetAddressOf());
 

@@ -12,6 +12,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui_impl_dx11.h"
+#include "Camera.h"
 
 namespace Ethereal
 {
@@ -71,7 +72,6 @@ namespace Ethereal
 		std::shared_ptr<Shaders> m_VertexShaderAsset;
 		std::shared_ptr<Shaders> m_PixelShaderAsset;
 
-		Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState;
-	
+		Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState;	
 	};
 }

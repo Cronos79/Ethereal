@@ -70,11 +70,30 @@ namespace Ethereal
 			return false; // Return false if window creation fails
 		}
 
+		RECT clientRect;
+		GetClientRect(m_hWnd, &clientRect);
+		int clientWidth = clientRect.right - clientRect.left;
+		int clientHeight = clientRect.bottom - clientRect.top;
+		EEContext::Get().SetWidth(clientWidth);
+		EEContext::Get().SetHeight(clientHeight);
+
 		// Show the window
 		ShowWindow(m_hWnd, SW_SHOW);
 		UpdateWindow(m_hWnd);
 
 		EEContext::Get().SetWindowHandle(m_hWnd);
+
+		RAWINPUTDEVICE rid;
+		rid.usUsagePage = 0x01; // Generic desktop controls
+		rid.usUsage = 0x02;     // Mouse
+		rid.dwFlags = 0;        // Or RIDEV_INPUTSINK if you want input even when not focused
+		rid.hwndTarget = m_hWnd;
+		if (!RegisterRawInputDevices(&rid, 1, sizeof(rid)))
+		{
+			LOG_ERROR("Failed to register raw input device.");
+		}
+
+		m_Mouse.EnableRaw();// Enable raw mouse input
 
 		return true; // Return true if initialization is successful
 	}
@@ -144,6 +163,19 @@ namespace Ethereal
 		LOG_INFO("Windows platform destroyed.");
 	}
 
+	void EEWindows::HideCursor()
+	{
+		while (::ShowCursor(FALSE) >= 0);
+	}
+
+	void EEWindows::ConfineCursor()
+	{
+		RECT rect;
+		GetClientRect(m_hWnd, &rect);
+		MapWindowPoints(m_hWnd, nullptr, reinterpret_cast<POINT*>(&rect), 2);
+		ClipCursor(&rect);
+	}	
+
 	// Windows procedure function to handle messages
 	LRESULT CALLBACK EEWindows::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
@@ -163,6 +195,9 @@ namespace Ethereal
 			// Retrieve the pointer to EEWindows
 			pEEWin = reinterpret_cast<EEWindows*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 		}
+
+		int32_t width = EEContext::Get().GetWidth();
+		int32_t height = EEContext::Get().GetHeight();
 
 		switch (uMsg)
 		{
@@ -193,44 +228,170 @@ namespace Ethereal
 			{
 				unsigned int character = static_cast<unsigned int>(wParam);
 				pEEWin->GetKeyboard().OnChar(character);
-			} break;
+			} break;	
+			/************* MOUSE MESSAGES ****************/
 		case WM_MOUSEMOVE:
-			if (pEEWin)
+		{
+			const POINTS pt = MAKEPOINTS(lParam);
+			// cursorless exclusive gets first dibs
+			if (!pEEWin->cursorEnabled)
 			{
-				int x = GET_X_LPARAM(lParam);
-				int y = GET_Y_LPARAM(lParam);
-				pEEWin->GetMouse().OnMove(x, y);
-			} break;
+				if (!pEEWin->m_Mouse.IsInWindow())
+				{
+					SetCapture(hwnd);
+					pEEWin->m_Mouse.OnMouseEnter();
+					pEEWin->HideCursor();
+				}
+				break;
+			}
+			// stifle this mouse message if imgui wants to capture
+			/*if (imio.WantCaptureMouse)
+			{
+				break;
+			}*/
+			// in client region -> log move, and log enter + capture mouse (if not previously in window)
+			if (pt.x >= 0 && pt.x < width && pt.y >= 0 && pt.y < height)
+			{
+				pEEWin->m_Mouse.OnMouseMove(pt.x, pt.y);
+				if (!pEEWin->m_Mouse.IsInWindow())
+				{
+					SetCapture(hwnd);
+					pEEWin->m_Mouse.OnMouseEnter();
+				}
+			}
+			// not in client -> log move / maintain capture if button down
+			else
+			{
+				if (wParam & (MK_LBUTTON | MK_RBUTTON))
+				{
+					pEEWin->m_Mouse.OnMouseMove(pt.x, pt.y);
+				}
+				// button up -> release capture / log event for leaving
+				else
+				{
+					ReleaseCapture();
+					pEEWin->m_Mouse.OnMouseLeave();
+				}
+			}
+			break;
+		}
 		case WM_LBUTTONDOWN:
-			if (pEEWin)
-				pEEWin->GetMouse().OnButtonDown(Mouse::Left);
-			break;
-		case WM_LBUTTONUP:
-			if (pEEWin)
-				pEEWin->GetMouse().OnButtonUp(Mouse::Left);
-			break;
-		case WM_RBUTTONDOWN:
-			if (pEEWin)
-				pEEWin->GetMouse().OnButtonDown(Mouse::Right);
-			break;
-		case WM_RBUTTONUP:
-			if (pEEWin)
-				pEEWin->GetMouse().OnButtonUp(Mouse::Right);
-			break;
-		case WM_MBUTTONDOWN:
-			if (pEEWin)
-				pEEWin->GetMouse().OnButtonDown(Mouse::Middle);
-			break;
-		case WM_MBUTTONUP:
-			if (pEEWin)
-				pEEWin->GetMouse().OnButtonUp(Mouse::Middle);
-			break;
-		case WM_MOUSEWHEEL:
-			if (pEEWin)
+		{
+			SetForegroundWindow(hwnd);
+			if (!pEEWin->cursorEnabled)
 			{
-				int delta = GET_WHEEL_DELTA_WPARAM(wParam);
-				pEEWin->GetMouse().OnWheel(delta);
-			} break;
+				pEEWin->ConfineCursor();
+				pEEWin->HideCursor();
+			}
+			// stifle this mouse message if imgui wants to capture
+			/*if (imio.WantCaptureMouse)
+			{
+				break;
+			}*/
+			const POINTS pt = MAKEPOINTS(lParam);
+			pEEWin->m_Mouse.OnLeftPressed(pt.x, pt.y);
+			break;
+		}
+		case WM_RBUTTONDOWN:
+		{
+			// stifle this mouse message if imgui wants to capture
+			/*if (imio.WantCaptureMouse)
+			{
+				break;
+			}*/
+			const POINTS pt = MAKEPOINTS(lParam);
+			pEEWin->m_Mouse.OnRightPressed(pt.x, pt.y);
+			break;
+		}
+		case WM_LBUTTONUP:
+		{
+			// stifle this mouse message if imgui wants to capture
+			/*if (imio.WantCaptureMouse)
+			{
+				break;
+			}*/
+			const POINTS pt = MAKEPOINTS(lParam);
+			pEEWin->m_Mouse.OnLeftReleased(pt.x, pt.y);
+			// release mouse if outside of window
+			if (pt.x < 0 || pt.x >= width || pt.y < 0 || pt.y >= height)
+			{
+				ReleaseCapture();
+				pEEWin->m_Mouse.OnMouseLeave();
+			}
+			break;
+		}
+		case WM_RBUTTONUP:
+		{
+			// stifle this mouse message if imgui wants to capture
+			/*if (imio.WantCaptureMouse)
+			{
+				break;
+			}*/
+			const POINTS pt = MAKEPOINTS(lParam);
+			pEEWin->m_Mouse.OnRightReleased(pt.x, pt.y);
+			// release mouse if outside of window
+			if (pt.x < 0 || pt.x >= width || pt.y < 0 || pt.y >= height)
+			{
+				ReleaseCapture();
+				pEEWin->m_Mouse.OnMouseLeave();
+			}
+			break;
+		}
+		case WM_MOUSEWHEEL:
+		{
+			// stifle this mouse message if imgui wants to capture
+			/*if (imio.WantCaptureMouse)
+			{
+				break;
+			}*/
+			const POINTS pt = MAKEPOINTS(lParam);
+			const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
+			pEEWin->m_Mouse.OnWheelDelta(pt.x, pt.y, delta);
+			break;
+		}
+		/************** END MOUSE MESSAGES **************/
+
+		/************** RAW MOUSE MESSAGES **************/
+		case WM_INPUT:
+		{
+			if (!pEEWin->m_Mouse.RawEnabled())
+			{				
+				break;
+			}
+			UINT size;
+			// first get the size of the input data
+			if (GetRawInputData(
+				reinterpret_cast<HRAWINPUT>(lParam),
+				RID_INPUT,
+				nullptr,
+				&size,
+				sizeof(RAWINPUTHEADER)) == -1)
+			{
+				// bail msg processing if error
+				break;
+			}
+			pEEWin->rawBuffer.resize(size);
+			// read in the input data
+			if (GetRawInputData(
+				reinterpret_cast<HRAWINPUT>(lParam),
+				RID_INPUT,
+				pEEWin->rawBuffer.data(),
+				&size,
+				sizeof(RAWINPUTHEADER)) != size)
+			{
+				// bail msg processing if error
+				break;
+			}
+			// process the raw input data
+			auto& ri = reinterpret_cast<const RAWINPUT&>(*pEEWin->rawBuffer.data());
+			if (ri.header.dwType == RIM_TYPEMOUSE &&
+				(ri.data.mouse.lLastX != 0 || ri.data.mouse.lLastY != 0))
+			{
+				pEEWin->m_Mouse.OnRawDelta(ri.data.mouse.lLastX, ri.data.mouse.lLastY);
+			}
+			break;
+		}
+		/************** END RAW MOUSE MESSAGES **************/
 		default:
 			return DefWindowProc(hwnd, uMsg, wParam, lParam); // Default window procedure for unhandled messages
 		}

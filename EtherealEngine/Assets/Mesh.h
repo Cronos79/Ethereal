@@ -21,6 +21,7 @@ namespace Ethereal
 		~Mesh() = default;
 		bool Initialize(Shaders* vertexShaderAsset);
 		bool InitializeBuffers();
+		void Update(DirectX::XMMATRIX worldMatrix, DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projectionMatrix);
 
 		ID3D11InputLayout* GetInputLayout();
 

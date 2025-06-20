@@ -28,6 +28,9 @@ namespace Ethereal
 		bool ProcessMessages();
 		void Resize(int width, int height, RECT& wr, long style);
 
+		void HideCursor();
+		void ConfineCursor();
+
 		static LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	private:
 		std::string m_windowTitle;
@@ -35,5 +38,7 @@ namespace Ethereal
 		Keyboard m_keyboard;
 		Mouse m_Mouse;
 		HWND m_hWnd = nullptr;
+		bool cursorEnabled = true;
+		std::vector<BYTE> rawBuffer;
 	};
 }

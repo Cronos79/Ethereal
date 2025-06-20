@@ -41,8 +41,10 @@ namespace Ethereal
 		m_Window = std::make_unique<EEWindows>();
 		m_Window->Initialize();
 
+		m_CameraManager = std::make_unique<CameraManager>();
+
 		m_Renderer = std::make_unique<RendererDX11>();
-		m_Renderer->Initialize();
+		m_Renderer->Initialize();		
 	}
 
 } // namespace Ethereal

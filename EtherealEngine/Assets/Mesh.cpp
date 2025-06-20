@@ -40,10 +40,10 @@ namespace Ethereal
 		//Textured Square
 		Vertex v[] =
 		{
-			Vertex(-0.5f,  -0.5f, 1.0f, 0.0f, 1.0f), //Bottom Left 0
-			Vertex(-0.5f,   0.5f, 1.0f, 0.0f, 0.0f), //Top Left 1
-			Vertex(0.5f,   0.5f, 1.0f, 1.0f, 0.0f), //Top Right 2
-			Vertex(0.5f,  -0.5f, 1.0f, 1.0f, 1.0f), //Bottom Right 3
+			Vertex(-0.5f,  -0.5f, 0.0f, 0.0f, 1.0f), //Bottom Left 0
+			Vertex(-0.5f,   0.5f, 0.0f, 0.0f, 0.0f), //Top Left 1
+			Vertex(0.5f,   0.5f, 0.0f, 1.0f, 0.0f), //Top Right 2
+			Vertex(0.5f,  -0.5f, 0.0f, 1.0f, 1.0f), //Bottom Right 3
 		};
 
 		ID3D11Device* device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());
@@ -77,6 +77,18 @@ namespace Ethereal
 		}
 
 		return true;
+	}
+
+	void Mesh::Update(DirectX::XMMATRIX worldMatrix, DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projectionMatrix)
+	{
+		// Store the final matrix (world * view * projection), transposed for HLSL
+		GetConstantBuffer().data.mat = DirectX::XMMatrixTranspose(worldMatrix * viewMatrix * projectionMatrix);
+
+		if (!GetConstantBuffer().ApplyChanges())
+		{
+			LOG_ERROR("Failed to apply changes to constant buffer");
+			return;
+		}
 	}
 
 	ID3D11InputLayout* Mesh::GetInputLayout()

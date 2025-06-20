@@ -107,7 +107,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);ETHEREALENGINE_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EDITOR_BUILD;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);ETHEREALENGINE_EXPORTS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -145,7 +145,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);ETHEREALENGINE_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EDITOR_BUILD;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);ETHEREALENGINE_EXPORTS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -173,6 +173,8 @@
     <ClCompile Include="Platform\Keyboard.cpp" />
     <ClCompile Include="Platform\Mouse.cpp" />
     <ClCompile Include="Renderer\DX11\AdapterReader.cpp" />
+    <ClCompile Include="Renderer\DX11\Camera.cpp" />
+    <ClCompile Include="Renderer\DX11\CameraManager.cpp" />
     <ClCompile Include="Renderer\DX11\RendererDX11.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui_demo.cpp" />
@@ -182,6 +184,7 @@
     <ClCompile Include="ThirdParty\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui_tables.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="UI\EditorGui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Assets\GameConfig.h" />
@@ -203,6 +206,8 @@
     <ClInclude Include="Platform\Keyboard.h" />
     <ClInclude Include="Platform\Mouse.h" />
     <ClInclude Include="Renderer\DX11\AdapterReader.h" />
+    <ClInclude Include="Renderer\DX11\Camera.h" />
+    <ClInclude Include="Renderer\DX11\CameraManager.h" />
     <ClInclude Include="Renderer\DX11\ConstantBuffer.h" />
     <ClInclude Include="Renderer\DX11\ConstantBufferTypes.h" />
     <ClInclude Include="Renderer\DX11\IndexBuffer.h" />
@@ -219,6 +224,7 @@
     <ClInclude Include="ThirdParty\imgui\imstb_rectpack.h" />
     <ClInclude Include="ThirdParty\imgui\imstb_textedit.h" />
     <ClInclude Include="ThirdParty\imgui\imstb_truetype.h" />
+    <ClInclude Include="UI\EditorGui.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -10,6 +10,7 @@
 #include <string>
 #include "spdlog/fmt/bundled/format.h"
 #include "Renderer/Renderer.h"
+#include "Renderer/DX11/CameraManager.h"
 
 struct GameSettings
 {
@@ -134,6 +135,15 @@ namespace Ethereal
 			throw std::runtime_error("Renderer is not initialized.");
 		}
 
+		CameraManager& GetCameraManager() const // Get the camera manager
+		{
+			if (!m_CameraManager)
+			{
+				throw std::runtime_error("CameraManager is not initialized. Please initialize it first.");
+			}
+			return *m_CameraManager;
+		} // Get the camera manager object
+
 	private:
 		std::unique_ptr<EEWindows> m_Window; // Pointer to the window object
 		std::unique_ptr<AssetManager> m_AssetManager;
@@ -142,5 +152,6 @@ namespace Ethereal
 		HWND m_hWnd = nullptr; // Handle to the window
 		bool m_IsRunning = true; // Flag to check if the application is running
 		GameSettings m_GameSettings;
+		std::unique_ptr<CameraManager> m_CameraManager; // Camera manager for handling cameras
 	};
 }

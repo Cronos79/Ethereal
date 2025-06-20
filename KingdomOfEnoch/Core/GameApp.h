@@ -8,10 +8,12 @@ public:
 	~GameApp();
 
 	void OnInitialize() override;
-	void OnHandleInput() override;
-	void OnUpdate() override;
+	void OnHandleInput(float deltaTime) override;
+	void OnUpdate(float deltaTime) override;
+	void OnGui(float deltaTime) override;
 	void OnShutdown() override;
 
 private:
-
+	float m_CameraSpeed = 0.5f;
+	float m_MouseSensitivity = 0.0002f; // Adjust as needed
 };
