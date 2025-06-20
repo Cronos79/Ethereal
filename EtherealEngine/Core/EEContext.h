@@ -11,6 +11,7 @@
 #include "spdlog/fmt/bundled/format.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/DX11/CameraManager.h"
+#include "SceneManager.h"
 
 struct GameSettings
 {
@@ -144,6 +145,9 @@ namespace Ethereal
 			return *m_CameraManager;
 		} // Get the camera manager object
 
+		SceneManager& GetSceneManager(); // Get the scene manager
+	// Get the scene manager object
+
 	private:
 		std::unique_ptr<EEWindows> m_Window; // Pointer to the window object
 		std::unique_ptr<AssetManager> m_AssetManager;
@@ -153,5 +157,6 @@ namespace Ethereal
 		bool m_IsRunning = true; // Flag to check if the application is running
 		GameSettings m_GameSettings;
 		std::unique_ptr<CameraManager> m_CameraManager; // Camera manager for handling cameras
+		std::unique_ptr<SceneManager> m_SceneManager; // Scene manager for handling scenes
 	};
 }

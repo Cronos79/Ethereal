@@ -10,7 +10,6 @@ public:
 	void OnInitialize() override;
 	void OnHandleInput(float deltaTime) override;
 	void OnUpdate(float deltaTime) override;
-	void OnGui(float deltaTime) override;
 	void OnShutdown() override;
 
 private:

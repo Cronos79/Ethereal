@@ -44,7 +44,21 @@ namespace Ethereal
 		m_CameraManager = std::make_unique<CameraManager>();
 
 		m_Renderer = std::make_unique<RendererDX11>();
-		m_Renderer->Initialize();		
+		m_Renderer->Initialize();	
+
+		if (!m_SceneManager)
+		{
+			m_SceneManager = std::make_unique<SceneManager>();
+		}
+	}
+
+	SceneManager& EEContext::GetSceneManager()
+	{
+		if (!m_SceneManager)
+		{
+			m_SceneManager = std::make_unique<SceneManager>();
+		}
+		return *m_SceneManager;
 	}
 
 } // namespace Ethereal

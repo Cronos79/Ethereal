@@ -168,7 +168,9 @@
     <ClCompile Include="Core\AssetManager.cpp" />
     <ClCompile Include="Core\EEApplication.cpp" />
     <ClCompile Include="Core\EEContext.cpp" />
+    <ClCompile Include="Core\EETimer.cpp" />
     <ClCompile Include="Core\Logger.cpp" />
+    <ClCompile Include="Core\SceneManager.cpp" />
     <ClCompile Include="Platform\EEWindows.cpp" />
     <ClCompile Include="Platform\Keyboard.cpp" />
     <ClCompile Include="Platform\Mouse.cpp" />
@@ -196,11 +198,13 @@
     <ClInclude Include="Core\AssetManager.h" />
     <ClInclude Include="Core\EEApplication.h" />
     <ClInclude Include="Core\EEContext.h" />
+    <ClInclude Include="Core\EETimer.h" />
     <ClInclude Include="Core\EngineUtils.h" />
     <ClInclude Include="Core\EtherealEngine.h" />
     <ClInclude Include="Core\EtherealIncludes.h" />
     <ClInclude Include="Assets\IAsset.h" />
     <ClInclude Include="Core\Logger.h" />
+    <ClInclude Include="Core\SceneManager.h" />
     <ClInclude Include="Platform\EEWindows.h" />
     <ClInclude Include="Platform\EEWinIncludes.h" />
     <ClInclude Include="Platform\Keyboard.h" />

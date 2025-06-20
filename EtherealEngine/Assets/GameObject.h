@@ -7,6 +7,7 @@
 #include "Shaders.h"
 #include "Material.h"
 #include "Mesh.h"
+#include <stdint.h>
 
 namespace Ethereal
 {
@@ -14,10 +15,13 @@ namespace Ethereal
 	{
 	public:
 		GameObject();
+		GameObject(const std::string& name);
+		GameObject(const std::string& name, std::unique_ptr<Material> material, std::unique_ptr<Mesh> mesh);
 		~GameObject();
 
 		bool Load(const std::string& path);
-
+		virtual void DrawUI(float deltaTime);
+		virtual void Update(float deltaTime);
 		
 		// Assessors
 		void SetMaterial(std::unique_ptr<Material> material)
@@ -36,11 +40,42 @@ namespace Ethereal
 		{
 			return m_Mesh.get();
 		}
+		bool IsVisible() const
+		{
+			return m_IsVisible;
+		}
+		void SetVisible(bool visible)
+		{
+			m_IsVisible = visible;
+		}
+		const std::string& GetName() const
+		{
+			return m_Name;
+		}
+		void SetName(const std::string& name)
+		{
+			m_Name = name;
+		}
+		int32_t GetID() const
+		{
+			return m_ID;
+		}
+		void NewID()
+		{
+			m_ID = s_NextID++;
+		}
 
-
-
+		bool operator==(const GameObject& other) const
+		{
+			// Compare by unique ID, name, or whatever makes sense for your game objects
+			return this->GetID() == other.GetID();
+		}
 	private:
 		std::shared_ptr<Material> m_Material;
 		std::shared_ptr<Mesh> m_Mesh;
+		bool m_IsVisible = true;
+		std::string m_Name;
+		int32_t m_ID = 0;
+		static int32_t s_NextID;
 	};
 }

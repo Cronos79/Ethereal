@@ -91,20 +91,21 @@ namespace Ethereal
 
 	void EditorGui::DrawViewport(float deltaTime)
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		
 		ImGui::Begin("Viewport");	
-		ImGui::Text("MousePos: %.1f, %.1f", io.MousePos.x, io.MousePos.y);
-		ImGui::Text("DisplaySize: %.1f, %.1f", io.DisplaySize.x, io.DisplaySize.y);
-		ImGui::Text("FramebufferScale: %.2f, %.2f", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
-		ImGui::Text("FPS: %.1f", io.Framerate);
+
 		ImGui::End();
 	}
 
 	void EditorGui::DrawAssetBrowser(float deltaTime)
 	{
 		// Placeholder for asset browser UI
+		ImGuiIO& io = ImGui::GetIO();
 		ImGui::Begin("Asset Browser");
-		ImGui::Text("Asset Browser Placeholder");
+		ImGui::Text("MousePos: %.1f, %.1f", io.MousePos.x, io.MousePos.y);
+		ImGui::Text("DisplaySize: %.1f, %.1f", io.DisplaySize.x, io.DisplaySize.y);
+		ImGui::Text("FramebufferScale: %.2f, %.2f", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+		ImGui::Text("FPS: %.1f", io.Framerate);
 		ImGui::End();
 	}
 
