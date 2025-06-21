@@ -33,6 +33,14 @@ namespace Ethereal
 			return false;
 		}
 
+		ID3D11DeviceContext* context = static_cast<ID3D11DeviceContext*>(EEContext::Get().GetContext());
+		hr = m_PSConstantBuffer.Initialize(device, context);
+		if (FAILED(hr))
+		{
+			LOG_ERROR("Failed to initialize pixel shader constant buffer: {}", hr);
+			return false;
+		}
+
 		return true;
 	}
 }

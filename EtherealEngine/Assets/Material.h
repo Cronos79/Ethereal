@@ -6,6 +6,7 @@
 #include <memory>
 #include "Shaders.h"
 #include "Renderer/DX11/Vertex.h"
+#include "Renderer/DX11/ConstantBuffer.h"
 
 namespace Ethereal
 {
@@ -30,6 +31,10 @@ namespace Ethereal
 		{
 			return m_MyTexture;
 		}
+		ConstantBuffer<CB_PS_pixelshader>& GetConstantBuffer()
+		{
+			return m_PSConstantBuffer;
+		}
 	private:
 		std::shared_ptr<Shaders> m_VertexShaderAsset;
 		Microsoft::WRL::ComPtr<ID3D10Blob> m_VertexBlob;
@@ -37,5 +42,7 @@ namespace Ethereal
 		std::shared_ptr<Shaders> m_PixelShaderAsset;
 		Microsoft::WRL::ComPtr<ID3D10Blob> m_PixelBlob;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_MyTexture;
+
+		ConstantBuffer<CB_PS_pixelshader> m_PSConstantBuffer;
 	};
 }

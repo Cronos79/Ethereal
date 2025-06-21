@@ -76,7 +76,7 @@ namespace Ethereal
 		}
 	}
 
-	void Scene::Render()
+	void Scene::Render(float deltaTime)
 	{
 		static bool firstRun = true;
 		if (firstRun)
@@ -89,7 +89,10 @@ namespace Ethereal
 				return;
 			}
 #endif
+			firstRun = false;
 		}
+		HandleInput(deltaTime);
+		Update(deltaTime);
 		auto renderer = EEContext::Get().GetRenderer();
 		renderer->BeginFrame();
 		for (auto& obj : m_GameObjects)

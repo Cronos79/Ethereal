@@ -21,7 +21,7 @@ namespace Ethereal
 		virtual void HandleInput(float deltaTime);
 		virtual void Update(float deltaTime);
 		void DrawUI(float deltaTime);
-		void Render();
+		void Render(float deltaTime);
 
 		const std::vector<GameObject>& GetGameObjects() const;
 		void SetName(const std::string& name);

@@ -7,6 +7,7 @@
 #include "Assets/Scene.h"
 #include "Assets/GameObject.h"
 #include "Game/TestObj.h"
+#include "Game/TestScene.h"
 
 GameApp::GameApp()
 {
@@ -21,10 +22,7 @@ GameApp::~GameApp()
 void GameApp::OnInitialize()
 {
 	// Temp code *************************
-	Ethereal::Scene* scene = new Ethereal::Scene("TestScene");
-	TestObj* obj = new TestObj();
-	obj->Load("Hi");
-	scene->AddGameObject(*obj);
+	TestScene* scene = new TestScene("TestScene");
 	m_SceneManager.AddScene(scene);
 	// Temp code *************************
 	GAME_LOG_INFO("GameApp initialized successfully.");

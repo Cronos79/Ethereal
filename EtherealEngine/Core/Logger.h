@@ -1,11 +1,12 @@
 #pragma once
-
 #include <memory>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <filesystem>
+#include <comdef.h>
 #include "EtherealIncludes.h"
+#include "EngineUtils.h"
 
 namespace Ethereal
 {
@@ -43,3 +44,31 @@ namespace Ethereal
 #define GAME_LOG_WARN(fmt, ...)     ::Ethereal::Logger::GetGameLogger()->warn("[{}:{}]\n " fmt, ::Ethereal::Internal::ExtractFilename(__FILE__), __LINE__, ##__VA_ARGS__)
 #define GAME_LOG_ERROR(fmt, ...)    ::Ethereal::Logger::GetGameLogger()->error("[{}:{}]\n " fmt, ::Ethereal::Internal::ExtractFilename(__FILE__), __LINE__, ##__VA_ARGS__)
 #define GAME_LOG_CRITICAL(fmt, ...) ::Ethereal::Logger::GetGameLogger()->critical("[{}:{}]\n " fmt, ::Ethereal::Internal::ExtractFilename(__FILE__), __LINE__, ##__VA_ARGS__)
+
+namespace Ethereal
+{
+	class COMException
+	{
+	public:
+		COMException(HRESULT hr, const std::string& msg, const std::string& file, const std::string& function, int line)
+		{
+			_com_error error(hr);
+			whatmsg = L"Msg: " + StringToWChar(std::string(msg)) + L"\n";
+			whatmsg += StringToWChar(error.ErrorMessage());
+			whatmsg += L"\nFile: " + StringToWChar(file);
+			whatmsg += L"\nFunction: " + StringToWChar(function);
+			whatmsg += L"\nLine: " + StringToWChar(std::to_string(line));
+			LOG_ERROR("COMException: {}", WCharToString(whatmsg.c_str()).c_str());
+		}
+
+		const wchar_t* what() const
+		{
+			return whatmsg.c_str();
+		}
+	private:
+		std::wstring whatmsg;
+	};
+}
+
+#define COM_ERROR_IF_FAILED( hr, msg ) if( FAILED( hr ) ) throw Ethereal::COMException( hr, msg, __FILE__, __FUNCTION__, __LINE__ )
+

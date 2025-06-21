@@ -19,7 +19,7 @@ namespace Ethereal
 		GameObject(const std::string& name, std::unique_ptr<Material> material, std::unique_ptr<Mesh> mesh);
 		~GameObject();
 
-		bool Load(const std::string& path);
+		bool Initialize();
 		virtual void DrawUI(float deltaTime);
 		virtual void Update(float deltaTime);
 		

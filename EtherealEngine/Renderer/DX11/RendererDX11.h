@@ -58,6 +58,7 @@ namespace Ethereal
 		Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_RenderTargetView;
 
 		Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_RasterizerState;
+		Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_RasterizerState_CullFront;
 
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> m_DepthStencilBuffer;
 		Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_DepthStencilView;
@@ -73,5 +74,6 @@ namespace Ethereal
 		std::shared_ptr<Shaders> m_PixelShaderAsset;
 
 		Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState;	
+		Microsoft::WRL::ComPtr<ID3D11BlendState> m_BlendState;
 	};
 }

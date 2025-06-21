@@ -46,7 +46,7 @@ namespace Ethereal
 
 	}
 
-	bool GameObject::Load(const std::string& path)
+	bool GameObject::Initialize()
 	{
 		m_Material = std::make_shared<Material>();
 		m_Mesh = std::make_shared<Mesh>();

@@ -38,7 +38,7 @@ namespace Ethereal
 		  }
 		  OnHandleInput(timer->GetDeltaTime());
 		  OnUpdate(timer->GetDeltaTime());	
-		  m_SceneManager.GetCurrentScene()->Render();
+		  m_SceneManager.GetCurrentScene()->Render(timer->GetDeltaTime());
 	  }
 	  renderer->Shutdown();
 	  Shutdown();

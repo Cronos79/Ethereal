@@ -24,12 +24,18 @@
     <ClCompile Include="Game\TestObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Game\TestScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\GameApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\TestObj.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TestScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
