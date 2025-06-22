@@ -18,7 +18,9 @@ namespace Ethereal
 		Model(std::shared_ptr<Material> material, std::vector<std::shared_ptr<Mesh>> meshes);
 		virtual ~Model();
 
-		bool Initialize();
+		void TEMPSetup(); // Temporary function for setting up input layout and constant buffer
+		bool LoadFromFile(const std::string& path); //Assimp loading
+
 		ID3D11InputLayout* GetInputLayout()
 		{
 			return m_InputLayout.Get();
@@ -52,6 +54,10 @@ namespace Ethereal
 		{
 			return (index < m_Meshes.size()) ? m_Meshes[index] : nullptr;
 		}
+	private:
+		bool CreateInputLayout(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layoutDesc);
+		bool CreateConstantBuffer();	
+		bool Init(); // Common initialization code
 
 	private:
 		std::shared_ptr<Material> m_Material;
