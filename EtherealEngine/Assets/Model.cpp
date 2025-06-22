@@ -14,10 +14,10 @@ namespace Ethereal
 	{
 	}
 
-	Model::Model(std::shared_ptr<Material> material, std::shared_ptr<Mesh> mesh)
+	Model::Model(std::shared_ptr<Material> material, std::vector<std::shared_ptr<Mesh>> meshes)
 	{
 		m_Material = std::move(material);
-		m_Mesh = std::move(mesh);
+		m_Meshes = std::move(meshes);
 	}
 
 	Model::~Model()
@@ -31,9 +31,9 @@ namespace Ethereal
 		{
 			m_Material = std::make_shared<Material>();
 		}
-		if (!m_Mesh)
+		if (m_Meshes.empty())
 		{
-			m_Mesh = std::make_shared<Mesh>();
+			m_Meshes.push_back(std::make_shared<Mesh>());
 		}
 		if (!m_Material->Initialize())
 		{
@@ -63,7 +63,7 @@ namespace Ethereal
 			0, 3, 7, 0, 7, 4        // Bottom
 		};
 
-		if (!m_Mesh->Initialize(vertices, indices))
+		if (!m_Meshes[0]->Initialize(vertices, indices))
 		{
 			LOG_ERROR("Failed to initialize mesh");
 			return false;

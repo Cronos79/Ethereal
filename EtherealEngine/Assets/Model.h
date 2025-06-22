@@ -15,7 +15,7 @@ namespace Ethereal
 	{
 	public:		
 		Model();
-		Model(std::shared_ptr<Material> material, std::shared_ptr<Mesh> mesh);
+		Model(std::shared_ptr<Material> material, std::vector<std::shared_ptr<Mesh>> meshes);
 		virtual ~Model();
 
 		bool Initialize();
@@ -36,18 +36,27 @@ namespace Ethereal
 		{
 			return m_Material.get();
 		}
-		void SetMesh(std::shared_ptr<Mesh> mesh)
+		void SetMeshes(const std::vector<std::shared_ptr<Mesh>>& meshes)
 		{
-			m_Mesh = std::move(mesh);
+			m_Meshes = meshes;
 		}
-		Mesh* GetMesh() const
+		void SetMeshes(std::vector<std::shared_ptr<Mesh>>&& meshes)
 		{
-			return m_Mesh.get();
+			m_Meshes = std::move(meshes);
+		}
+		const std::vector<std::shared_ptr<Mesh>>& GetMeshes() const
+		{
+			return m_Meshes;
+		}
+		std::shared_ptr<Mesh> GetMesh(size_t index) const
+		{
+			return (index < m_Meshes.size()) ? m_Meshes[index] : nullptr;
 		}
 
 	private:
 		std::shared_ptr<Material> m_Material;
-		std::shared_ptr<Mesh> m_Mesh;
+		//std::shared_ptr<Mesh> m_Mesh;
+		std::vector<std::shared_ptr<Mesh>> m_Meshes;
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_InputLayout;
 		ConstantBuffer<CB_VS_vertexshader> m_ConstantBuffer;
 	};
