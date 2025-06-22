@@ -15,8 +15,14 @@ namespace Ethereal
 	{
 	public:
 		Mesh() = default;
+		Mesh(const std::string& name,
+			const std::vector<Vertex>& vertices,
+			const std::vector<uint32_t>& indices,
+			uint32_t materialIndex = 0);
 		~Mesh() = default;
-		bool Initialize();
+		bool Initialize(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices); // copy
+		bool Initialize(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices);
+		void UploadToGPU();
 
 		ID3D11Buffer* GetVertexBuffer() const
 		{
@@ -37,8 +43,21 @@ namespace Ethereal
 			return m_IndexBuffer.IndexCount();
 		}	
 
+		inline const std::vector<Vertex>& GetVertices() const
+		{
+			return m_Vertices;
+		}
+		inline const std::vector<uint32_t>& GetIndices() const
+		{
+			return m_Indices;
+		}
+
 	private:		
 		VertexBuffer<Vertex> m_VertexBuffer;
 		IndexBuffer m_IndexBuffer;	
+		std::vector<Vertex> m_Vertices;
+		std::vector<uint32_t> m_Indices;
+		uint32_t m_MaterialIndex = 0;
+		std::string m_Name;
 	};
 }

@@ -4,53 +4,45 @@
 
 namespace Ethereal
 {
-	bool Mesh::Initialize()
+
+	Mesh::Mesh(const std::string& name, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices, uint32_t materialIndex /*= 0*/)
+		: m_Name(name),
+		m_Vertices(vertices),
+		m_Indices(indices),
+		m_MaterialIndex(materialIndex)
 	{
-		//Textured Square
-		Vertex v[] =
-		{
-			Vertex(-0.5f,  -0.5f, -0.5f, 0.0f, 1.0f), //FRONT Bottom Left   - [0]
-			Vertex(-0.5f,   0.5f, -0.5f, 0.0f, 0.0f), //FRONT Top Left      - [1]
-			Vertex(0.5f,   0.5f, -0.5f, 1.0f, 0.0f), //FRONT Top Right     - [2]
-			Vertex(0.5f,  -0.5f, -0.5f, 1.0f, 1.0f), //FRONT Bottom Right   - [3]
-			Vertex(-0.5f,  -0.5f, 0.5f, 0.0f, 1.0f), //BACK Bottom Left   - [4]
-			Vertex(-0.5f,   0.5f, 0.5f, 0.0f, 0.0f), //BACK Top Left      - [5]
-			Vertex(0.5f,   0.5f, 0.5f, 1.0f, 0.0f), //BACK Top Right     - [6]
-			Vertex(0.5f,  -0.5f, 0.5f, 1.0f, 1.0f), //BACK Bottom Right   - [7]
-		};
+	}
 
-		ID3D11Device* device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());
-		ID3D11DeviceContext* context = static_cast<ID3D11DeviceContext*>(EEContext::Get().GetContext());
-		HRESULT hr = m_VertexBuffer.Initialize(device, v, ARRAYSIZE(v));
-		if (FAILED(hr))
-		{
-			LOG_ERROR("Failed to create vertex buffer: {}", hr);
-			return false;
-		}
-
-		DWORD indices[] =
-		{
-			0, 1, 2, //FRONT
-			0, 2, 3, //FRONT
-			4, 7, 6, //BACK 
-			4, 6, 5, //BACK
-			3, 2, 6, //RIGHT SIDE
-			3, 6, 7, //RIGHT SIDE
-			4, 5, 1, //LEFT SIDE
-			4, 1, 0, //LEFT SIDE
-			1, 5, 6, //TOP
-			1, 6, 2, //TOP
-			0, 3, 7, //BOTTOM
-			0, 7, 4, //BOTTOM
-		};
-
-		hr = m_IndexBuffer.Initialize(device, indices, ARRAYSIZE(indices));
-		if (FAILED(hr))
-		{
-			LOG_ERROR("Failed to create index buffer: {}", hr);
-			return false;
-		}		
-
+	bool Mesh::Initialize(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
+	{
+		m_Vertices = vertices;
+		m_Indices = indices;
+		UploadToGPU();
 		return true;
 	}
+
+	bool Mesh::Initialize(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices)
+	{
+		m_Vertices = std::move(vertices);
+		m_Indices = std::move(indices);
+		UploadToGPU();
+		return true;
+	}
+
+	void Mesh::UploadToGPU()
+	{
+		ID3D11Device* device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());
+		if (!m_Vertices.empty() && !m_VertexBuffer.Get())
+		{
+			LOG_INFO("Uploading vertex buffer with {} vertices", m_Vertices.size());
+			m_VertexBuffer.Initialize(device, m_Vertices.data(), (UINT)m_Vertices.size());
+		}
+
+		if (!m_Indices.empty() && !m_IndexBuffer.Get())
+		{
+			LOG_INFO("Uploading index buffer with {} indices", m_Indices.size());
+			m_IndexBuffer.Initialize(device, reinterpret_cast<DWORD*>(m_Indices.data()), (UINT)m_Indices.size());
+		}
+	}
+
 }

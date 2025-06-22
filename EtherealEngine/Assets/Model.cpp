@@ -41,7 +41,29 @@ namespace Ethereal
 			return false;
 		}
 		
-		if (!m_Mesh->Initialize())
+		// Textured Cube Vertices		
+		std::vector<Vertex> vertices = {
+			{ -0.5f, -0.5f, -0.5f, 0.0f, 1.0f }, // Front Bottom Left
+			{ -0.5f,  0.5f, -0.5f, 0.0f, 0.0f }, // Front Top Left
+			{  0.5f,  0.5f, -0.5f, 1.0f, 0.0f }, // Front Top Right
+			{  0.5f, -0.5f, -0.5f, 1.0f, 1.0f }, // Front Bottom Right
+			{ -0.5f, -0.5f,  0.5f, 0.0f, 1.0f }, // Back Bottom Left
+			{ -0.5f,  0.5f,  0.5f, 0.0f, 0.0f }, // Back Top Left
+			{  0.5f,  0.5f,  0.5f, 1.0f, 0.0f }, // Back Top Right
+			{  0.5f, -0.5f,  0.5f, 1.0f, 1.0f }, // Back Bottom Right
+		};
+
+		// Indices for 12 triangles (2 per cube face)
+		std::vector<uint32_t> indices = {
+			0, 1, 2, 0, 2, 3,       // Front
+			4, 7, 6, 4, 6, 5,       // Back
+			3, 2, 6, 3, 6, 7,       // Right
+			4, 5, 1, 4, 1, 0,       // Left
+			1, 5, 6, 1, 6, 2,       // Top
+			0, 3, 7, 0, 7, 4        // Bottom
+		};
+
+		if (!m_Mesh->Initialize(vertices, indices))
 		{
 			LOG_ERROR("Failed to initialize mesh");
 			return false;
