@@ -163,6 +163,7 @@
     <ClCompile Include="Assets\GameObject.cpp" />
     <ClCompile Include="Assets\Material.cpp" />
     <ClCompile Include="Assets\Mesh.cpp" />
+    <ClCompile Include="Assets\Model.cpp" />
     <ClCompile Include="Assets\Scene.cpp" />
     <ClCompile Include="Assets\Shaders.cpp" />
     <ClCompile Include="Core\AssetManager.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="Assets\GameObject.h" />
     <ClInclude Include="Assets\Material.h" />
     <ClInclude Include="Assets\Mesh.h" />
+    <ClInclude Include="Assets\Model.h" />
     <ClInclude Include="Assets\Scene.h" />
     <ClInclude Include="Assets\Shaders.h" />
     <ClInclude Include="Core\AssetManager.h" />

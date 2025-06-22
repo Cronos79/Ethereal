@@ -264,17 +264,18 @@ namespace Ethereal
 
 	void RendererDX11::Draw(GameObject obj)
 	{
-		m_Context->IASetInputLayout(obj.GetMesh()->GetInputLayout());
+		auto& model = obj.GetModel();
+		m_Context->IASetInputLayout(model.GetInputLayout());
 		m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_Context->RSSetState(m_RasterizerState.Get()); // Set the rasterizer state
 	
 		m_Context->OMSetDepthStencilState(m_DepthStencilState.Get(), 1); // Set the depth stencil state
 		m_Context->OMSetBlendState(m_BlendState.Get(), nullptr, 0xFFFFFFFF); // Set the blend state with no mask
 		m_Context->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf()); // Set the sampler state
-		m_Context->VSSetShader(obj.GetMaterial()->GetVertexShader()->GetVertexShader(), NULL, 0);
-		m_Context->PSSetShader(obj.GetMaterial()->GetPixelShader()->GetPixelShader(), NULL, 0);
+		m_Context->VSSetShader(model.GetMaterial()->GetVertexShader()->GetVertexShader(), NULL, 0);
+		m_Context->PSSetShader(model.GetMaterial()->GetPixelShader()->GetPixelShader(), NULL, 0);
 
-		m_Context->PSSetShaderResources(0, 1, obj.GetMaterial()->GetTexture().GetAddressOf());
+		m_Context->PSSetShaderResources(0, 1, model.GetMaterial()->GetTexture().GetAddressOf());
 
 		UINT offset = 0;		
 
@@ -288,21 +289,21 @@ namespace Ethereal
 		DirectX::XMMATRIX world = scale * rotation * translation;	
 		
 		auto& camera = EEContext::Get().GetCameraManager().GetCurrentCamera(); // Get the current camera from the context
+		auto& constantBuffer = model.GetConstantBuffer();
+		constantBuffer.data.mat = DirectX::XMMatrixTranspose(world * camera.GetViewMatrix() * camera.GetProjectionMatrix());
+		constantBuffer.ApplyChanges();
+		m_Context->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
 
-		obj.GetMesh()->Update(world, camera.GetViewMatrix(), camera.GetProjectionMatrix());
-		
-		m_Context->VSSetConstantBuffers(0, 1, obj.GetMesh()->GetConstantBuffer().GetAddressOf()); // Set the constant buffer for the vertex shader
-
-		obj.GetMaterial()->GetConstantBuffer().data.alpha = 1.0f; // Set the alpha value in the material's constant buffer
-		obj.GetMaterial()->GetConstantBuffer().ApplyChanges(); // Apply changes to the material's constant buffer
-		m_Context->PSSetConstantBuffers(0, 1, obj.GetMaterial()->GetConstantBuffer().GetAddressOf()); // Set the constant buffer for the pixel shader
+		model.GetMaterial()->GetConstantBuffer().data.alpha = 1.0f; // Set the alpha value in the material's constant buffer
+		model.GetMaterial()->GetConstantBuffer().ApplyChanges(); // Apply changes to the material's constant buffer
+		m_Context->PSSetConstantBuffers(0, 1, model.GetMaterial()->GetConstantBuffer().GetAddressOf()); // Set the constant buffer for the pixel shader
 
 		// Square
-		ID3D11Buffer* vb = obj.GetMesh()->GetVertexBuffer();
-		m_Context->IASetVertexBuffers(0, 1, &vb, obj.GetMesh()->GetStridePtr(), &offset);
-		m_Context->IASetIndexBuffer(obj.GetMesh()->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0); // Set the index buffer
+		ID3D11Buffer* vb = model.GetMesh()->GetVertexBuffer();
+		m_Context->IASetVertexBuffers(0, 1, &vb, model.GetMesh()->GetStridePtr(), &offset);
+		m_Context->IASetIndexBuffer(model.GetMesh()->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0); // Set the index buffer
 
-		m_Context->DrawIndexed((UINT)obj.GetMesh()->GetIndexCount(), 0, 0); // Draw the indexed geometry
+		m_Context->DrawIndexed((UINT)model.GetMesh()->GetIndexCount(), 0, 0); // Draw the indexed geometry
 	}
 
 	void RendererDX11::EndFrame()

@@ -8,6 +8,7 @@
 #include "Material.h"
 #include "Mesh.h"
 #include <stdint.h>
+#include "Model.h"
 
 namespace Ethereal
 {
@@ -16,30 +17,13 @@ namespace Ethereal
 	public:
 		GameObject();
 		GameObject(const std::string& name);
-		GameObject(const std::string& name, std::unique_ptr<Material> material, std::unique_ptr<Mesh> mesh);
 		~GameObject();
 
-		bool Initialize();
 		virtual void DrawUI(float deltaTime);
 		virtual void Update(float deltaTime);
 		
 		// Assessors
-		void SetMaterial(std::unique_ptr<Material> material)
-		{
-			m_Material = std::move(material);
-		}
-		Material* GetMaterial() const
-		{
-			return m_Material.get();
-		}
-		void SetMesh(std::unique_ptr<Mesh> mesh)
-		{
-			m_Mesh = std::move(mesh);
-		}
-		Mesh* GetMesh() const
-		{
-			return m_Mesh.get();
-		}
+		
 		bool IsVisible() const
 		{
 			return m_IsVisible;
@@ -64,15 +48,26 @@ namespace Ethereal
 		{
 			m_ID = s_NextID++;
 		}
+		std::shared_ptr<Model> GetModelPtr()
+		{
+			return m_Model;
+		}
+		Model& GetModel()
+		{
+			return *m_Model;
+		}
+		void SetModel(const std::shared_ptr<Model>& model)
+		{
+			m_Model = model;
+		}
 
 		bool operator==(const GameObject& other) const
 		{
 			// Compare by unique ID, name, or whatever makes sense for your game objects
 			return this->GetID() == other.GetID();
 		}
-	private:
-		std::shared_ptr<Material> m_Material;
-		std::shared_ptr<Mesh> m_Mesh;
+	private:	
+		std::shared_ptr<Model> m_Model;
 		bool m_IsVisible = true;
 		std::string m_Name;
 		int32_t m_ID = 0;

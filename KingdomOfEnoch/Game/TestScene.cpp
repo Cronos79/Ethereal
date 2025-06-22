@@ -6,7 +6,6 @@ TestScene::TestScene(const std::string& name)
 	: Scene(name)
 {
 	TestObj* obj = new TestObj();
-	obj->Initialize();
 	AddGameObject(*obj);
 	LOG_INFO("Test scene loaded game obj {}", obj->GetName());
 }

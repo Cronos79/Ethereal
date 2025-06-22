@@ -9,9 +9,6 @@
 #include "Renderer/DX11/VertexBuffer.h"
 #include "Renderer/DX11/IndexBuffer.h"
 
-#include "Renderer/DX11/ConstantBufferTypes.h"
-#include "Renderer/DX11/ConstantBuffer.h"
-
 namespace Ethereal
 {
 	class ETHEREAL_API Mesh : public IAsset
@@ -19,11 +16,7 @@ namespace Ethereal
 	public:
 		Mesh() = default;
 		~Mesh() = default;
-		bool Initialize(Shaders* vertexShaderAsset);
-		bool InitializeBuffers();
-		void Update(DirectX::XMMATRIX worldMatrix, DirectX::XMMATRIX viewMatrix, DirectX::XMMATRIX projectionMatrix);
-
-		ID3D11InputLayout* GetInputLayout();
+		bool Initialize();
 
 		ID3D11Buffer* GetVertexBuffer() const
 		{
@@ -44,15 +37,8 @@ namespace Ethereal
 			return m_IndexBuffer.IndexCount();
 		}	
 
-		ConstantBuffer<CB_VS_vertexshader>& GetConstantBuffer()
-		{
-			return m_ConstantBuffer;
-		}
-
-	private:
-		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_InputLayout;
+	private:		
 		VertexBuffer<Vertex> m_VertexBuffer;
 		IndexBuffer m_IndexBuffer;	
-		ConstantBuffer<CB_VS_vertexshader> m_ConstantBuffer;
 	};
 }
