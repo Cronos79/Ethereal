@@ -319,7 +319,8 @@ namespace Ethereal
 		m_Context->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
 		m_Context->VSSetShader(model.GetMaterial()->GetVertexShader()->GetVertexShader(), NULL, 0);
 		m_Context->PSSetShader(model.GetMaterial()->GetPixelShader()->GetPixelShader(), NULL, 0);
-		m_Context->PSSetShaderResources(0, 1, model.GetMaterial()->GetTexture().GetAddressOf());
+		ID3D11ShaderResourceView* diffuseSRV = model.GetMaterial()->GetDiffuseTexture();
+		m_Context->PSSetShaderResources(0, 1, &diffuseSRV);
 
 		// Camera and world matrix setup (set once per model)
 		DirectX::XMMATRIX scale = DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f);
