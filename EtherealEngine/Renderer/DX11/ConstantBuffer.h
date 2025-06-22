@@ -15,6 +15,7 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
 	ID3D11DeviceContext* deviceContext = nullptr;
+	bool IsInitialized = false;
 
 public:
 	ConstantBuffer()
@@ -33,12 +34,12 @@ public:
 		return buffer.GetAddressOf();
 	}
 
-	HRESULT Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
+	HRESULT Initialize(ID3D11Device* device, ID3D11DeviceContext* indeviceContext)
 	{
 		if (buffer.Get() != nullptr)
 			buffer.Reset();
 
-		this->deviceContext = deviceContext;
+		this->deviceContext = indeviceContext;
 
 		D3D11_BUFFER_DESC desc;
 		desc.Usage = D3D11_USAGE_DYNAMIC;
@@ -49,11 +50,20 @@ public:
 		desc.StructureByteStride = 0;
 
 		HRESULT hr = device->CreateBuffer(&desc, 0, buffer.GetAddressOf());
+		if (SUCCEEDED(hr))
+		{
+			IsInitialized = true;
+		}		
 		return hr;
 	}
 
 	bool ApplyChanges()
 	{
+		if (deviceContext == nullptr)
+		{
+			LOG_ERROR("Device context is null.");
+			return false;
+		}
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		HRESULT hr = this->deviceContext->Map(buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		if (FAILED(hr))
@@ -64,6 +74,16 @@ public:
 		CopyMemory(mappedResource.pData, &data, sizeof(T));
 		this->deviceContext->Unmap(buffer.Get(), 0);
 		return true;
+	}
+
+	bool IsBufferInitialized()const
+	{
+		if(deviceContext == nullptr)
+		{
+			LOG_ERROR("Device context is null.");
+			return false;
+		}
+		return IsInitialized;
 	}
 };
 

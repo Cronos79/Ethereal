@@ -43,13 +43,30 @@ namespace Ethereal
 			return m_IndexBuffer.IndexCount();
 		}	
 
-		inline const std::vector<Vertex>& GetVertices() const
+		inline std::vector<Vertex>& GetVertices()
 		{
 			return m_Vertices;
 		}
-		inline const std::vector<uint32_t>& GetIndices() const
+		inline std::vector<uint32_t>& GetIndices()
 		{
 			return m_Indices;
+		}
+
+		void SetName(const std::string& name)
+		{
+			m_Name = name;
+		}
+		const std::string& GetName() const
+		{
+			return m_Name;
+		}
+		void SetMaterialIndex(uint32_t index)
+		{
+			m_MaterialIndex = index;
+		}
+		uint32_t GetMaterialIndex() const
+		{
+			return m_MaterialIndex;
 		}
 
 	private:		

@@ -326,7 +326,10 @@ namespace Ethereal
 		DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(0.0f));
 		DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
 		DirectX::XMMATRIX world = scale * rotation * translation;
-
+		if (!model.GetConstantBuffer().IsBufferInitialized())
+		{
+			model.GetConstantBuffer().Initialize(m_Device.Get(), m_Context.Get());
+		}
 		auto& camera = EEContext::Get().GetCameraManager().GetCurrentCamera();
 		auto& constantBuffer = model.GetConstantBuffer();
 		constantBuffer.data.mat = DirectX::XMMatrixTranspose(world * camera.GetViewMatrix() * camera.GetProjectionMatrix());
@@ -358,6 +361,10 @@ namespace Ethereal
 			ID3D11ShaderResourceView* diffuseSRV = material->GetDiffuseTexture();
 			m_Context->PSSetShaderResources(0, 1, &diffuseSRV);
 
+			if (!material->GetConstantBuffer().IsBufferInitialized())
+			{
+				material->GetConstantBuffer().Initialize(m_Device.Get(), m_Context.Get());
+			}
 			material->GetConstantBuffer().data.alpha = 1.0f;
 			material->GetConstantBuffer().ApplyChanges();
 			m_Context->PSSetConstantBuffers(0, 1, material->GetConstantBuffer().GetAddressOf());

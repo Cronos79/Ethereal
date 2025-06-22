@@ -10,7 +10,10 @@ namespace Ethereal
 		m_Name = "GameObject" + std::to_string(m_ID);
 		m_ID = s_NextID++;
 		m_Model = std::make_shared<Model>();
-		m_Model->TEMPSetup();
+		auto assetDir = GetAssetsDirectory();
+		auto modelPath = assetDir / "Models/Cube.fbx";
+		m_Model->LoadFromFile(modelPath.string());
+		//m_Model->TEMPSetup();
 	}
 
 	GameObject::GameObject(const std::string& name)
@@ -18,7 +21,10 @@ namespace Ethereal
 		m_Name = name;	
 		m_ID = s_NextID++;	
 		m_Model = std::make_shared<Model>();
-		m_Model->TEMPSetup();
+		auto assetDir = GetAssetsDirectory();
+		auto modelPath = assetDir / "Models/Cube.fbx";
+		m_Model->LoadFromFile(modelPath.string());
+		//m_Model->TEMPSetup();
 	}
 
 	GameObject::~GameObject()

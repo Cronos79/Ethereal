@@ -43,7 +43,7 @@ namespace Ethereal
 	void CameraManager::NewCamera(float fov, float nearPlane, float farPlane)
 	{
 		Camera* newCamera = new Camera();
-		newCamera->SetPosition(0.0f, 0.0f, -2.0f); // Set camera position
+		newCamera->SetPosition(0.0f, 0.0f, -200.0f); // Set camera position
 		newCamera->SetProjectionValues(fov, (float)EEContext::Get().GetWidth() / (float)EEContext::Get().GetHeight(), nearPlane, farPlane); // Set projection values
 		
 		AddCamera(newCamera); // Add the new camera to the manager

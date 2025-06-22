@@ -63,6 +63,7 @@ namespace Ethereal
 		{
 			return (index < m_Meshes.size()) ? m_Meshes[index] : nullptr;
 		}
+	
 	private:
 		bool CreateInputLayout(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layoutDesc);
 		bool CreateConstantBuffer();	
@@ -73,5 +74,6 @@ namespace Ethereal
 		std::vector<std::shared_ptr<Mesh>> m_Meshes;
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_InputLayout;
 		ConstantBuffer<CB_VS_vertexshader> m_ConstantBuffer;
+		std::string m_TextureName = "Texture"; // Default texture name for materials without a specified texture
 	};
 }

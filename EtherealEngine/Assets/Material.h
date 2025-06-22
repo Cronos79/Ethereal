@@ -23,6 +23,8 @@ namespace Ethereal
 		void SetMetallicTextureName(const std::string& name);
 		void SetRoughnessTextureName(const std::string& name);
 		void SetDiffuseColor(const DirectX::XMFLOAT3& color);
+		void SetVertexShaderName(const std::string& name);
+		void SetPixelShaderName(const std::string& name);
 
 		bool Initialize();	
 		bool ResolveTextures();
@@ -66,9 +68,11 @@ namespace Ethereal
 
 		std::shared_ptr<Shaders> m_VertexShaderAsset;
 		Microsoft::WRL::ComPtr<ID3D10Blob> m_VertexBlob;
+		std::string m_VertexShaderName;
 
 		std::shared_ptr<Shaders> m_PixelShaderAsset;
 		Microsoft::WRL::ComPtr<ID3D10Blob> m_PixelBlob;
+		std::string m_PixelShaderName;
 
 		ConstantBuffer<CB_PS_pixelshader> m_PSConstantBuffer;
 	};

@@ -38,6 +38,16 @@ namespace Ethereal
 		m_DiffuseColor = color;
 	}
 
+	void Material::SetVertexShaderName(const std::string& name)
+	{
+		m_VertexShaderName = name;
+	}
+
+	void Material::SetPixelShaderName(const std::string& name)
+	{
+		m_PixelShaderName = name;
+	}
+
 	bool Material::Initialize()
 	{	
 		ResolveShaders();
@@ -74,15 +84,15 @@ namespace Ethereal
 	bool Material::ResolveShaders()
 	{
 		// Load the shaders into the asset manager
-		EEContext::Get().GetAssetManager().LoadShader("VertexShader", ShaderType::VERTEX_SHADER);
-		EEContext::Get().GetAssetManager().LoadShader("PixelShader", ShaderType::PIXEL_SHADER);
+		EEContext::Get().GetAssetManager().LoadShader(m_VertexShaderName, ShaderType::VERTEX_SHADER);
+		EEContext::Get().GetAssetManager().LoadShader(m_PixelShaderName, ShaderType::PIXEL_SHADER);
 
 		// Get the Vertex shader from the asset manager
-		m_VertexShaderAsset = EEContext::Get().GetAssetManager().Get<Shaders>("VertexShader");
+		m_VertexShaderAsset = EEContext::Get().GetAssetManager().Get<Shaders>(m_VertexShaderName);
 		m_VertexBlob = m_VertexShaderAsset->GetVertexShaderBuffer();
 
 		// Get the Pixel shader from the asset manager
-		m_PixelShaderAsset = EEContext::Get().GetAssetManager().Get<Shaders>("PixelShader");
+		m_PixelShaderAsset = EEContext::Get().GetAssetManager().Get<Shaders>(m_PixelShaderName);
 		m_PixelBlob = m_PixelShaderAsset->GetPixelShaderBuffer();
 		return true;
 	}
