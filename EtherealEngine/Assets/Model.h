@@ -15,7 +15,7 @@ namespace Ethereal
 	{
 	public:		
 		Model();
-		Model(std::shared_ptr<Material> material, std::vector<std::shared_ptr<Mesh>> meshes);
+		Model(std::vector<std::shared_ptr<Material>> materials, std::vector<std::shared_ptr<Mesh>> meshes);
 		virtual ~Model();
 
 		void TEMPSetup(); // Temporary function for setting up input layout and constant buffer
@@ -30,14 +30,23 @@ namespace Ethereal
 			return m_ConstantBuffer;
 		}
 
-		void SetMaterial(std::shared_ptr<Material> material)
+		void SetMaterials(const std::vector<std::shared_ptr<Material>>& materials)
 		{
-			m_Material = std::move(material);
+			m_Materials = materials;
 		}
-		Material* GetMaterial() const
+		void SetMaterials(std::vector<std::shared_ptr<Material>>&& materials)
 		{
-			return m_Material.get();
+			m_Materials = std::move(materials);
 		}
+		const std::vector<std::shared_ptr<Material>>& GetMaterials() const
+		{
+			return m_Materials;
+		}
+		std::shared_ptr<Material> GetMaterial(size_t index) const
+		{
+			return (index < m_Materials.size()) ? m_Materials[index] : nullptr;
+		}
+
 		void SetMeshes(const std::vector<std::shared_ptr<Mesh>>& meshes)
 		{
 			m_Meshes = meshes;
@@ -60,8 +69,7 @@ namespace Ethereal
 		bool Init(); // Common initialization code
 
 	private:
-		std::shared_ptr<Material> m_Material;
-		//std::shared_ptr<Mesh> m_Mesh;
+		std::vector<std::shared_ptr<Material>> m_Materials;
 		std::vector<std::shared_ptr<Mesh>> m_Meshes;
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_InputLayout;
 		ConstantBuffer<CB_VS_vertexshader> m_ConstantBuffer;

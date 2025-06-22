@@ -260,52 +260,55 @@ namespace Ethereal
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
-	}
+	}	
 
 	//void RendererDX11::Draw(GameObject obj)
 	//{
 	//	auto& model = obj.GetModel();
+
+	//	// --- Set once per model ---
 	//	m_Context->IASetInputLayout(model.GetInputLayout());
-	//	m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//	m_Context->RSSetState(m_RasterizerState.Get()); // Set the rasterizer state
-	//
-	//	m_Context->OMSetDepthStencilState(m_DepthStencilState.Get(), 1); // Set the depth stencil state
-	//	m_Context->OMSetBlendState(m_BlendState.Get(), nullptr, 0xFFFFFFFF); // Set the blend state with no mask
-	//	m_Context->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf()); // Set the sampler state
+	//	m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//	m_Context->RSSetState(m_RasterizerState.Get());
+	//	m_Context->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
+	//	m_Context->OMSetBlendState(m_BlendState.Get(), nullptr, 0xFFFFFFFF);
+	//	m_Context->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
 	//	m_Context->VSSetShader(model.GetMaterial()->GetVertexShader()->GetVertexShader(), NULL, 0);
 	//	m_Context->PSSetShader(model.GetMaterial()->GetPixelShader()->GetPixelShader(), NULL, 0);
+	//	ID3D11ShaderResourceView* diffuseSRV = model.GetMaterial()->GetDiffuseTexture();
+	//	m_Context->PSSetShaderResources(0, 1, &diffuseSRV);
 
-	//	m_Context->PSSetShaderResources(0, 1, model.GetMaterial()->GetTexture().GetAddressOf());
-
-	//	UINT offset = 0;		
-
-	//	// Scale by 1
+	//	// Camera and world matrix setup (set once per model)
 	//	DirectX::XMMATRIX scale = DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f);
-	//	// Rotate 0 degrees around Y axis (for 3D, use Z for 2D)
 	//	DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(0.0f));
-	//	// Move up by 0 units
 	//	DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
-	//	// Combine: scale, then rotate, then translate
-	//	DirectX::XMMATRIX world = scale * rotation * translation;	
-	//	
-	//	auto& camera = EEContext::Get().GetCameraManager().GetCurrentCamera(); // Get the current camera from the context
+	//	DirectX::XMMATRIX world = scale * rotation * translation;
+
+	//	auto& camera = EEContext::Get().GetCameraManager().GetCurrentCamera();
 	//	auto& constantBuffer = model.GetConstantBuffer();
 	//	constantBuffer.data.mat = DirectX::XMMatrixTranspose(world * camera.GetViewMatrix() * camera.GetProjectionMatrix());
 	//	constantBuffer.ApplyChanges();
 	//	m_Context->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
 
-	//	model.GetMaterial()->GetConstantBuffer().data.alpha = 1.0f; // Set the alpha value in the material's constant buffer
-	//	model.GetMaterial()->GetConstantBuffer().ApplyChanges(); // Apply changes to the material's constant buffer
-	//	m_Context->PSSetConstantBuffers(0, 1, model.GetMaterial()->GetConstantBuffer().GetAddressOf()); // Set the constant buffer for the pixel shader
+	//	model.GetMaterial()->GetConstantBuffer().data.alpha = 1.0f;
+	//	model.GetMaterial()->GetConstantBuffer().ApplyChanges();
+	//	m_Context->PSSetConstantBuffers(0, 1, model.GetMaterial()->GetConstantBuffer().GetAddressOf());
 
-	//	// Square
-	//	ID3D11Buffer* vb = model.GetMesh()->GetVertexBuffer();
-	//	m_Context->IASetVertexBuffers(0, 1, &vb, model.GetMesh()->GetStridePtr(), &offset);
-	//	m_Context->IASetIndexBuffer(model.GetMesh()->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0); // Set the index buffer
+	//	// --- Per-mesh draw ---
+	//	UINT offset = 0;
+	//	const auto& meshes = model.GetMeshes();
+	//	for (const auto& mesh : meshes)
+	//	{
+	//		if (!mesh) continue;
 
-	//	m_Context->DrawIndexed((UINT)model.GetMesh()->GetIndexCount(), 0, 0); // Draw the indexed geometry
+	//		ID3D11Buffer* vb = mesh->GetVertexBuffer();
+	//		m_Context->IASetVertexBuffers(0, 1, &vb, mesh->GetStridePtr(), &offset);
+	//		m_Context->IASetIndexBuffer(mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+
+	//		m_Context->DrawIndexed((UINT)mesh->GetIndexCount(), 0, 0);
+	//	}
 	//}
-
+	
 	void RendererDX11::Draw(GameObject obj)
 	{
 		auto& model = obj.GetModel();
@@ -317,10 +320,6 @@ namespace Ethereal
 		m_Context->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
 		m_Context->OMSetBlendState(m_BlendState.Get(), nullptr, 0xFFFFFFFF);
 		m_Context->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
-		m_Context->VSSetShader(model.GetMaterial()->GetVertexShader()->GetVertexShader(), NULL, 0);
-		m_Context->PSSetShader(model.GetMaterial()->GetPixelShader()->GetPixelShader(), NULL, 0);
-		ID3D11ShaderResourceView* diffuseSRV = model.GetMaterial()->GetDiffuseTexture();
-		m_Context->PSSetShaderResources(0, 1, &diffuseSRV);
 
 		// Camera and world matrix setup (set once per model)
 		DirectX::XMMATRIX scale = DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f);
@@ -334,16 +333,34 @@ namespace Ethereal
 		constantBuffer.ApplyChanges();
 		m_Context->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
 
-		model.GetMaterial()->GetConstantBuffer().data.alpha = 1.0f;
-		model.GetMaterial()->GetConstantBuffer().ApplyChanges();
-		m_Context->PSSetConstantBuffers(0, 1, model.GetMaterial()->GetConstantBuffer().GetAddressOf());
-
-		// --- Per-mesh draw ---
-		UINT offset = 0;
 		const auto& meshes = model.GetMeshes();
+		const auto& materials = model.GetMaterials();
+
+		UINT offset = 0;
 		for (const auto& mesh : meshes)
 		{
 			if (!mesh) continue;
+
+			// Determine which material to use for this mesh
+			std::shared_ptr<Material> material;
+			if (materials.size() == 1)
+				material = materials[0];
+			/*else if (mesh->GetMaterialIndex() < materials.size())
+				material = materials[mesh->GetMaterialIndex()];*/
+			else
+				material = nullptr;
+
+			if (!material) continue;
+
+			// Set shaders and resources for this material
+			m_Context->VSSetShader(material->GetVertexShader()->GetVertexShader(), NULL, 0);
+			m_Context->PSSetShader(material->GetPixelShader()->GetPixelShader(), NULL, 0);
+			ID3D11ShaderResourceView* diffuseSRV = material->GetDiffuseTexture();
+			m_Context->PSSetShaderResources(0, 1, &diffuseSRV);
+
+			material->GetConstantBuffer().data.alpha = 1.0f;
+			material->GetConstantBuffer().ApplyChanges();
+			m_Context->PSSetConstantBuffers(0, 1, material->GetConstantBuffer().GetAddressOf());
 
 			ID3D11Buffer* vb = mesh->GetVertexBuffer();
 			m_Context->IASetVertexBuffers(0, 1, &vb, mesh->GetStridePtr(), &offset);
@@ -357,8 +374,6 @@ namespace Ethereal
 	{
 		ImGui::Render();
 		
-		//g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
-		//g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		// Update and Render additional Platform Windows

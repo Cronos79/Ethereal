@@ -15,9 +15,9 @@ namespace Ethereal
 		Init();
 	}
 
-	Model::Model(std::shared_ptr<Material> material, std::vector<std::shared_ptr<Mesh>> meshes)
+	Model::Model(std::vector<std::shared_ptr<Material>> materials, std::vector<std::shared_ptr<Mesh>> meshes)
 	{
-		m_Material = std::move(material);
+		m_Materials = std::move(materials);
 		m_Meshes = std::move(meshes);
 		Init();
 	}
@@ -34,7 +34,7 @@ namespace Ethereal
 
 	bool Model::CreateInputLayout(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layoutDesc)
 	{
-		auto vertexShaderBlob = m_Material->GetVertexShader()->GetVertexShaderBuffer();
+		auto vertexShaderBlob = m_Materials[0]->GetVertexShader()->GetVertexShaderBuffer();
 		ID3D11Device* device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());
 		HRESULT hr = device->CreateInputLayout(
 			layoutDesc.data(),
@@ -67,15 +67,16 @@ namespace Ethereal
 	bool Model::Init()
 	{
 		bool result = false;
-		if (!m_Material)
+		if (m_Materials.empty())
 		{
-			m_Material = std::make_shared<Material>();
+			auto mat = std::make_shared<Material>();
+			m_Materials.push_back(mat);
 		}
 		if (m_Meshes.empty())
 		{
 			m_Meshes.push_back(std::make_shared<Mesh>());
 		}
-		if (!m_Material->Initialize())
+		if (!m_Materials[0]->Initialize())
 		{
 			LOG_ERROR("Failed to initialize material");
 			return false;
