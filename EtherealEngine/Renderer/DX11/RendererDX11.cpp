@@ -309,9 +309,9 @@ namespace Ethereal
 	//	}
 	//}
 	
-	void RendererDX11::Draw(GameObject obj)
+	void RendererDX11::Draw(const std::shared_ptr<GameObject>& obj)
 	{
-		auto& model = obj.GetModel();
+		auto& model = obj->GetModel();
 
 		// --- Set once per model ---
 		m_Context->IASetInputLayout(model.GetInputLayout());
@@ -322,10 +322,8 @@ namespace Ethereal
 		m_Context->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
 
 		// Camera and world matrix setup (set once per model)
-		DirectX::XMMATRIX scale = DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f);
-		DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(0.0f));
-		DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
-		DirectX::XMMATRIX world = scale * rotation * translation;
+		
+		DirectX::XMMATRIX world = obj->GetTransform().GetMatrix();
 		if (!model.GetConstantBuffer().IsBufferInitialized())
 		{
 			model.GetConstantBuffer().Initialize(m_Device.Get(), m_Context.Get());
@@ -349,7 +347,7 @@ namespace Ethereal
 			if (materials.size() == 1)
 				material = materials[0];
 			/*else if (mesh->GetMaterialIndex() < materials.size())
-				material = materials[mesh->GetMaterialIndex()];*/
+				material = materials[mesh->GetMaterialIndex()];*/ // #TODO: Mesh material index
 			else
 				material = nullptr;
 

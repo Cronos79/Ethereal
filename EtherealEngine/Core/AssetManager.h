@@ -17,6 +17,7 @@ namespace Ethereal
 		bool LoadRegistry(const std::string& path);
 		bool LoadGameConfig(const std::string& name);
 		bool LoadShader(const std::string& name, ShaderType shaderType);
+		bool LoadModel(const std::string& name);
 
 		template<typename T>
 		std::shared_ptr<T> Get(const std::string& name)

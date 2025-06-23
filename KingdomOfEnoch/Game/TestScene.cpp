@@ -5,9 +5,12 @@
 TestScene::TestScene(const std::string& name)
 	: Scene(name)
 {
-	TestObj* obj = new TestObj();
-	AddGameObject(*obj);
-	LOG_INFO("Test scene loaded game obj {}", obj->GetName());
+	for (int i = 0; i < 200; i++)
+	{
+		auto obj = std::make_shared<TestObj>();
+		AddGameObject(obj);
+		LOG_INFO("Test scene loaded game obj {}", obj->GetName());
+	}
 }
 
 void TestScene::HandleInput(float deltaTime)
@@ -17,5 +20,5 @@ void TestScene::HandleInput(float deltaTime)
 
 void TestScene::Update(float deltaTime)
 {
-	
+	Scene::Update(deltaTime);
 }

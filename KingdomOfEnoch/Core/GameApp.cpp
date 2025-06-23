@@ -33,7 +33,7 @@ void GameApp::OnHandleInput(float deltaTime)
 	Ethereal::Keyboard& keyboard = Ethereal::EEContext::Get().GetWindow().GetKeyboard();
 	Ethereal::Mouse& mouse = Ethereal::EEContext::Get().GetWindow().GetMouse();
 	Ethereal::Camera& camera = Ethereal::EEContext::Get().GetCameraManager().GetCurrentCamera();	
-
+	
 	if (keyboard.GetKeyPressed(VK_ESCAPE))
 	{
 		LOG_INFO("Escape key pressed");
@@ -44,16 +44,18 @@ void GameApp::OnHandleInput(float deltaTime)
 	}
 
 	float newMouseSensitivity = m_MouseSensitivity;
+	float newCameraSpeed = m_CameraSpeed;
 	if (keyboard.IsKeyDown(VK_SHIFT))
 	{
 		newMouseSensitivity = m_MouseSensitivity * 2.0f; // Increase mouse sensitivity when Shift is pressed
+		newCameraSpeed = m_CameraSpeed * 2.0f; // Increase camera speed when Shift is pressed
 	}
-	camera.HandleInput(mouse, keyboard, 1.0f, m_CameraSpeed, newMouseSensitivity);
+	camera.HandleInput(mouse, keyboard, 1.0f, newCameraSpeed, newMouseSensitivity);	
 }
 
 void GameApp::OnUpdate(float deltaTime)
 {
-	//LOG_INFO("GameApp is updating. Delta Time: {}", deltaTime);
+	
 }
 
 

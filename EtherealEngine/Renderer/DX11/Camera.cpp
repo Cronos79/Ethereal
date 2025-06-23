@@ -1,4 +1,5 @@
 #include "Renderer/DX11/Camera.h"
+#include "imgui/imgui.h"
 
 namespace Ethereal
 {
@@ -243,6 +244,22 @@ namespace Ethereal
 			float newYaw = rot.y + static_cast<float>(rawDelta->x) * mouseSensitivity;
 			SetRotation(newPitch, newYaw, 0.0f);
 		}
+	}
+
+	void Camera::UIControls()
+	{
+		ImGui::Begin("Camera Controls");
+		ImGui::Text("Use WASDQE to move the camera.");
+		ImGui::Text("Use mouse to look around.");
+		ImGui::SliderFloat("FOV", &m_FovDegrees, 1.0f, 120.0f);
+		ImGui::SliderFloat("Near Plane", &m_NearPlane, 0.01f, 10.0f);
+		ImGui::SliderFloat("Far Plane", &m_FarPlane, 100.0f, 10000.0f);
+		// Set position
+		if (ImGui::InputFloat3("Position", &this->pos.x))
+		{
+			this->SetPosition(this->pos.x, this->pos.y, this->pos.z);
+		}
+		ImGui::End();
 	}
 
 	float Camera::GetFovDegrees() const

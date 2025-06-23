@@ -25,7 +25,7 @@ namespace Ethereal
 		void Initialize() override;
 		void InitImGui(HWND hwnd);
 		void BeginFrame() override;
-		void Draw(GameObject obj) override;
+		void Draw(const std::shared_ptr<GameObject>& obj) override;
 		void EndFrame() override;
 		void Shutdown() override;
 

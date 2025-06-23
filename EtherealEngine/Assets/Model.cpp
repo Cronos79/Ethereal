@@ -71,20 +71,10 @@ namespace Ethereal
 				}
 			}
 
-			material->SetVertexShaderName("VertexShader");
-			material->SetPixelShaderName("PixelShader");
+			material->SetVertexShaderName(m_VertexShaderName);
+			material->SetPixelShaderName(m_PixelShaderName);
 			material->Initialize();
-			material->ResolveTextures();
 			m_Materials.push_back(material);
-			material->SetVertexShaderName("VertexShader");
-			material->SetPixelShaderName("PixelShader");
-			if (!material->ResolveShaders())
-			{
-				if (!material->GetVertexShader())
-					LOG_ERROR("Material {} missing vertex shader!", i);
-				if (!material->GetPixelShader())
-					LOG_ERROR("Material {} missing pixel shader!", i);
-			}
 		}
 
 		for (unsigned int m = 0; m < scene->mNumMeshes; ++m)
@@ -185,8 +175,8 @@ namespace Ethereal
 		{
 			m_Meshes.push_back(std::make_shared<Mesh>());
 		}
-		m_Materials[0]->SetVertexShaderName("VertexShader");
-		m_Materials[0]->SetPixelShaderName("PixelShader");
+		m_Materials[0]->SetVertexShaderName(m_VertexShaderName);
+		m_Materials[0]->SetPixelShaderName(m_PixelShaderName);
 		if (!m_Materials[0]->Initialize())
 		{
 			LOG_ERROR("Failed to initialize material");

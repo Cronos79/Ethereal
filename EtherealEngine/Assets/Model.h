@@ -75,5 +75,7 @@ namespace Ethereal
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_InputLayout;
 		ConstantBuffer<CB_VS_vertexshader> m_ConstantBuffer;
 		std::string m_TextureName = "Texture"; // Default texture name for materials without a specified texture
+		std::string m_VertexShaderName = "VertexShader"; // Default vertex shader name
+		std::string m_PixelShaderName = "PixelShader"; // Default pixel shader name
 	};
 }

@@ -197,6 +197,7 @@
     <ClInclude Include="Assets\Model.h" />
     <ClInclude Include="Assets\Scene.h" />
     <ClInclude Include="Assets\Shaders.h" />
+    <ClInclude Include="Assets\Transform.h" />
     <ClInclude Include="Core\AssetManager.h" />
     <ClInclude Include="Core\EEApplication.h" />
     <ClInclude Include="Core\EEContext.h" />

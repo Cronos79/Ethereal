@@ -14,16 +14,18 @@ namespace Ethereal
 		Scene();
 		Scene(const std::string& name);
 		virtual ~Scene();
-		void AddGameObject(GameObject obj);
-		void RemoveGameObject(GameObject obj);
+		void AddGameObject(const std::shared_ptr<GameObject>& obj);
+		void RemoveGameObject(const std::shared_ptr<GameObject>& obj);
 		void RemoveGameObjectByName(const std::string& name);
 		void RemoveGameObjectByID(int32_t id);
+		std::shared_ptr<GameObject> FindGameObjectByName(const std::string& name);
+		std::shared_ptr<GameObject> FindGameObjectByID(int32_t id);
 		virtual void HandleInput(float deltaTime);
 		virtual void Update(float deltaTime);
 		void DrawUI(float deltaTime);
 		void Render(float deltaTime);
 
-		const std::vector<GameObject>& GetGameObjects() const;
+		std::vector<std::shared_ptr<GameObject>>& GetGameObjects();
 		void SetName(const std::string& name);
 		const std::string& GetName() const;
 
@@ -32,7 +34,7 @@ namespace Ethereal
 	private:
 
 	private:
-		std::vector<GameObject> m_GameObjects;
+		std::vector<std::shared_ptr<GameObject>> m_GameObjects;
 		std::string m_Name;
 		std::unique_ptr<EditorGui> m_Editor;
 	};

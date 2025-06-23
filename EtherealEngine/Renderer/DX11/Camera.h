@@ -42,6 +42,7 @@ namespace Ethereal
 		void MoveUp(float amount);
 		void MoveDown(float amount);
 		void HandleInput(Mouse& mouse, Keyboard& keyboard, float deltaTime, float cameraSpeed, float mouseSensitivity);
+		void UIControls();
 
 		float GetFovDegrees() const;
 		float GetNearPlane() const;

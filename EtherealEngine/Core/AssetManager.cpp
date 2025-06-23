@@ -6,6 +6,7 @@
 #include "Core/EngineUtils.h"
 #include "Assets/GameConfig.h"
 #include "Assets/Shaders.h"
+#include "Assets/Model.h"
 
 namespace Ethereal
 {
@@ -68,6 +69,12 @@ namespace Ethereal
 
 	bool AssetManager::LoadShader(const std::string& name, ShaderType shaderType)
 	{
+		// Check if asset is already loaded
+		if (m_Assets.find(name) != m_Assets.end())
+		{
+			return true;
+		}
+
 		auto it = m_Registry.find(name);
 		if (it == m_Registry.end())
 		{
@@ -83,6 +90,35 @@ namespace Ethereal
 
 		m_Assets[name] = shader;
 		LOG_INFO("Loaded shader '{}' of type '{}'", name, ShaderTypeToString(shaderType));
+		return true;
+	}
+
+	bool AssetManager::LoadModel(const std::string& name)
+	{
+		// Check if asset is already loaded
+		if (m_Assets.find(name) != m_Assets.end())
+		{
+			return true;
+		}
+
+		auto it = m_Registry.find(name);
+		if (it == m_Registry.end())
+		{
+			LOG_ERROR("GameConfig '{}' not found in registry.", name);
+			return false;
+		}
+
+		std::filesystem::path fullPath = GetAssetsDirectory();
+		fullPath /= it->second;
+
+		auto model = std::make_shared<Model>();
+		if (!model->LoadFromFile(fullPath.string()))
+		{
+			LOG_ERROR("Failed to load model: {}", fullPath.string());
+			return false;
+		}
+		m_Assets[name] = model;
+		LOG_INFO("Loaded model '{}'", name);
 		return true;
 	}
 
