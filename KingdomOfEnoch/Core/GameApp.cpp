@@ -8,6 +8,9 @@
 #include "Assets/GameObject.h"
 #include "Game/TestObj.h"
 #include "Game/TestScene.h"
+#include "Assets/AssetFactory.h"
+
+using namespace Ethereal;
 
 GameApp::GameApp()
 {
@@ -21,6 +24,16 @@ GameApp::~GameApp()
 
 void GameApp::OnInitialize()
 {
+	
+
+	EEContext::Get().GetAssetManager().RegisterGameObjectFactory(
+		[](const std::string& type) -> std::shared_ptr<GameObject>
+		{
+			if (type == "TestObj")
+				return std::make_shared<TestObj>();
+			return nullptr;
+		}
+	);
 	// Temp code *************************
 	TestScene* scene = new TestScene("TestScene");
 	m_SceneManager.AddScene(scene);

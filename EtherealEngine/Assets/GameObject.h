@@ -20,6 +20,8 @@ namespace Ethereal
 		GameObject(const std::string& name);
 		~GameObject();
 
+		virtual std::shared_ptr<GameObject> Clone() const;
+
 		virtual void DrawUI(float deltaTime);
 		virtual void Update(float deltaTime);
 
@@ -29,11 +31,12 @@ namespace Ethereal
 		void MoveTo(const DirectX::XMFLOAT3& targetPosition);
 		void MoveTo(float x, float y, float z);
 		
-		void Move(float deltaTime);
+		void Move(float deltaTime, float moveSpeed, float rotatationSpeed);
 		void StopMoving();
 		
 		// Assessors
-		
+		virtual std::string GetTypeName();
+
 		bool IsVisible() const
 		{
 			return m_IsVisible;
@@ -152,8 +155,7 @@ namespace Ethereal
 		float m_Speed = 10.0f; // Units per second
 		float m_RotationSpeed = 0.01f; 
 		bool m_IsMoving = false;
-		bool m_CanMove = true;
-	private:	
+		bool m_CanMove = true;	
 		std::shared_ptr<Model> m_Model;
 		bool m_IsVisible = true;
 		std::string m_Name;

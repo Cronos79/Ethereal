@@ -5,6 +5,7 @@
 #include <memory>
 #include "Assets/IAsset.h"
 #include "Assets/Shaders.h"
+#include "Assets/AssetFactory.h"
 
 namespace Ethereal
 {
@@ -14,10 +15,13 @@ namespace Ethereal
 		void Initialize();
 		void Shutdown();
 
+		void RegisterGameObjectFactory(GameObjectFactoryFunc factory);
+
 		bool LoadRegistry(const std::string& path);
 		bool LoadGameConfig(const std::string& name);
 		bool LoadShader(const std::string& name, ShaderType shaderType);
 		bool LoadModel(const std::string& name);
+		bool LoadGameObject(const std::string& name);
 
 		template<typename T>
 		std::shared_ptr<T> Get(const std::string& name)
@@ -32,5 +36,6 @@ namespace Ethereal
 		std::unordered_map<std::string, std::shared_ptr<IAsset>> m_Assets;
 		std::unordered_map<std::string, std::string> m_Registry; // name -> path
 		bool m_Initialized = false;
+		GameObjectFactoryFunc m_GameObjectFactory;
 	};
 }

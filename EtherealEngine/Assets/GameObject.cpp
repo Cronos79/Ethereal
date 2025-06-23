@@ -24,6 +24,17 @@ namespace Ethereal
 
 	}
 
+	std::shared_ptr<GameObject> GameObject::Clone() const
+	{
+		auto clone = std::make_shared<GameObject>();
+		clone->SetName(m_Name);
+		clone->SetTransform(m_Transform);
+		clone->SetModel(m_Model); // Share the model (okay if it's not mutated)
+		//clone->NewID(); // Give it a unique ID
+
+		return clone;
+	}
+
 	void GameObject::DrawUI(float deltaTime)
 	{
 		ImGui::Begin("Info");
@@ -48,8 +59,6 @@ namespace Ethereal
 			static_cast<float>(rand() % 2000 - 1000),
 			static_cast<float>(rand() % 2000 - 1000)
 		);
-		// Set random move speed between 10 and 150 units per second
-		m_Speed = static_cast<float>(rand() % 140 + 10);
 	}
 
 	void GameObject::PickNewRandomRotation()
@@ -74,10 +83,13 @@ namespace Ethereal
 		MoveTo(DirectX::XMFLOAT3(x, y, z));
 	}
 
-	void GameObject::Move(float deltaTime)
+	void GameObject::Move(float deltaTime, float moveSpeed, float rotatationSpeed)
 	{
 		if (!m_CanMove)
 			return;
+
+		
+		m_RotationSpeed = rotatationSpeed;
 
 		m_IsMoving = true;
 		using namespace DirectX;
@@ -90,6 +102,7 @@ namespace Ethereal
 		if (distance < 1.0f) // Close enough, pick a new target
 		{
 			PickNewTarget();
+			m_Speed = moveSpeed;
 		}
 		else
 		{
@@ -107,6 +120,11 @@ namespace Ethereal
 		m_IsMoving = false;
 		XMFLOAT3 currentPos = m_Transform.GetPosition();
 		m_TargetPosition = currentPos; // Set target to current position to stop movement logic
+	}
+
+	std::string GameObject::GetTypeName()
+	{
+
 	}
 
 }

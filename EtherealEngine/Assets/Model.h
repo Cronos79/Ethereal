@@ -18,7 +18,6 @@ namespace Ethereal
 		Model(std::vector<std::shared_ptr<Material>> materials, std::vector<std::shared_ptr<Mesh>> meshes);
 		virtual ~Model();
 
-		void TEMPSetup(); // Temporary function for setting up input layout and constant buffer
 		bool LoadFromFile(const std::string& path); //Assimp loading
 
 		ID3D11InputLayout* GetInputLayout()

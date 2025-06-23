@@ -190,6 +190,7 @@
     <ClCompile Include="UI\EditorGui.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Assets\AssetFactory.h" />
     <ClInclude Include="Assets\GameConfig.h" />
     <ClInclude Include="Assets\GameObject.h" />
     <ClInclude Include="Assets\Material.h" />

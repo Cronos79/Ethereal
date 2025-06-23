@@ -9,4 +9,7 @@ public:
 
 	virtual void Update(float deltaTime) override;
 	virtual void DrawUI(float deltaTime) override;
+
+	std::shared_ptr<Ethereal::GameObject> Clone() const override;
+
 };
