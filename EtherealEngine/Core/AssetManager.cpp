@@ -126,7 +126,6 @@ namespace Ethereal
 
 	bool AssetManager::LoadGameObject(const std::string& name)
 	{
-		// Already loaded?
 		if (m_Assets.find(name) != m_Assets.end())
 			return true;
 
@@ -149,18 +148,16 @@ namespace Ethereal
 		nlohmann::json j;
 		file >> j;
 
-		std::shared_ptr<GameObject> gameObject;
-
 		std::string type = j.value("type", "GameObject");
-		if (m_GameObjectFactory)
-			gameObject = m_GameObjectFactory(type);
-
+		auto gameObject = GameObject::CreateByType(type);
 		if (!gameObject)
+		{
+			LOG_WARN("GameObject type '{}' not found, using base GameObject.", type);
 			gameObject = std::make_shared<GameObject>();
-
+		}
+		gameObject->SetTypeName(type);   //m_TypeName = type;
 		gameObject->SetName(j.value("name", name));
 
-		// Load model
 		std::string modelName = j.value("model", "");
 		if (!LoadModel(modelName))
 		{
@@ -172,14 +169,13 @@ namespace Ethereal
 			gameObject->SetModel(model);
 		}
 
-		// Set transform
 		if (j.contains("transform"))
 		{
 			const auto& t = j["transform"];
 			gameObject->SetTransform(
-				DirectX::XMFLOAT3(t["position"][0], t["position"][1], t["position"][2]),
-				DirectX::XMFLOAT3(t["rotation"][0], t["rotation"][1], t["rotation"][2]),
-				DirectX::XMFLOAT3(t["scale"][0], t["scale"][1], t["scale"][2])
+				{ t["position"][0], t["position"][1], t["position"][2] },
+				{ t["rotation"][0], t["rotation"][1], t["rotation"][2] },
+				{ t["scale"][0], t["scale"][1], t["scale"][2] }
 			);
 		}
 
@@ -187,6 +183,70 @@ namespace Ethereal
 		LOG_INFO("Loaded GameObject '{}'", name);
 		return true;
 	}
+
+	//bool AssetManager::LoadGameObject(const std::string& name)
+	//{
+	//	// Already loaded?
+	//	if (m_Assets.find(name) != m_Assets.end())
+	//		return true;
+
+	//	auto it = m_Registry.find(name);
+	//	if (it == m_Registry.end())
+	//	{
+	//		LOG_ERROR("GameObject '{}' not found in registry.", name);
+	//		return false;
+	//	}
+
+	//	std::filesystem::path fullPath = GetAssetsDirectory() / it->second;
+
+	//	std::ifstream file(fullPath);
+	//	if (!file.is_open())
+	//	{
+	//		LOG_ERROR("Failed to open GameObject file: {}", fullPath.string());
+	//		return false;
+	//	}
+
+	//	nlohmann::json j;
+	//	file >> j;
+
+	//	std::shared_ptr<GameObject> gameObject;
+
+	//	std::string type = j.value("type", "GameObject");
+	//	if (m_GameObjectFactory)
+	//		gameObject = m_GameObjectFactory(type);
+
+	//	if (!gameObject)
+	//		gameObject = std::make_shared<GameObject>();
+
+	//	gameObject->SetName(j.value("name", name));
+
+	//	// Load model
+	//	std::string modelName = j.value("model", "");
+	//	if (!LoadModel(modelName))
+	//	{
+	//		LOG_WARN("Model '{}' for GameObject '{}' could not be loaded", modelName, name);
+	//	}
+	//	else
+	//	{
+	//		auto model = Get<Model>(modelName);
+	//		gameObject->SetModel(model);
+	//	}
+
+	//	// Set transform
+	//	if (j.contains("transform"))
+	//	{
+	//		const auto& t = j["transform"];
+	//		gameObject->SetTransform(
+	//			DirectX::XMFLOAT3(t["position"][0], t["position"][1], t["position"][2]),
+	//			DirectX::XMFLOAT3(t["rotation"][0], t["rotation"][1], t["rotation"][2]),
+	//			DirectX::XMFLOAT3(t["scale"][0], t["scale"][1], t["scale"][2])
+	//		);
+	//	}
+
+	//	m_Assets[name] = gameObject;
+	//	LOG_INFO("Loaded GameObject '{}'", name);
+	//	return true;
+	//}
 
 	void AssetManager::RegisterGameObjectFactory(GameObjectFactoryFunc factory)
 	{

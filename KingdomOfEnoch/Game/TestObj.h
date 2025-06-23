@@ -5,11 +5,8 @@ class TestObj : public Ethereal::GameObject
 {
 public:
 	TestObj();
-	~TestObj();
+	virtual ~TestObj() = default;
 
 	virtual void Update(float deltaTime) override;
 	virtual void DrawUI(float deltaTime) override;
-
-	std::shared_ptr<Ethereal::GameObject> Clone() const override;
-
 };

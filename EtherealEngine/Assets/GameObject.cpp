@@ -5,6 +5,7 @@
 
 namespace Ethereal
 {
+	static std::unordered_map<std::string, GameObject::GameObjectFactoryFunc> s_GameObjectFactory;
 	int32_t GameObject::s_NextID = 0;
 
 	GameObject::GameObject()
@@ -24,14 +25,32 @@ namespace Ethereal
 
 	}
 
+	void GameObject::RegisterType(const std::string& typeName, GameObjectFactoryFunc factory)
+	{
+		s_GameObjectFactory[typeName] = factory;
+	}
+
+	std::shared_ptr<GameObject> GameObject::CreateByType(const std::string& typeName)
+	{
+		auto it = s_GameObjectFactory.find(typeName);
+		if (it != s_GameObjectFactory.end())
+			return it->second();
+		return nullptr;
+	}
+
 	std::shared_ptr<GameObject> GameObject::Clone() const
 	{
-		auto clone = std::make_shared<GameObject>();
+		auto clone = CreateByType(m_TypeName);
+		if (!clone)
+		{
+			LOG_WARN("Clone failed, falling back to GameObject");
+			clone = std::make_shared<GameObject>();
+		}
+
 		clone->SetName(m_Name);
 		clone->SetTransform(m_Transform);
-		clone->SetModel(m_Model); // Share the model (okay if it's not mutated)
-		//clone->NewID(); // Give it a unique ID
-
+		clone->SetModel(m_Model);
+		clone->m_TypeName = m_TypeName;
 		return clone;
 	}
 
@@ -49,7 +68,6 @@ namespace Ethereal
 
 	void GameObject::Update(float deltaTime)
 	{
-		LOG_INFO("Updating GameObject: %s", m_Name.c_str());
 	}
 
 	void GameObject::PickNewTarget()
@@ -121,10 +139,4 @@ namespace Ethereal
 		XMFLOAT3 currentPos = m_Transform.GetPosition();
 		m_TargetPosition = currentPos; // Set target to current position to stop movement logic
 	}
-
-	std::string GameObject::GetTypeName()
-	{
-
-	}
-
 }

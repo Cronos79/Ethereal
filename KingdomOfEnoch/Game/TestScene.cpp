@@ -20,7 +20,6 @@ TestScene::TestScene(const std::string& name)
 	for (int i = 0; i < 200; i++)
 	{
 		auto clone = original->Clone();
-		clone->SetPosition({ (float)i * 2.0f, 0.0f, 0.0f }); // Optional: stagger positions
 		AddGameObject(clone);
 
 		LOG_INFO("Test scene loaded game obj {}", clone->GetName());

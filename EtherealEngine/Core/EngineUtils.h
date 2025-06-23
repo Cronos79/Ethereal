@@ -53,3 +53,8 @@ inline const char* ShaderTypeToString(Ethereal::ShaderType type)
 	default:                          return "UNKNOWN_SHADER";
 	}
 }
+
+inline float RandomFloatRange(float min, float max)
+{
+	return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
+}

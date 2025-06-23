@@ -1,15 +1,10 @@
 #pragma once
-#include "Core/EtherealIncludes.h"
-#include "Assets/IAsset.h"
-#include <wrl/client.h>
-#include <d3d11.h>
 #include <memory>
-#include "Shaders.h"
-#include "Material.h"
-#include "Mesh.h"
 #include <stdint.h>
 #include "Model.h"
 #include "Transform.h"
+#include "Assets/IAsset.h"
+#include "Core/EtherealIncludes.h"
 
 namespace Ethereal
 {
@@ -19,6 +14,16 @@ namespace Ethereal
 		GameObject();
 		GameObject(const std::string& name);
 		~GameObject();
+
+		using GameObjectFactoryFunc = std::function<std::shared_ptr<GameObject>()>;
+
+		static void RegisterType(const std::string& typeName, GameObjectFactoryFunc factory);
+		static std::shared_ptr<GameObject> CreateByType(const std::string& typeName);
+
+		virtual std::string GetTypeName()
+		{
+			return m_TypeName;
+		}
 
 		virtual std::shared_ptr<GameObject> Clone() const;
 
@@ -35,8 +40,6 @@ namespace Ethereal
 		void StopMoving();
 		
 		// Assessors
-		virtual std::string GetTypeName();
-
 		bool IsVisible() const
 		{
 			return m_IsVisible;
@@ -149,6 +152,16 @@ namespace Ethereal
 		{
 			m_Transform.AddScale(DirectX::XMFLOAT3(deltaX, deltaY, deltaZ));
 		}
+
+
+		void SetTypeName(const std::string& typeName)
+		{
+			m_TypeName = typeName;
+		}
+		const std::string& GetTypeName() const
+		{
+			return m_TypeName;
+		}
 	protected:
 		DirectX::XMFLOAT3 m_TargetPosition;
 		DirectX::XMFLOAT3 m_RndRotation;
@@ -162,5 +175,6 @@ namespace Ethereal
 		int32_t m_ID = 0;
 		static int32_t s_NextID;
 		Transform m_Transform;
+		std::string m_TypeName = "GameObject";
 	};
 }
