@@ -299,8 +299,8 @@ namespace Ethereal
 			std::shared_ptr<Material> material;
 			if (materials.size() == 1)
 				material = materials[0];
-			/*else if (mesh->GetMaterialIndex() < materials.size())
-				material = materials[mesh->GetMaterialIndex()];*/ // #TODO: Mesh material index
+			else if (mesh->GetMaterialIndex() < materials.size())
+				material = materials[mesh->GetMaterialIndex()];
 			else
 				material = nullptr;
 

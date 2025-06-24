@@ -46,7 +46,15 @@ namespace Ethereal
 
 			material->SetVertexShaderName(m_VertexShaderName);
 			material->SetPixelShaderName(m_PixelShaderName);
-			material->SetDiffuseTexturePath(m_DiffuseTexturePath);
+			//material->SetDiffuseTexturePath(m_DiffuseTexturePath);
+			// TEST CODE
+			if (i == 0)
+				material->SetDiffuseTexturePath("Textures/Test.png");
+			else if (i == 1)
+				material->SetDiffuseTexturePath("Textures/Mushroom.png");
+			else
+				material->SetDiffuseTexturePath(m_DiffuseTexturePath);
+
 			if (!material->Initialize())
 			{
 				LOG_ERROR("Failed to initialize material for model: {}", path);
