@@ -16,6 +16,7 @@ namespace Ethereal
 		std::string vertexShader = "VertexShader";
 		std::string pixelShader = "PixelShader";
 		std::string diffuseTexture = "Textures/UV.png";
+		std::string normalTexture = "";
 		nlohmann::json inputLayout;
 	};
 
@@ -27,7 +28,7 @@ namespace Ethereal
 
 		// Setters
 		void SetDiffuseTexturePath(const std::string& path);
-		void SetNormalTextureName(const std::string& name);
+		void SetNormalTexturePath(const std::string& path);
 		void SetSpecularTextureName(const std::string& name);
 		void SetMetallicTextureName(const std::string& name);
 		void SetRoughnessTextureName(const std::string& name);
@@ -73,7 +74,7 @@ namespace Ethereal
 		nlohmann::json m_InputLayoutJson;
 
 		std::string m_DiffuseTexturePath;
-		std::string m_NormalTextureName;
+		std::string m_NormalTexturePath;
 		std::string m_SpecularTextureName;
 		std::string m_MetallicTextureName;
 		std::string m_RoughnessTextureName;

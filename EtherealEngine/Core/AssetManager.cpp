@@ -146,6 +146,7 @@ namespace Ethereal
 					mat.vertexShader = matJson.value("vertexShader", "VertexShader");
 					mat.pixelShader = matJson.value("pixelShader", "PixelShader");
 					mat.diffuseTexture = matJson.value("diffuseTexture", "Textures/UV.png");
+					mat.normalTexture = matJson.value("normalTexture", "");
 
 					if (matJson.contains("inputLayout"))
 						mat.inputLayout = matJson["inputLayout"];

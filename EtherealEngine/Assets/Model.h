@@ -80,6 +80,7 @@ namespace Ethereal
 		std::string m_VertexShaderName = "VertexShader";
 		std::string m_PixelShaderName = "PixelShader";
 		std::string m_DiffuseTexturePath = "Textures/Test.png";
+		std::string m_NormalTexturePath = "Textures/Normal.png";
 		std::unordered_map<int, MaterialOverride> m_MaterialOverrides;
 	};
 }

@@ -15,9 +15,9 @@ namespace Ethereal
 		m_DiffuseTexturePath = path;
 	}
 
-	void Material::SetNormalTextureName(const std::string& name)
+	void Material::SetNormalTexturePath(const std::string& path)
 	{
-		m_NormalTextureName = name;
+		m_NormalTexturePath = path;
 	}
 
 	void Material::SetSpecularTextureName(const std::string& name)
@@ -101,9 +101,9 @@ namespace Ethereal
 				return false;
 			}
 		}
-		if (!m_NormalTextureName.empty())
+		if (!m_NormalTexturePath.empty())
 		{
-			std::filesystem::path texturePath = GetAssetsDirectory() / m_NormalTextureName;
+			std::filesystem::path texturePath = GetAssetsDirectory() / m_NormalTexturePath;
 			HRESULT hr = DirectX::CreateWICTextureFromFile(device, StringToWChar(texturePath.string()).c_str(), nullptr, m_NormalTextureView.GetAddressOf());
 			if (FAILED(hr))
 			{

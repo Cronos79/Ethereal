@@ -50,6 +50,7 @@ namespace Ethereal
 				material->SetVertexShaderName(ovr->second.vertexShader);
 				material->SetPixelShaderName(ovr->second.pixelShader);
 				material->SetDiffuseTexturePath(ovr->second.diffuseTexture);
+				material->SetNormalTexturePath(ovr->second.normalTexture);
 				material->SetInputLayoutJson(ovr->second.inputLayout);
 			}
 			else
@@ -57,6 +58,7 @@ namespace Ethereal
 				material->SetVertexShaderName(m_VertexShaderName);
 				material->SetPixelShaderName(m_PixelShaderName);
 				material->SetDiffuseTexturePath(m_DiffuseTexturePath);
+				material->SetNormalTexturePath(m_NormalTexturePath);
 			}
 
 			if (!material->Initialize())

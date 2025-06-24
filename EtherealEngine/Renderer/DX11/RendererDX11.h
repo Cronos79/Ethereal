@@ -77,5 +77,7 @@ namespace Ethereal
 
 		Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState;	
 		Microsoft::WRL::ComPtr<ID3D11BlendState> m_BlendState;
+
+		ConstantBuffer<CB_PS_Light> m_LightBuffer;
 	};
 }
