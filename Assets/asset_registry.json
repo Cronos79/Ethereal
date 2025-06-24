@@ -1,0 +1,8 @@
+{
+    "GameConfig": "Configs/GameConfig.json",
+    "TestModel": "Models/TestCube.json",
+    "VertexShader": "Shaders/VertexShader.cso",
+    "PixelShader": "Shaders/PixelShader.cso",
+    "Texture": "Textures/Test.png",
+    "TestCube": "GameObjects/TestCube.json"
+}

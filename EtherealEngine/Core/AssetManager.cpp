@@ -147,6 +147,9 @@ namespace Ethereal
 					mat.pixelShader = matJson.value("pixelShader", "PixelShader");
 					mat.diffuseTexture = matJson.value("diffuseTexture", "Textures/UV.png");
 
+					if (matJson.contains("inputLayout"))
+						mat.inputLayout = matJson["inputLayout"];
+
 					model->SetMaterialOverride(id, mat);
 				}
 			}

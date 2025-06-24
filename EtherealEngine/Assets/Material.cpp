@@ -4,6 +4,7 @@
 #include "Renderer/DX11/RendererDX11.h"
 #include "Core/EngineUtils.h"
 #include <WICTextureLoader.h>
+#include <cstring>
 
 namespace Ethereal
 {
@@ -49,6 +50,11 @@ namespace Ethereal
 		m_PixelShaderName = name;
 	}
 
+	void Material::SetInputLayoutJson(const nlohmann::json& json)
+	{
+		m_InputLayoutJson = json;
+	}
+
 	bool Material::Initialize()
 	{	
 		if (!ResolveShaders())
@@ -66,6 +72,12 @@ namespace Ethereal
 		if (FAILED(hr))
 		{
 			LOG_ERROR("Failed to initialize pixel shader constant buffer: {}", hr);
+			return false;
+		}
+
+		if (!BuildInputLayoutFromJson())
+		{
+			LOG_ERROR("Failed to build input layout from JSON");
 			return false;
 		}
 
@@ -124,6 +136,72 @@ namespace Ethereal
 			return false;
 		}
 		m_PixelBlob = m_PixelShaderAsset->GetPixelShaderBuffer();
+		return true;
+	}
+
+	bool Material::BuildInputLayoutFromJson()
+	{
+		std::vector<D3D11_INPUT_ELEMENT_DESC> layoutDesc;
+		std::vector<std::string> stableNames;
+		stableNames.reserve(m_InputLayoutJson.size()); // avoid reallocations
+
+		if (!m_InputLayoutJson.empty())
+		{
+			for (const auto& elem : m_InputLayoutJson)
+			{
+				D3D11_INPUT_ELEMENT_DESC desc = {};
+
+				// Push string and immediately get pointer
+				stableNames.emplace_back(elem.value("semantic", "POSITION"));
+				const char* semanticCStr = stableNames.back().c_str();
+				desc.SemanticName = semanticCStr;
+
+				desc.SemanticIndex = elem.value("index", 0);
+				desc.Format = FormatStringToDXGI(elem.value("format", "R32G32B32_FLOAT"));
+				desc.InputSlot = 0;
+
+				int offset = elem.value("offset", -1);
+				desc.AlignedByteOffset = (offset == -1) ? D3D11_APPEND_ALIGNED_ELEMENT : static_cast<UINT>(offset);
+
+				desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+				desc.InstanceDataStepRate = 0;
+
+				layoutDesc.push_back(desc);
+			}
+		}
+		else
+		{
+			layoutDesc = {
+				{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+				{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+				{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+			};
+		}
+
+		if (!CreateInputLayout(layoutDesc))
+		{
+			LOG_ERROR("Failed to create input layout");
+			return false;
+		}
+		return true;
+	}
+
+	bool Material::CreateInputLayout(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layoutDesc)
+	{
+		auto vertexShaderBlob = GetVertexShader()->GetVertexShaderBuffer();
+		ID3D11Device* device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());
+		HRESULT hr = device->CreateInputLayout(
+			layoutDesc.data(),
+			static_cast<UINT>(layoutDesc.size()),
+			vertexShaderBlob->GetBufferPointer(),
+			vertexShaderBlob->GetBufferSize(),
+			&m_InputLayout
+		);
+		if (FAILED(hr))
+		{
+			LOG_ERROR("Failed to create input layout: {}", hr);
+			return false;
+		}
 		return true;
 	}
 

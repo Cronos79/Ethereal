@@ -266,8 +266,7 @@ namespace Ethereal
 	{
 		auto& model = obj->GetModel();
 
-		// --- Set once per model ---
-		m_Context->IASetInputLayout(model.GetInputLayout());
+		// --- Set once per model ---	
 		m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_Context->RSSetState(m_RasterizerState.Get());
 		m_Context->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
@@ -305,6 +304,8 @@ namespace Ethereal
 				material = nullptr;
 
 			if (!material) continue;
+
+			m_Context->IASetInputLayout(material->GetInputLayout());
 
 			// Set shaders and resources for this material
 			m_Context->VSSetShader(material->GetVertexShader()->GetVertexShader(), NULL, 0);

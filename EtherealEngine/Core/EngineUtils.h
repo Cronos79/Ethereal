@@ -5,6 +5,7 @@
 #include <locale>
 #include <codecvt>
 #include "Assets/Shaders.h"
+#include "Platform/EEWinIncludes.h"
 
 inline std::filesystem::path GetExecutableDirectory()
 {
@@ -57,4 +58,13 @@ inline const char* ShaderTypeToString(Ethereal::ShaderType type)
 inline float RandomFloatRange(float min, float max)
 {
 	return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
+}
+
+inline DXGI_FORMAT FormatStringToDXGI(const std::string& formatStr)
+{
+	if (formatStr == "R32G32B32_FLOAT") return DXGI_FORMAT_R32G32B32_FLOAT;
+	if (formatStr == "R32G32_FLOAT")    return DXGI_FORMAT_R32G32_FLOAT;
+	if (formatStr == "R8G8B8A8_UNORM")  return DXGI_FORMAT_R8G8B8A8_UNORM;
+	// Add more as needed
+	throw std::runtime_error("Unknown DXGI format: " + formatStr);
 }

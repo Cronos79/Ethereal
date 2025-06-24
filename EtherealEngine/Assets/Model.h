@@ -18,11 +18,7 @@ namespace Ethereal
 		virtual ~Model() = default;
 
 		bool LoadFromFile(const std::string& path); //Assimp loading
-
-		ID3D11InputLayout* GetInputLayout()
-		{
-			return m_InputLayout.Get();
-		}
+	
 		ConstantBuffer<CB_VS_vertexshader>& GetConstantBuffer()
 		{
 			return m_ConstantBuffer;
@@ -82,13 +78,13 @@ namespace Ethereal
 		}
 	
 	private:
-		bool CreateInputLayout(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layoutDesc);
+		
 		bool CreateConstantBuffer();	
 
 	private:
 		std::vector<std::shared_ptr<Material>> m_Materials;
 		std::vector<std::shared_ptr<Mesh>> m_Meshes;
-		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_InputLayout;
+		
 		ConstantBuffer<CB_VS_vertexshader> m_ConstantBuffer;
 		std::string m_TextureName = "Texture"; // Default texture name for materials without a specified texture
 		std::string m_VertexShaderName = "VertexShader"; // Default vertex shader name

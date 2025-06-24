@@ -50,6 +50,7 @@ namespace Ethereal
 				material->SetVertexShaderName(ovr->second.vertexShader);
 				material->SetPixelShaderName(ovr->second.pixelShader);
 				material->SetDiffuseTexturePath(ovr->second.diffuseTexture);
+				material->SetInputLayoutJson(ovr->second.inputLayout);
 			}
 			else
 			{
@@ -114,19 +115,7 @@ namespace Ethereal
 
 			LOG_INFO("Loaded mesh '{}' with {} vertices, {} indices, material {}",
 				mesh->GetName(), mesh->GetVertices().size(), mesh->GetIndices().size(), mesh->GetMaterialIndex());
-		}
-
-		D3D11_INPUT_ELEMENT_DESC layout[] = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-		};
-
-		if (!CreateInputLayout(std::vector<D3D11_INPUT_ELEMENT_DESC>(std::begin(layout), std::end(layout))))
-		{
-			LOG_ERROR("Failed to create input layout");
-			return false;
-		}
+		}	
 
 		if(!CreateConstantBuffer())
 		{
@@ -137,25 +126,6 @@ namespace Ethereal
 
 		LOG_INFO("Model '{}' loaded with {} mesh(es)", path, m_Meshes.size());
 
-		return true;
-	}
-
-	bool Model::CreateInputLayout(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layoutDesc)
-	{
-		auto vertexShaderBlob = m_Materials[0]->GetVertexShader()->GetVertexShaderBuffer();
-		ID3D11Device* device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());
-		HRESULT hr = device->CreateInputLayout(
-			layoutDesc.data(),
-			static_cast<UINT>(layoutDesc.size()),
-			vertexShaderBlob->GetBufferPointer(),
-			vertexShaderBlob->GetBufferSize(),
-			&m_InputLayout
-		);
-		if (FAILED(hr))
-		{
-			LOG_ERROR("Failed to create input layout: {}", hr);
-			return false;
-		}
 		return true;
 	}
 

@@ -7,6 +7,7 @@
 #include "Shaders.h"
 #include "Renderer/DX11/Vertex.h"
 #include "Renderer/DX11/ConstantBuffer.h"
+#include <nlohmann/json.hpp>
 
 namespace Ethereal
 {
@@ -16,6 +17,7 @@ namespace Ethereal
 		std::string vertexShader = "VertexShader";
 		std::string pixelShader = "PixelShader";
 		std::string diffuseTexture = "Textures/UV.png";
+		nlohmann::json inputLayout;
 	};
 
 	class ETHEREAL_API Material : public IAsset
@@ -33,10 +35,14 @@ namespace Ethereal
 		void SetDiffuseColor(const DirectX::XMFLOAT3& color);
 		void SetVertexShaderName(const std::string& name);
 		void SetPixelShaderName(const std::string& name);
+		void SetInputLayoutJson(const nlohmann::json& json);
+	
 
 		bool Initialize();	
 		bool ResolveTextures();
 		bool ResolveShaders();
+		bool BuildInputLayoutFromJson();
+		bool CreateInputLayout(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layoutDesc);
 
 		// Assessors 
 		Shaders* GetVertexShader()
@@ -52,6 +58,10 @@ namespace Ethereal
 		{
 			return m_PSConstantBuffer;
 		}
+		ID3D11InputLayout* GetInputLayout()
+		{
+			return m_InputLayout.Get();
+		}
 
 		const std::string& GetDiffuseTexturePath() const;
 		ID3D11ShaderResourceView* GetDiffuseTexture() const;
@@ -61,6 +71,8 @@ namespace Ethereal
 		ID3D11ShaderResourceView* GetRoughnessTexture() const;
 		const DirectX::XMFLOAT3& GetDiffuseColor() const;
 	private:
+		nlohmann::json m_InputLayoutJson;
+
 		std::string m_DiffuseTexturePath;
 		std::string m_NormalTextureName;
 		std::string m_SpecularTextureName;
@@ -83,5 +95,6 @@ namespace Ethereal
 		std::string m_PixelShaderName;
 
 		ConstantBuffer<CB_PS_pixelshader> m_PSConstantBuffer;
+		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_InputLayout;
 	};
 }
