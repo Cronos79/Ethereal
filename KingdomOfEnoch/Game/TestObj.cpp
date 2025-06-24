@@ -4,7 +4,7 @@
 #include "Core/Logger.h"
 #include "Core/EngineUtils.h"
 
-REGISTER_GAMEOBJECT_TYPE(TestObj);
+REGISTER_GAMEOBJECT_TYPE(TestObj);  // Enables factory-based creation from JSON/type strings
 
 TestObj::TestObj()
 	: GameObject("TestObj")

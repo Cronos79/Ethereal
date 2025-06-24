@@ -46,8 +46,9 @@ namespace Ethereal
 			LOG_WARN("Clone failed, falling back to GameObject");
 			clone = std::make_shared<GameObject>();
 		}
-
-		clone->SetName(m_Name);
+		
+		std::string fullName = m_Name + "_" + std::to_string(clone->m_ID);
+		clone->SetName(fullName);
 		clone->SetTransform(m_Transform);
 		clone->SetModel(m_Model);
 		clone->m_TypeName = m_TypeName;

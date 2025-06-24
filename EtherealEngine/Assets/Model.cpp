@@ -73,7 +73,11 @@ namespace Ethereal
 
 			material->SetVertexShaderName(m_VertexShaderName);
 			material->SetPixelShaderName(m_PixelShaderName);
-			material->Initialize();
+			if (!material->Initialize())
+			{
+				LOG_ERROR("Failed to initialize material for model: {}", path);
+				return false;
+			}
 			m_Materials.push_back(material);
 		}
 

@@ -50,8 +50,14 @@ namespace Ethereal
 
 	bool Material::Initialize()
 	{	
-		ResolveShaders();
-		ResolveTextures();		
+		if (!ResolveShaders())
+		{
+			return false;
+		}
+		if (!ResolveTextures())
+		{
+			return false;
+		}
 	
 		ID3D11Device* device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());
 		ID3D11DeviceContext* context = static_cast<ID3D11DeviceContext*>(EEContext::Get().GetContext());
@@ -89,10 +95,20 @@ namespace Ethereal
 
 		// Get the Vertex shader from the asset manager
 		m_VertexShaderAsset = EEContext::Get().GetAssetManager().Get<Shaders>(m_VertexShaderName);
+		if (!m_VertexShaderAsset)
+		{
+			LOG_ERROR("Vertex shader '{}' not loaded", m_VertexShaderName);
+			return false;
+		}
 		m_VertexBlob = m_VertexShaderAsset->GetVertexShaderBuffer();
 
 		// Get the Pixel shader from the asset manager
 		m_PixelShaderAsset = EEContext::Get().GetAssetManager().Get<Shaders>(m_PixelShaderName);
+		if (!m_PixelShaderAsset)
+		{
+			LOG_ERROR("Pixel shader '{}' not loaded", m_PixelShaderName);
+			return false;
+		}
 		m_PixelBlob = m_PixelShaderAsset->GetPixelShaderBuffer();
 		return true;
 	}

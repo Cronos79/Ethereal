@@ -62,6 +62,15 @@ namespace Ethereal
 		{
 			return (index < m_Meshes.size()) ? m_Meshes[index] : nullptr;
 		}
+
+		void SetVertexShaderName(const std::string& name)
+		{
+			m_VertexShaderName = name;
+		}
+		void SetPixelShaderName(const std::string& name)
+		{
+			m_PixelShaderName = name;
+		}
 	
 	private:
 		bool CreateInputLayout(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layoutDesc);
