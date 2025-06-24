@@ -3,13 +3,14 @@
   "materials": [
     {
       "ID": 0,
-      "vertexShader": "VertexShader",
-      "pixelShader": "PixelShader",
-      "diffuseTexture": "Textures/Mushroom.png",
+      "vertexShader": "PBR_VS",
+      "pixelShader": "PBR_PS",
+      "diffuseTexture": "Textures/UV.png",
         "inputLayout": [
-        { "semantic": "POSITION", "index": 0, "format": "R32G32B32_FLOAT", "offset": 0 },
-        { "semantic": "NORMAL", "index": 0, "format": "R32G32B32_FLOAT", "offset": -1 },
-        { "semantic": "TEXCOORD", "index": 0, "format": "R32G32_FLOAT", "offset": -1 }
+           { "semantic": "POSITION", "format": "R32G32B32_FLOAT", "index": 0 },
+           { "semantic": "NORMAL",   "format": "R32G32B32_FLOAT", "index": 0 },
+           { "semantic": "TEXCOORD", "format": "R32G32_FLOAT",    "index": 0 },
+           { "semantic": "TANGENT",  "format": "R32G32B32_FLOAT", "index": 0 }
       ]
     },
     {

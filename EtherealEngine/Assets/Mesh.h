@@ -1,13 +1,13 @@
 #pragma once
 #include "Core/EtherealIncludes.h"
 #include "Assets/IAsset.h"
+#include "Renderer/DX11/VertexBuffer.h"
+#include "Renderer/DX11/IndexBuffer.h"
+#include "Renderer/DX11/VertexBufferLayout.h"
 #include <wrl/client.h>
 #include <d3d11.h>
 #include <memory>
-#include "Shaders.h"
-#include "Renderer/DX11/Vertex.h"
-#include "Renderer/DX11/VertexBuffer.h"
-#include "Renderer/DX11/IndexBuffer.h"
+#include <vector>
 
 namespace Ethereal
 {
@@ -15,13 +15,10 @@ namespace Ethereal
 	{
 	public:
 		Mesh() = default;
-		Mesh(const std::string& name,
-			const std::vector<Vertex>& vertices,
-			const std::vector<uint32_t>& indices,
-			uint32_t materialIndex = 0);
 		~Mesh() = default;
-		bool Initialize(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices); // copy
-		bool Initialize(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices);
+
+		bool Initialize(const std::vector<uint8_t>& vertexData, const VertexBufferLayout& layout, const std::vector<uint32_t>& indices);
+		bool Initialize(std::vector<uint8_t>&& vertexData, VertexBufferLayout&& layout, std::vector<uint32_t>&& indices);
 		void UploadToGPU();
 
 		ID3D11Buffer* GetVertexBuffer() const
@@ -32,24 +29,13 @@ namespace Ethereal
 		{
 			return m_VertexBuffer.StridePtr();
 		}
-
 		ID3D11Buffer* GetIndexBuffer() const
 		{
 			return m_IndexBuffer.Get();
 		}
-
 		UINT GetIndexCount() const
 		{
 			return m_IndexBuffer.IndexCount();
-		}	
-
-		inline std::vector<Vertex>& GetVertices()
-		{
-			return m_Vertices;
-		}
-		inline std::vector<uint32_t>& GetIndices()
-		{
-			return m_Indices;
 		}
 
 		void SetName(const std::string& name)
@@ -60,6 +46,7 @@ namespace Ethereal
 		{
 			return m_Name;
 		}
+
 		void SetMaterialIndex(uint32_t index)
 		{
 			m_MaterialIndex = index;
@@ -69,12 +56,28 @@ namespace Ethereal
 			return m_MaterialIndex;
 		}
 
-	private:		
-		VertexBuffer<Vertex> m_VertexBuffer;
-		IndexBuffer m_IndexBuffer;	
-		std::vector<Vertex> m_Vertices;
-		std::vector<uint32_t> m_Indices;
-		uint32_t m_MaterialIndex = 0;
+		std::vector<uint32_t>& GetIndices()
+		{
+			return m_Indices;
+		}
+		const VertexBufferLayout& GetLayout() const
+		{
+			return m_VertexLayout;
+		}
+		const std::vector<uint8_t>& GetVertexData() const
+		{
+			return m_VertexData;
+		}
+
+	private:
 		std::string m_Name;
+		uint32_t m_MaterialIndex = 0;
+
+		std::vector<uint8_t> m_VertexData;
+		std::vector<uint32_t> m_Indices;
+		VertexBufferLayout m_VertexLayout;
+
+		VertexBuffer m_VertexBuffer;
+		IndexBuffer m_IndexBuffer;
 	};
 }

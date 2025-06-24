@@ -13,9 +13,15 @@ namespace Ethereal
 		void Build();
 		const std::vector<D3D11_INPUT_ELEMENT_DESC>& GetLayout() const;
 
+		UINT GetStride() const
+		{
+			return m_Stride;
+		}
+
 	private:
 		std::vector<VertexAttribute> m_Attributes;
 		std::vector<D3D11_INPUT_ELEMENT_DESC> m_Layout;
 		std::vector<std::string> m_SemanticNames; // owns strings for SemanticName pointers
+		UINT m_Stride = 0;
 	};
 }

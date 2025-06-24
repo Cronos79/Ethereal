@@ -1,8 +1,10 @@
 {
     "GameConfig": "Configs/GameConfig.json",
-    "TestModel": "Models/TestCube.json",
     "VertexShader": "Shaders/VertexShader.cso",
     "PixelShader": "Shaders/PixelShader.cso",
+    "PBR_VS": "Shaders/PBR_VS.cso",
+    "PBR_PS": "Shaders/PBR_PS.cso",
     "Texture": "Textures/Test.png",
+    "TestModel": "Models/TestCube.json",
     "TestCube": "GameObjects/TestCube.json"
 }

@@ -1,12 +1,12 @@
 #include "Model.h"
 #include "Core/Logger.h"
 #include "Core/EEContext.h"
+#include "Renderer/DX11/VertexBufferLayout.h"
 
 // Assimp
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-
 
 namespace Ethereal
 {
@@ -31,6 +31,7 @@ namespace Ethereal
 			return false;
 		}
 
+		// Load Materials
 		for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
 		{
 			const aiMaterial* aiMat = scene->mMaterials[i];
@@ -40,9 +41,8 @@ namespace Ethereal
 			aiColor3D color(1.0f, 1.0f, 1.0f);
 			if (AI_SUCCESS == aiMat->Get(AI_MATKEY_COLOR_DIFFUSE, color))
 			{
-				const DirectX::XMFLOAT3 colorF3(color.r, color.g, color.b);
-				material->SetDiffuseColor(colorF3);
-			}	
+				material->SetDiffuseColor({ color.r, color.g, color.b });
+			}
 
 			auto ovr = m_MaterialOverrides.find(i);
 			if (ovr != m_MaterialOverrides.end())
@@ -54,10 +54,9 @@ namespace Ethereal
 			}
 			else
 			{
-				// Use defaults if override not provided
-				material->SetVertexShaderName("VertexShader");
-				material->SetPixelShaderName("PixelShader");
-				material->SetDiffuseTexturePath("Textures/UV.png");
+				material->SetVertexShaderName(m_VertexShaderName);
+				material->SetPixelShaderName(m_PixelShaderName);
+				material->SetDiffuseTexturePath(m_DiffuseTexturePath);
 			}
 
 			if (!material->Initialize())
@@ -68,6 +67,7 @@ namespace Ethereal
 			m_Materials.push_back(material);
 		}
 
+		// Load Meshes
 		for (unsigned int m = 0; m < scene->mNumMeshes; ++m)
 		{
 			const aiMesh* assimpMesh = scene->mMeshes[m];
@@ -75,57 +75,75 @@ namespace Ethereal
 			mesh->SetName(assimpMesh->mName.C_Str());
 			mesh->SetMaterialIndex(assimpMesh->mMaterialIndex);
 
-			mesh->GetVertices().reserve(assimpMesh->mNumVertices);
+			VertexBufferLayout layout;
+			layout.AddAttribute(VertexAttributeType::Position, DXGI_FORMAT_R32G32B32_FLOAT, "POSITION");
+			bool hasNormals = assimpMesh->HasNormals();
+			bool hasTexCoords = assimpMesh->HasTextureCoords(0);
+			bool hasTangents = assimpMesh->HasTangentsAndBitangents();
+			if (hasNormals)
+				layout.AddAttribute(VertexAttributeType::Normal, DXGI_FORMAT_R32G32B32_FLOAT, "NORMAL");
+			if (hasTexCoords)
+				layout.AddAttribute(VertexAttributeType::TexCoord, DXGI_FORMAT_R32G32_FLOAT, "TEXCOORD");
+			if (hasTangents)
+				layout.AddAttribute(VertexAttributeType::Tangent, DXGI_FORMAT_R32G32B32_FLOAT, "TANGENT");
+
+			layout.Build();
+			UINT stride = layout.GetStride();
+
+			std::vector<uint8_t> vertexData(assimpMesh->mNumVertices * stride);
 			for (unsigned int i = 0; i < assimpMesh->mNumVertices; ++i)
 			{
-				Vertex vertex;
-				vertex.pos = DirectX::XMFLOAT3(
-					assimpMesh->mVertices[i].x,
-					assimpMesh->mVertices[i].y,
-					assimpMesh->mVertices[i].z
-				);
-				vertex.normal = DirectX::XMFLOAT3(
-					assimpMesh->mNormals[i].x,
-					assimpMesh->mNormals[i].y,
-					assimpMesh->mNormals[i].z
-				);
-				if (assimpMesh->HasTextureCoords(0))
+				uint8_t* dst = vertexData.data() + i * stride;
+
+				// Position
+				memcpy(dst, &assimpMesh->mVertices[i], sizeof(float) * 3);
+				UINT offset = sizeof(float) * 3;
+
+				if (hasNormals)
 				{
-					vertex.texCoord = DirectX::XMFLOAT2(
+					memcpy(dst + offset, &assimpMesh->mNormals[i], sizeof(float) * 3);
+					offset += sizeof(float) * 3;
+				}
+
+				if (hasTexCoords)
+				{
+					float uv[2] = {
 						assimpMesh->mTextureCoords[0][i].x,
 						assimpMesh->mTextureCoords[0][i].y
-					);
+					};
+					memcpy(dst + offset, uv, sizeof(float) * 2);
+					offset += sizeof(float) * 2;
 				}
-				else
+
+				if (hasTangents)
 				{
-					vertex.texCoord = DirectX::XMFLOAT2(0.0f, 0.0f);
+					memcpy(dst + offset, &assimpMesh->mTangents[i], sizeof(float) * 3);
+					offset += sizeof(float) * 3;
 				}
-				mesh->GetVertices().push_back(vertex);
 			}
 
+			std::vector<uint32_t> indices;
 			for (unsigned int i = 0; i < assimpMesh->mNumFaces; ++i)
 			{
 				const aiFace& face = assimpMesh->mFaces[i];
 				for (unsigned int j = 0; j < face.mNumIndices; ++j)
-					mesh->GetIndices().push_back(face.mIndices[j]);
+					indices.push_back(face.mIndices[j]);
 			}
 
-			mesh->Initialize(mesh->GetVertices(), mesh->GetIndices());
-			m_Meshes.push_back(mesh);			
+			mesh->Initialize(std::move(vertexData), std::move(layout), std::move(indices));
+			m_Meshes.push_back(mesh);
 
-			LOG_INFO("Loaded mesh '{}' with {} vertices, {} indices, material {}",
-				mesh->GetName(), mesh->GetVertices().size(), mesh->GetIndices().size(), mesh->GetMaterialIndex());
-		}	
+			LOG_INFO("Loaded mesh '{}' with {} verts, {} indices, material {}",
+				mesh->GetName(), assimpMesh->mNumVertices, indices.size(), mesh->GetMaterialIndex());
+		}
 
-		if(!CreateConstantBuffer())
+		if (!CreateConstantBuffer())
 		{
 			LOG_ERROR("Failed to create constant buffer for model: {}", path);
 			return false;
 		}
 
-
 		LOG_INFO("Model '{}' loaded with {} mesh(es)", path, m_Meshes.size());
-
 		return true;
 	}
 
@@ -140,5 +158,5 @@ namespace Ethereal
 			return false;
 		}
 		return true;
-	}	
+	}
 }

@@ -11,7 +11,7 @@ TestScene::TestScene(const std::string& name)
 	if (assetManager.LoadGameObject("TestCube"))
 	{
 		auto original = assetManager.Get<Ethereal::GameObject>("TestCube");
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 400; i++)
 		{
 			auto clone = original->Clone();
 			AddGameObject(clone);

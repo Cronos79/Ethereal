@@ -4,27 +4,19 @@
 
 namespace Ethereal
 {
-
-	Mesh::Mesh(const std::string& name, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices, uint32_t materialIndex /*= 0*/)
-		: m_Name(name),
-		m_Vertices(vertices),
-		m_Indices(indices),
-		m_MaterialIndex(materialIndex)
+	bool Mesh::Initialize(const std::vector<uint8_t>& vertexData, const VertexBufferLayout& layout, const std::vector<uint32_t>& indices)
 	{
-		Initialize(vertices, indices);
-	}
-
-	bool Mesh::Initialize(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
-	{
-		m_Vertices = vertices;
+		m_VertexData = vertexData;
+		m_VertexLayout = layout;
 		m_Indices = indices;
 		UploadToGPU();
 		return true;
 	}
 
-	bool Mesh::Initialize(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices)
+	bool Mesh::Initialize(std::vector<uint8_t>&& vertexData, VertexBufferLayout&& layout, std::vector<uint32_t>&& indices)
 	{
-		m_Vertices = std::move(vertices);
+		m_VertexData = std::move(vertexData);
+		m_VertexLayout = std::move(layout);
 		m_Indices = std::move(indices);
 		UploadToGPU();
 		return true;
@@ -33,10 +25,11 @@ namespace Ethereal
 	void Mesh::UploadToGPU()
 	{
 		ID3D11Device* device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());
-		if (!m_Vertices.empty() && !m_VertexBuffer.Get())
+
+		if (!m_VertexData.empty() && !m_VertexBuffer.Get())
 		{
-			LOG_INFO("Uploading vertex buffer with {} vertices", m_Vertices.size());
-			m_VertexBuffer.Initialize(device, m_Vertices.data(), (UINT)m_Vertices.size());
+			LOG_INFO("Uploading vertex buffer with {} bytes", m_VertexData.size());
+			m_VertexBuffer.Initialize(device, m_VertexData.data(), static_cast<UINT>(m_VertexData.size()), m_VertexLayout.GetStride());
 		}
 
 		if (!m_Indices.empty() && !m_IndexBuffer.Get())
@@ -45,5 +38,4 @@ namespace Ethereal
 			m_IndexBuffer.Initialize(device, reinterpret_cast<DWORD*>(m_Indices.data()), (UINT)m_Indices.size());
 		}
 	}
-
 }

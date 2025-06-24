@@ -5,7 +5,6 @@
 #include <d3d11.h>
 #include <memory>
 #include "Shaders.h"
-#include "Renderer/DX11/Vertex.h"
 #include "Renderer/DX11/ConstantBuffer.h"
 #include <nlohmann/json.hpp>
 

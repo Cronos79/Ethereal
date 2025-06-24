@@ -185,9 +185,6 @@
     <ClInclude Include="Renderer\DX11\AdapterReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer\DX11\Vertex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Assets\Shaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -255,5 +252,7 @@
   <ItemGroup>
     <FxCompile Include="Shaders\VertexShader.hlsl" />
     <FxCompile Include="Shaders\PixelShader.hlsl" />
+    <FxCompile Include="Shaders\PBR_VS.hlsl" />
+    <FxCompile Include="Shaders\PBR_PS.hlsl" />
   </ItemGroup>
 </Project>
