@@ -14,9 +14,8 @@ namespace Ethereal
 	class ETHEREAL_API Model : public IAsset
 	{
 	public:		
-		Model();
-		Model(std::vector<std::shared_ptr<Material>> materials, std::vector<std::shared_ptr<Mesh>> meshes);
-		virtual ~Model();
+		Model() = default;
+		virtual ~Model() = default;
 
 		bool LoadFromFile(const std::string& path); //Assimp loading
 
@@ -80,7 +79,6 @@ namespace Ethereal
 	private:
 		bool CreateInputLayout(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layoutDesc);
 		bool CreateConstantBuffer();	
-		bool Init(); // Common initialization code
 
 	private:
 		std::vector<std::shared_ptr<Material>> m_Materials;

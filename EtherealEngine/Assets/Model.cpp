@@ -9,24 +9,7 @@
 
 
 namespace Ethereal
-{							
-	Model::Model()
-	{
-		Init();
-	}
-
-	Model::Model(std::vector<std::shared_ptr<Material>> materials, std::vector<std::shared_ptr<Mesh>> meshes)
-	{
-		m_Materials = std::move(materials);
-		m_Meshes = std::move(meshes);
-		Init();
-	}
-
-	Model::~Model()
-	{
-
-	}
-
+{
 	bool Model::LoadFromFile(const std::string& path)
 	{
 		auto assetManager = EEContext::Get().GetAssetManager();
@@ -59,17 +42,7 @@ namespace Ethereal
 			{
 				const DirectX::XMFLOAT3 colorF3(color.r, color.g, color.b);
 				material->SetDiffuseColor(colorF3);
-			}
-
-			if (aiMat->GetTextureCount(aiTextureType_DIFFUSE) > 0)
-			{
-				aiString path;
-				if (AI_SUCCESS == aiMat->GetTexture(aiTextureType_DIFFUSE, 0, &path))
-				{
-					//material->SetDiffuseTexturePath(m_TextureName);
-					// You'll handle loading the texture in Material later
-				}
-			}
+			}		
 
 			material->SetVertexShaderName(m_VertexShaderName);
 			material->SetPixelShaderName(m_PixelShaderName);
@@ -131,6 +104,25 @@ namespace Ethereal
 				mesh->GetName(), mesh->GetVertices().size(), mesh->GetIndices().size(), mesh->GetMaterialIndex());
 		}
 
+		D3D11_INPUT_ELEMENT_DESC layout[] = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		};
+
+		if (!CreateInputLayout(std::vector<D3D11_INPUT_ELEMENT_DESC>(std::begin(layout), std::end(layout))))
+		{
+			LOG_ERROR("Failed to create input layout");
+			return false;
+		}
+
+		if(!CreateConstantBuffer())
+		{
+			LOG_ERROR("Failed to create constant buffer for model: {}", path);
+			return false;
+		}
+
+
 		LOG_INFO("Model '{}' loaded with {} mesh(es)", path, m_Meshes.size());
 
 		return true;
@@ -166,49 +158,5 @@ namespace Ethereal
 			return false;
 		}
 		return true;
-	}
-
-	bool Model::Init()
-	{
-		bool result = false;
-		if (m_Materials.empty())
-		{
-			auto mat = std::make_shared<Material>();
-			m_Materials.push_back(mat);
-		}
-		if (m_Meshes.empty())
-		{
-			m_Meshes.push_back(std::make_shared<Mesh>());
-		}
-		m_Materials[0]->SetVertexShaderName(m_VertexShaderName);
-		m_Materials[0]->SetPixelShaderName(m_PixelShaderName);
-		m_Materials[0]->SetDiffuseTexturePath(m_DiffuseTexturePath);
-		if (!m_Materials[0]->Initialize())
-		{
-			LOG_ERROR("Failed to initialize material");
-			return false;
-		}
-
-		D3D11_INPUT_ELEMENT_DESC layout[] = {
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-		};
-
-		result = CreateInputLayout(std::vector<D3D11_INPUT_ELEMENT_DESC>(std::begin(layout), std::end(layout)));
-		if (!result)
-		{
-			LOG_ERROR("Failed to create input layout");
-			return false;
-		}
-
-		result = CreateConstantBuffer();
-		if (!result)
-		{
-			LOG_ERROR("Failed to create constant buffer");
-			return false;
-		}
-
-		return result;
 	}	
 }
