@@ -140,6 +140,8 @@ namespace Ethereal
 				model->SetVertexShaderName(j["vertexShader"].get<std::string>());
 			if (j.contains("pixelShader"))
 				model->SetPixelShaderName(j["pixelShader"].get<std::string>());
+			if (j.contains("diffuseTexture"))
+				model->SetDiffuseTexturePath(j["diffuseTexture"].get<std::string>());
 
 			if (!model->LoadFromFile(meshFullPath.string()))
 			{

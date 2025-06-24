@@ -66,13 +66,14 @@ namespace Ethereal
 				aiString path;
 				if (AI_SUCCESS == aiMat->GetTexture(aiTextureType_DIFFUSE, 0, &path))
 				{
-					material->SetDiffuseTextureName(m_TextureName);
+					//material->SetDiffuseTexturePath(m_TextureName);
 					// You'll handle loading the texture in Material later
 				}
 			}
 
 			material->SetVertexShaderName(m_VertexShaderName);
 			material->SetPixelShaderName(m_PixelShaderName);
+			material->SetDiffuseTexturePath(m_DiffuseTexturePath);
 			if (!material->Initialize())
 			{
 				LOG_ERROR("Failed to initialize material for model: {}", path);
@@ -181,6 +182,7 @@ namespace Ethereal
 		}
 		m_Materials[0]->SetVertexShaderName(m_VertexShaderName);
 		m_Materials[0]->SetPixelShaderName(m_PixelShaderName);
+		m_Materials[0]->SetDiffuseTexturePath(m_DiffuseTexturePath);
 		if (!m_Materials[0]->Initialize())
 		{
 			LOG_ERROR("Failed to initialize material");

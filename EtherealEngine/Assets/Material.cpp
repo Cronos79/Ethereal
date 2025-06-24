@@ -8,9 +8,10 @@
 namespace Ethereal
 {
 
-	void Material::SetDiffuseTextureName(const std::string& name)
+
+	void Material::SetDiffuseTexturePath(const std::string& path)
 	{
-		m_DiffuseTextureName = name;
+		m_DiffuseTexturePath = path;
 	}
 
 	void Material::SetNormalTextureName(const std::string& name)
@@ -75,14 +76,27 @@ namespace Ethereal
 	{
 		ID3D11Device* device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());
 		// Get the file path with GetAssetsDirectory()
-		std::wstring texturePath = StringToWChar(GetAssetsDirectory().string()) + L"\\Textures\\Test.png";
-
-		HRESULT hr = DirectX::CreateWICTextureFromFile(device, texturePath.c_str(), nullptr, m_DiffuseTextureView.GetAddressOf());
-
-		if (FAILED(hr))
+		if (!m_DiffuseTexturePath.empty())
 		{
-			LOG_ERROR("Failed to create WIC texture from file: {}", hr);
-			return false;
+			std::filesystem::path texturePath = GetAssetsDirectory() / m_DiffuseTexturePath;
+			std::wstring wpath = StringToWChar(texturePath.string());
+
+			HRESULT hr = DirectX::CreateWICTextureFromFile(device, texturePath.c_str(), nullptr, m_DiffuseTextureView.GetAddressOf());
+
+			if (FAILED(hr))
+			{
+				LOG_ERROR("Failed to create WIC DiffuseTexture from file: {}", hr);
+				return false;
+			}
+		}
+		if (!m_NormalTextureName.empty())
+		{
+			std::filesystem::path texturePath = GetAssetsDirectory() / m_NormalTextureName;
+			HRESULT hr = DirectX::CreateWICTextureFromFile(device, StringToWChar(texturePath.string()).c_str(), nullptr, m_NormalTextureView.GetAddressOf());
+			if (FAILED(hr))
+			{
+				LOG_ERROR("Failed to create WIC NormalTexture from file: {}", hr);
+			}
 		}
 		return true;
 	}
@@ -113,9 +127,9 @@ namespace Ethereal
 		return true;
 	}
 
-	const std::string& Material::GetDiffuseTextureName() const
+	const std::string& Material::GetDiffuseTexturePath() const
 	{
-		return m_DiffuseTextureName;
+		return m_DiffuseTexturePath;
 	}
 
 	ID3D11ShaderResourceView* Material::GetDiffuseTexture() const

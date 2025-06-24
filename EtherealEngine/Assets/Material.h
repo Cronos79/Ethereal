@@ -17,7 +17,7 @@ namespace Ethereal
 		~Material() = default;
 
 		// Setters
-		void SetDiffuseTextureName(const std::string& name);
+		void SetDiffuseTexturePath(const std::string& path);
 		void SetNormalTextureName(const std::string& name);
 		void SetSpecularTextureName(const std::string& name);
 		void SetMetallicTextureName(const std::string& name);
@@ -45,7 +45,7 @@ namespace Ethereal
 			return m_PSConstantBuffer;
 		}
 
-		const std::string& GetDiffuseTextureName() const;
+		const std::string& GetDiffuseTexturePath() const;
 		ID3D11ShaderResourceView* GetDiffuseTexture() const;
 		ID3D11ShaderResourceView* GetNormalTexture() const;
 		ID3D11ShaderResourceView* GetSpecularTexture() const;
@@ -53,7 +53,7 @@ namespace Ethereal
 		ID3D11ShaderResourceView* GetRoughnessTexture() const;
 		const DirectX::XMFLOAT3& GetDiffuseColor() const;
 	private:
-		std::string m_DiffuseTextureName;
+		std::string m_DiffuseTexturePath;
 		std::string m_NormalTextureName;
 		std::string m_SpecularTextureName;
 		std::string m_MetallicTextureName;

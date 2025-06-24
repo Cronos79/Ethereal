@@ -260,54 +260,7 @@ namespace Ethereal
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
-	}	
-
-	//void RendererDX11::Draw(GameObject obj)
-	//{
-	//	auto& model = obj.GetModel();
-
-	//	// --- Set once per model ---
-	//	m_Context->IASetInputLayout(model.GetInputLayout());
-	//	m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//	m_Context->RSSetState(m_RasterizerState.Get());
-	//	m_Context->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
-	//	m_Context->OMSetBlendState(m_BlendState.Get(), nullptr, 0xFFFFFFFF);
-	//	m_Context->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
-	//	m_Context->VSSetShader(model.GetMaterial()->GetVertexShader()->GetVertexShader(), NULL, 0);
-	//	m_Context->PSSetShader(model.GetMaterial()->GetPixelShader()->GetPixelShader(), NULL, 0);
-	//	ID3D11ShaderResourceView* diffuseSRV = model.GetMaterial()->GetDiffuseTexture();
-	//	m_Context->PSSetShaderResources(0, 1, &diffuseSRV);
-
-	//	// Camera and world matrix setup (set once per model)
-	//	DirectX::XMMATRIX scale = DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f);
-	//	DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(0.0f));
-	//	DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
-	//	DirectX::XMMATRIX world = scale * rotation * translation;
-
-	//	auto& camera = EEContext::Get().GetCameraManager().GetCurrentCamera();
-	//	auto& constantBuffer = model.GetConstantBuffer();
-	//	constantBuffer.data.mat = DirectX::XMMatrixTranspose(world * camera.GetViewMatrix() * camera.GetProjectionMatrix());
-	//	constantBuffer.ApplyChanges();
-	//	m_Context->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
-
-	//	model.GetMaterial()->GetConstantBuffer().data.alpha = 1.0f;
-	//	model.GetMaterial()->GetConstantBuffer().ApplyChanges();
-	//	m_Context->PSSetConstantBuffers(0, 1, model.GetMaterial()->GetConstantBuffer().GetAddressOf());
-
-	//	// --- Per-mesh draw ---
-	//	UINT offset = 0;
-	//	const auto& meshes = model.GetMeshes();
-	//	for (const auto& mesh : meshes)
-	//	{
-	//		if (!mesh) continue;
-
-	//		ID3D11Buffer* vb = mesh->GetVertexBuffer();
-	//		m_Context->IASetVertexBuffers(0, 1, &vb, mesh->GetStridePtr(), &offset);
-	//		m_Context->IASetIndexBuffer(mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-
-	//		m_Context->DrawIndexed((UINT)mesh->GetIndexCount(), 0, 0);
-	//	}
-	//}
+	}		
 	
 	void RendererDX11::Draw(const std::shared_ptr<GameObject>& obj)
 	{

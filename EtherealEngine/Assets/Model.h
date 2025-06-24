@@ -71,6 +71,11 @@ namespace Ethereal
 		{
 			m_PixelShaderName = name;
 		}
+
+		void SetDiffuseTexturePath(const std::string& path)
+		{
+			m_DiffuseTexturePath = path;
+		}
 	
 	private:
 		bool CreateInputLayout(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layoutDesc);
@@ -85,5 +90,6 @@ namespace Ethereal
 		std::string m_TextureName = "Texture"; // Default texture name for materials without a specified texture
 		std::string m_VertexShaderName = "VertexShader"; // Default vertex shader name
 		std::string m_PixelShaderName = "PixelShader"; // Default pixel shader name
+		std::string m_DiffuseTexturePath = "Textures/Test.png"; // Default diffuse texture name
 	};
 }
