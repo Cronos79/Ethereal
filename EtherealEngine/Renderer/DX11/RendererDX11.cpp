@@ -18,6 +18,120 @@ namespace Ethereal
 
 	}
 
+	//void RendererDX11::DrawVertexDataTest()
+	//{
+	//	// === 1. Create and bind identity matrix constant buffer ===
+	//	struct MatrixBuffer
+	//	{
+	//		DirectX::XMMATRIX mat;
+	//	};
+	//	MatrixBuffer cbData = { DirectX::XMMatrixTranspose(DirectX::XMMatrixIdentity()) };
+
+	//	Microsoft::WRL::ComPtr<ID3D11Buffer> cb;
+	//	D3D11_BUFFER_DESC cbd = {};
+	//	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	//	cbd.ByteWidth = sizeof(MatrixBuffer);
+	//	cbd.Usage = D3D11_USAGE_DEFAULT;
+
+	//	D3D11_SUBRESOURCE_DATA cbInit = {};
+	//	cbInit.pSysMem = &cbData;
+
+	//	HRESULT hr = m_Device->CreateBuffer(&cbd, &cbInit, &cb);
+	//	if (FAILED(hr))
+	//	{
+	//		LOG_ERROR("Failed to create constant buffer: {}", hr);
+	//		return;
+	//	}
+	//	m_Context->VSSetConstantBuffers(0, 1, cb.GetAddressOf());
+
+	//	// === 2. Define triangle vertices and indices ===
+	//	struct SimpleVertex
+	//	{
+	//		DirectX::XMFLOAT3 pos;
+	//		DirectX::XMFLOAT3 normal;
+	//		DirectX::XMFLOAT2 texCoord;
+	//	};
+
+	//	SimpleVertex vertices[] =
+	//	{
+	//		{ {  0.0f,  0.5f, 0.0f }, { 0, 0, -1 }, { 0.5f, 0.0f } },
+	//		{ {  0.5f, -0.5f, 0.0f }, { 0, 0, -1 }, { 1.0f, 1.0f } },
+	//		{ { -0.5f, -0.5f, 0.0f }, { 0, 0, -1 }, { 0.0f, 1.0f } },
+	//	};
+
+	//	uint32_t indices[] = { 0, 1, 2 };
+
+	//	// === 3. Create vertex buffer ===
+	//	Microsoft::WRL::ComPtr<ID3D11Buffer> vb;
+	//	D3D11_BUFFER_DESC vbDesc = {};
+	//	vbDesc.Usage = D3D11_USAGE_DEFAULT;
+	//	vbDesc.ByteWidth = sizeof(vertices);
+	//	vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	//	D3D11_SUBRESOURCE_DATA vbData = {};
+	//	vbData.pSysMem = vertices;
+
+	//	hr = m_Device->CreateBuffer(&vbDesc, &vbData, &vb);
+	//	if (FAILED(hr))
+	//	{
+	//		LOG_ERROR("Failed to create vertex buffer: {}", hr);
+	//		return;
+	//	}
+
+	//	// === 4. Create index buffer ===
+	//	Microsoft::WRL::ComPtr<ID3D11Buffer> ib;
+	//	D3D11_BUFFER_DESC ibDesc = {};
+	//	ibDesc.Usage = D3D11_USAGE_DEFAULT;
+	//	ibDesc.ByteWidth = sizeof(indices);
+	//	ibDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+	//	D3D11_SUBRESOURCE_DATA ibData = {};
+	//	ibData.pSysMem = indices;
+
+	//	hr = m_Device->CreateBuffer(&ibDesc, &ibData, &ib);
+	//	if (FAILED(hr))
+	//	{
+	//		LOG_ERROR("Failed to create index buffer: {}", hr);
+	//		return;
+	//	}
+
+	//	// === 5. Create and initialize test material ===
+	//	auto testMat = std::make_shared<Material>();
+	//	testMat->SetVertexShaderName("VertexShader");
+	//	testMat->SetPixelShaderName("PixelShader");
+	//	//testMat->SetDiffuseTexturePath("Textures/UV.png");
+
+	//	nlohmann::json inputLayout = {
+	//		{ { "semantic", "POSITION" }, { "format", "R32G32B32_FLOAT" }, { "index", 0 } },
+	//		{ { "semantic", "NORMAL"   }, { "format", "R32G32B32_FLOAT" }, { "index", 0 } },
+	//		{ { "semantic", "TEXCOORD" }, { "format", "R32G32_FLOAT"    }, { "index", 0 } }
+	//	};
+	//	testMat->SetInputLayoutJson(inputLayout);
+	//	testMat->Initialize();
+
+	//	ID3D11ShaderResourceView* diffuseSRV = testMat->GetDiffuseTexture();
+	//	m_Context->PSSetShaderResources(0, 1, &diffuseSRV);
+
+	//	// === 6. Set the pipeline state ===
+	//	UINT stride = sizeof(SimpleVertex);
+	//	UINT offset = 0;
+	//	m_Context->IASetVertexBuffers(0, 1, vb.GetAddressOf(), &stride, &offset);
+	//	m_Context->IASetIndexBuffer(ib.Get(), DXGI_FORMAT_R32_UINT, 0);
+	//	m_Context->IASetInputLayout(testMat->GetInputLayout());
+	//	m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	//	m_Context->RSSetState(m_RasterizerState.Get());
+	//	m_Context->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
+	//	m_Context->OMSetBlendState(m_BlendState.Get(), nullptr, 0xFFFFFFFF);
+	//	m_Context->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
+
+	//	m_Context->VSSetShader(testMat->GetVertexShader()->GetVertexShader(), nullptr, 0);
+	//	m_Context->PSSetShader(testMat->GetPixelShader()->GetPixelShader(), nullptr, 0);
+
+	//	// === 7. Draw ===
+	//	m_Context->DrawIndexed(3, 0, 0);
+	//}
+
 	void RendererDX11::Initialize()
 	{
 		try
@@ -146,21 +260,9 @@ namespace Ethereal
 			hr = m_Device->CreateRasterizerState(&rasterizerDesc, m_RasterizerState.GetAddressOf());
 			COM_ERROR_IF_FAILED(hr, "Failed to create rasterizer state");
 
-			//Create Rasterizer State for culling front
-			//CD3D11_RASTERIZER_DESC rasterizerDesc_CullFront(D3D11_DEFAULT);
-			//rasterizerDesc_CullFront.CullMode = D3D11_CULL_MODE::D3D11_CULL_FRONT;
-			//hr = m_Device->CreateRasterizerState(&rasterizerDesc_CullFront, m_RasterizerState_CullFront.GetAddressOf());
-			//if (FAILED(hr))
-			//{
-			//	LOG_ERROR("Failed to create rasterizer state: {}", hr);
-			//	return;
-			//}
-
 			// Create the blend state
 			D3D11_BLEND_DESC blendDesc;
 			ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
-			//blendDesc.AlphaToCoverageEnable = FALSE; // Disable alpha to coverage
-			//blendDesc.IndependentBlendEnable = FALSE; // Disable independent blending	
 
 			D3D11_RENDER_TARGET_BLEND_DESC rtbs;
 			ZeroMemory(&rtbs, sizeof(D3D11_RENDER_TARGET_BLEND_DESC));
@@ -247,7 +349,7 @@ namespace Ethereal
 
 	void RendererDX11::BeginFrame()
 	{
-		float bgcolor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		float bgcolor[] = { 0.0f, 0.0f, 1.0f, 1.0f };
 		m_Context->ClearRenderTargetView(m_RenderTargetView.Get(), bgcolor); // Clear the render target view
 		m_Context->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0); // Clear the depth stencil view
 
@@ -274,7 +376,7 @@ namespace Ethereal
 		m_Context->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
 
 		// Camera and world matrix setup (set once per model)
-		
+
 		DirectX::XMMATRIX world = obj->GetTransform().GetMatrix();
 		if (!model.GetConstantBuffer().IsBufferInitialized())
 		{
@@ -325,9 +427,11 @@ namespace Ethereal
 			m_Context->IASetVertexBuffers(0, 1, &vb, mesh->GetStridePtr(), &offset);
 			m_Context->IASetIndexBuffer(mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
-			m_Context->DrawIndexed((UINT)mesh->GetIndexCount(), 0, 0);
+			m_Context->DrawIndexed((UINT)mesh->GetIndexCount(), 0, 0);			
 		}
+		//DrawVertexDataTest();
 	}
+	
 
 	void RendererDX11::EndFrame()
 	{

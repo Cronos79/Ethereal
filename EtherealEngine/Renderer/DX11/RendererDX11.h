@@ -22,6 +22,8 @@ namespace Ethereal
 		RendererDX11();
 		~RendererDX11();
 
+		//void DrawVertexDataTest();
+
 		void Initialize() override;
 		void InitImGui(HWND hwnd);
 		void BeginFrame() override;

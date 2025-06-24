@@ -179,6 +179,8 @@
     <ClCompile Include="Renderer\DX11\Camera.cpp" />
     <ClCompile Include="Renderer\DX11\CameraManager.cpp" />
     <ClCompile Include="Renderer\DX11\RendererDX11.cpp" />
+    <ClCompile Include="Renderer\DX11\VertexBufferLayout.cpp" />
+    <ClCompile Include="Renderer\DX11\VertexData.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui_demo.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui_draw.cpp" />
@@ -220,7 +222,10 @@
     <ClInclude Include="Renderer\DX11\ConstantBufferTypes.h" />
     <ClInclude Include="Renderer\DX11\IndexBuffer.h" />
     <ClInclude Include="Renderer\DX11\Vertex.h" />
+    <ClInclude Include="Renderer\DX11\VertexAttribute.h" />
     <ClInclude Include="Renderer\DX11\VertexBuffer.h" />
+    <ClInclude Include="Renderer\DX11\VertexBufferLayout.h" />
+    <ClInclude Include="Renderer\DX11\VertexData.h" />
     <ClInclude Include="Renderer\Renderer.h" />
     <ClInclude Include="Renderer\DX11\RendererDX11.h" />
     <ClInclude Include="ThirdParty\imgui\imconfig.h" />
