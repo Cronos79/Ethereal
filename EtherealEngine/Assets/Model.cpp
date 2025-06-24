@@ -42,18 +42,22 @@ namespace Ethereal
 			{
 				const DirectX::XMFLOAT3 colorF3(color.r, color.g, color.b);
 				material->SetDiffuseColor(colorF3);
-			}		
+			}	
 
-			material->SetVertexShaderName(m_VertexShaderName);
-			material->SetPixelShaderName(m_PixelShaderName);
-			//material->SetDiffuseTexturePath(m_DiffuseTexturePath);
-			// TEST CODE
-			if (i == 0)
-				material->SetDiffuseTexturePath("Textures/Test.png");
-			else if (i == 1)
-				material->SetDiffuseTexturePath("Textures/Mushroom.png");
+			auto ovr = m_MaterialOverrides.find(i);
+			if (ovr != m_MaterialOverrides.end())
+			{
+				material->SetVertexShaderName(ovr->second.vertexShader);
+				material->SetPixelShaderName(ovr->second.pixelShader);
+				material->SetDiffuseTexturePath(ovr->second.diffuseTexture);
+			}
 			else
-				material->SetDiffuseTexturePath(m_DiffuseTexturePath);
+			{
+				// Use defaults if override not provided
+				material->SetVertexShaderName("VertexShader");
+				material->SetPixelShaderName("PixelShader");
+				material->SetDiffuseTexturePath("Textures/UV.png");
+			}
 
 			if (!material->Initialize())
 			{

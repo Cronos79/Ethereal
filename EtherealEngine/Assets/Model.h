@@ -75,6 +75,11 @@ namespace Ethereal
 		{
 			m_DiffuseTexturePath = path;
 		}
+
+		void SetMaterialOverride(int materialIndex, const MaterialOverride& override)
+		{
+			m_MaterialOverrides[materialIndex] = override;
+		}
 	
 	private:
 		bool CreateInputLayout(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layoutDesc);
@@ -89,5 +94,6 @@ namespace Ethereal
 		std::string m_VertexShaderName = "VertexShader"; // Default vertex shader name
 		std::string m_PixelShaderName = "PixelShader"; // Default pixel shader name
 		std::string m_DiffuseTexturePath = "Textures/Test.png"; // Default diffuse texture name
+		std::unordered_map<int, MaterialOverride> m_MaterialOverrides;
 	};
 }

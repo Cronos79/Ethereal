@@ -10,6 +10,14 @@
 
 namespace Ethereal
 {
+	struct MaterialOverride
+	{
+		int32_t ID = -1;
+		std::string vertexShader = "VertexShader";
+		std::string pixelShader = "PixelShader";
+		std::string diffuseTexture = "Textures/UV.png";
+	};
+
 	class ETHEREAL_API Material : public IAsset
 	{
 	public:

@@ -134,14 +134,22 @@ namespace Ethereal
 			std::filesystem::path meshFullPath = GetAssetsDirectory() / meshPath;
 
 			auto model = std::make_shared<Model>();
+			
+			if (j.contains("materials") && j["materials"].is_array())
+			{
+				for (const auto& matJson : j["materials"])
+				{
+					int32_t id = matJson.value("ID", -1);
+					if (id < 0) continue;
 
-			// Optional shader overrides
-			if (j.contains("vertexShader"))
-				model->SetVertexShaderName(j["vertexShader"].get<std::string>());
-			if (j.contains("pixelShader"))
-				model->SetPixelShaderName(j["pixelShader"].get<std::string>());
-			if (j.contains("diffuseTexture"))
-				model->SetDiffuseTexturePath(j["diffuseTexture"].get<std::string>());
+					MaterialOverride mat;
+					mat.vertexShader = matJson.value("vertexShader", "VertexShader");
+					mat.pixelShader = matJson.value("pixelShader", "PixelShader");
+					mat.diffuseTexture = matJson.value("diffuseTexture", "Textures/UV.png");
+
+					model->SetMaterialOverride(id, mat);
+				}
+			}
 
 			if (!model->LoadFromFile(meshFullPath.string()))
 			{
