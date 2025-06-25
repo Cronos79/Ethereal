@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClCompile Include="Assets\GameConfig.cpp" />
     <ClCompile Include="Assets\GameObject.cpp" />
+    <ClCompile Include="Assets\LightObject.cpp" />
     <ClCompile Include="Assets\Material.cpp" />
     <ClCompile Include="Assets\Mesh.cpp" />
     <ClCompile Include="Assets\Model.cpp" />
@@ -195,6 +196,7 @@
     <ClInclude Include="Assets\AssetFactory.h" />
     <ClInclude Include="Assets\GameConfig.h" />
     <ClInclude Include="Assets\GameObject.h" />
+    <ClInclude Include="Assets\LightObject.h" />
     <ClInclude Include="Assets\Material.h" />
     <ClInclude Include="Assets\Mesh.h" />
     <ClInclude Include="Assets\Model.h" />

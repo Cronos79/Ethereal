@@ -68,9 +68,17 @@ namespace Ethereal
 		{
 			return m_Model;
 		}
-		Model& GetModel()
+		Model& GetModelRef()
 		{
 			return *m_Model;
+		}
+		const Model& GetModelRef() const
+		{
+			return *m_Model;
+		}
+		std::shared_ptr<Model> GetModel() const
+		{
+			return m_Model;
 		}
 		void SetModel(const std::shared_ptr<Model>& model)
 		{

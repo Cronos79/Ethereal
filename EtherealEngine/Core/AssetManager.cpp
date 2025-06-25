@@ -8,6 +8,7 @@
 #include "Assets/Shaders.h"
 #include "Assets/Model.h"
 #include "Assets/GameObject.h"
+#include "Assets/LightObject.h"
 
 
 namespace Ethereal
@@ -211,20 +212,49 @@ namespace Ethereal
 			LOG_WARN("GameObject type '{}' not found, using base GameObject.", type);
 			gameObject = std::make_shared<GameObject>();
 		}
-		gameObject->SetTypeName(type);   //m_TypeName = type;
-		gameObject->SetName(j.value("name", name));	
-		std::string modelName = j.value("model", "");
-		if (!LoadModel(modelName))
+
+		gameObject->SetTypeName(type);
+		gameObject->SetName(j.value("name", name));
+
+		// Handle LightObject custom data
+		if (type == "LightObject")
 		{
-			LOG_WARN("Model '{}' for GameObject '{}' could not be loaded", modelName, name);
-			return false;
-		}
-		else
-		{
-			auto model = Get<Model>(modelName);
-			gameObject->SetModel(model);
+			auto light = std::dynamic_pointer_cast<LightObject>(gameObject);
+			if (light)
+			{
+				if (j.contains("lightDirection"))
+				{
+					auto& v = j["lightDirection"];
+					light->SetLightDirection({ v[0], v[1], v[2] });
+				}
+				if (j.contains("lightColor"))
+				{
+					auto& c = j["lightColor"];
+					light->SetLightColor({ c[0], c[1], c[2] });
+				}
+				if (j.contains("ambientStrength"))
+				{
+					light->SetAmbientStrength(j["ambientStrength"]);
+				}
+			}
 		}
 
+		// Optional model
+		if (j.contains("model"))
+		{
+			std::string modelName = j["model"];
+			if (LoadModel(modelName))
+			{
+				auto model = Get<Model>(modelName);
+				gameObject->SetModel(model);
+			}
+			else
+			{
+				LOG_WARN("Model '{}' for GameObject '{}' could not be loaded", modelName, name);
+			}
+		}
+
+		// Common transform
 		if (j.contains("transform"))
 		{
 			const auto& t = j["transform"];

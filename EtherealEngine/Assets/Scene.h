@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <memory>
 #include "UI/EditorGui.h"
+#include "LightObject.h"
 
 namespace Ethereal
 {
@@ -22,8 +23,10 @@ namespace Ethereal
 		std::shared_ptr<GameObject> FindGameObjectByID(int32_t id);
 		virtual void HandleInput(float deltaTime);
 		virtual void Update(float deltaTime);
-		void DrawUI(float deltaTime);
+		virtual void DrawUI(float deltaTime);
 		void Render(float deltaTime);
+
+		std::shared_ptr<LightObject> GetMainLight();
 
 		std::vector<std::shared_ptr<GameObject>>& GetGameObjects();
 		void SetName(const std::string& name);
@@ -37,5 +40,6 @@ namespace Ethereal
 		std::vector<std::shared_ptr<GameObject>> m_GameObjects;
 		std::string m_Name;
 		std::unique_ptr<EditorGui> m_Editor;
+		std::shared_ptr<LightObject> m_CachedLight = nullptr;
 	};
 }

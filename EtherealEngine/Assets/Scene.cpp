@@ -103,6 +103,11 @@ namespace Ethereal
 		}
 		Ethereal::Camera& camera = Ethereal::EEContext::Get().GetCameraManager().GetCurrentCamera();
 		camera.UIControls(); // #TODO: Add bool to enable/disable camera UI controls
+
+		ImGui::Begin("Performance");
+		ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+		ImGui::Text("Frame Time: %.3f ms", 1000.0f / ImGui::GetIO().Framerate);
+		ImGui::End();
 	}
 
 	void Scene::Render(float deltaTime)
@@ -136,6 +141,20 @@ namespace Ethereal
 		m_Editor->DrawUI(deltaTime);
 #endif
 		renderer->EndFrame();
+	}
+
+	std::shared_ptr<Ethereal::LightObject> Scene::GetMainLight()
+	{
+		if (m_CachedLight) return m_CachedLight;
+		for (const auto& obj : m_GameObjects)
+		{
+			if (obj && obj->GetTypeName() == "LightObject")
+			{
+				m_CachedLight = std::dynamic_pointer_cast<LightObject>(obj);
+				return m_CachedLight;
+			}
+		}
+		return nullptr;
 	}
 
 	std::vector<std::shared_ptr<GameObject>>& Scene::GetGameObjects()

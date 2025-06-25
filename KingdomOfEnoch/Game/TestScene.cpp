@@ -7,9 +7,24 @@
 TestScene::TestScene(const std::string& name)
 	: Scene(name)
 {
+	bool result = false;
 	auto assetManager = Ethereal::EEContext::Get().GetAssetManager();
-	if (assetManager.LoadGameObject("TestCube"))
+	result = assetManager.LoadGameObject("TestCube");
+	if (!result)
 	{
+		LOG_WARN("Failed to load GameObject 'TestCube' in TestScene.");
+	}
+	result = assetManager.LoadGameObject("MainLight");
+	if (!result)
+	{
+		LOG_WARN("Failed to load GameObject 'MainLight' in TestScene.");
+	}
+
+	if (result)
+	{
+		auto light = assetManager.Get<Ethereal::GameObject>("MainLight");
+		auto lightclone = light->Clone();
+		AddGameObject(lightclone);
 		auto original = assetManager.Get<Ethereal::GameObject>("TestCube");
 		for (int i = 0; i < 400; i++)
 		{
@@ -31,4 +46,10 @@ void TestScene::HandleInput(float deltaTime)
 void TestScene::Update(float deltaTime)
 {
 	Scene::Update(deltaTime);
+}
+
+void TestScene::DrawUI(float deltaTime)
+{
+	Scene::DrawUI(deltaTime);
+
 }

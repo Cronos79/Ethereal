@@ -180,6 +180,12 @@ namespace Ethereal
 			hr = m_Device->CreateSamplerState(&samplerDesc, &m_SamplerState);
 			COM_ERROR_IF_FAILED(hr, "Failed to create sampler state");
 
+			if (!m_LightBuffer.IsBufferInitialized())
+			{
+				hr = m_LightBuffer.Initialize(m_Device.Get(), m_Context.Get());
+				COM_ERROR_IF_FAILED(hr, "Failed to create light constant buffer");
+			}
+
 			InitImGui(hwnd); // Initialize ImGui with the main window handle
 			// Finished initializing DirectX 11
 		}
@@ -252,37 +258,53 @@ namespace Ethereal
 	
 	void RendererDX11::Draw(const std::shared_ptr<GameObject>& obj)
 	{
-		auto& model = obj->GetModel();
+		auto model = obj->GetModel();
+		if (!model) return;
 
-		// --- Set once per model ---	
+		// --- Set once per model ---
 		m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_Context->RSSetState(m_RasterizerState.Get());
 		m_Context->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
 		m_Context->OMSetBlendState(m_BlendState.Get(), nullptr, 0xFFFFFFFF);
 		m_Context->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
 
-		// Camera and world matrix setup (set once per model)
-
+		// Camera and World Matrix
 		DirectX::XMMATRIX world = obj->GetTransform().GetMatrix();
-		if (!model.GetConstantBuffer().IsBufferInitialized())
-		{
-			model.GetConstantBuffer().Initialize(m_Device.Get(), m_Context.Get());
-		}
+		if (!model->GetConstantBuffer().IsBufferInitialized())
+			model->GetConstantBuffer().Initialize(m_Device.Get(), m_Context.Get());
+
 		auto& camera = EEContext::Get().GetCameraManager().GetCurrentCamera();
-		auto& constantBuffer = model.GetConstantBuffer();
+		auto& constantBuffer = model->GetConstantBuffer();
 		constantBuffer.data.mat = DirectX::XMMatrixTranspose(world * camera.GetViewMatrix() * camera.GetProjectionMatrix());
 		constantBuffer.ApplyChanges();
 		m_Context->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
 
-		const auto& meshes = model.GetMeshes();
-		const auto& materials = model.GetMaterials();
+		// Upload light buffer once (shared by all objects)
+		auto scene = EEContext::Get().GetSceneManager().GetCurrentScene();
+		auto lightObj = scene->GetMainLight();
+		if (lightObj)
+		{
+			CB_PS_Light lightData;
+			lightData.lightDirection = lightObj->GetLightDirection();
+			lightData.lightColor = lightObj->GetLightColor();
+			lightData.ambientStrength = lightObj->GetAmbientStrength();
 
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+			m_Context->Map(m_LightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+			memcpy(mappedResource.pData, &lightData, sizeof(CB_PS_Light));
+			m_Context->Unmap(m_LightBuffer.Get(), 0);
+
+			m_Context->PSSetConstantBuffers(1, 1, m_LightBuffer.GetAddressOf());
+		}
+
+		const auto& meshes = model->GetMeshes();
+		const auto& materials = model->GetMaterials();
 		UINT offset = 0;
+
 		for (const auto& mesh : meshes)
 		{
 			if (!mesh) continue;
 
-			// Determine which material to use for this mesh
 			std::shared_ptr<Material> material;
 			if (materials.size() == 1)
 				material = materials[0];
@@ -295,29 +317,18 @@ namespace Ethereal
 
 			m_Context->IASetInputLayout(material->GetInputLayout());
 
-			// Set shaders and resources for this material
 			m_Context->VSSetShader(material->GetVertexShader()->GetVertexShader(), NULL, 0);
 			m_Context->PSSetShader(material->GetPixelShader()->GetPixelShader(), NULL, 0);
+
 			ID3D11ShaderResourceView* diffuseSRV = material->GetDiffuseTexture();
 			m_Context->PSSetShaderResources(0, 1, &diffuseSRV);
+
 			ID3D11ShaderResourceView* normalSRV = material->GetNormalTexture();
-			m_Context->PSSetShaderResources(1, 1, &normalSRV); // Bind to t1
-
-			if (!m_LightBuffer.IsBufferInitialized())
-				m_LightBuffer.Initialize(m_Device.Get(), m_Context.Get());
-
-			// Example values
-			m_LightBuffer.data.lightDirection = { 0.0f, -1.0f, -1.0f }; // Directional light coming from above
-			m_LightBuffer.data.lightColor = { 1.0f, 1.0f, 1.0f };       // White light
-			m_LightBuffer.data.ambientStrength = 0.2f;
-
-			m_LightBuffer.ApplyChanges();
-			m_Context->PSSetConstantBuffers(1, 1, m_LightBuffer.GetAddressOf());
+			m_Context->PSSetShaderResources(1, 1, &normalSRV);
 
 			if (!material->GetConstantBuffer().IsBufferInitialized())
-			{
 				material->GetConstantBuffer().Initialize(m_Device.Get(), m_Context.Get());
-			}
+
 			material->GetConstantBuffer().data.alpha = 1.0f;
 			material->GetConstantBuffer().ApplyChanges();
 			m_Context->PSSetConstantBuffers(0, 1, material->GetConstantBuffer().GetAddressOf());
@@ -326,7 +337,7 @@ namespace Ethereal
 			m_Context->IASetVertexBuffers(0, 1, &vb, mesh->GetStridePtr(), &offset);
 			m_Context->IASetIndexBuffer(mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
-			m_Context->DrawIndexed((UINT)mesh->GetIndexCount(), 0, 0);			
+			m_Context->DrawIndexed((UINT)mesh->GetIndexCount(), 0, 0);
 		}
 	}
 	
