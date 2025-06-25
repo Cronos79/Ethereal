@@ -20,19 +20,19 @@ namespace Ethereal
 		m_NormalTexturePath = path;
 	}
 
-	void Material::SetSpecularTextureName(const std::string& name)
+	void Material::SetSpecularTexturePath(const std::string& path)
 	{
-		m_SpecularTextureName = name;
+		m_SpecularTexturePath = path;
 	}
 
-	void Material::SetMetallicTextureName(const std::string& name)
+	void Material::SetMetallicTexturePath(const std::string& path)
 	{
-		m_MetallicTextureName = name;
+		m_MetallicTexturePath = path;
 	}
 
-	void Material::SetRoughnessTextureName(const std::string& name)
+	void Material::SetRoughnessTexturePath(const std::string& path)
 	{
-		m_RoughnessTextureName = name;
+		m_RoughnessTexturePath = path;
 	}
 
 	void Material::SetDiffuseColor(const DirectX::XMFLOAT3& color)
@@ -108,6 +108,33 @@ namespace Ethereal
 			if (FAILED(hr))
 			{
 				LOG_ERROR("Failed to create WIC NormalTexture from file: {}", hr);
+			}
+		}
+		if (!m_SpecularTexturePath.empty())
+		{
+			std::filesystem::path texturePath = GetAssetsDirectory() / m_SpecularTexturePath;
+			HRESULT hr = DirectX::CreateWICTextureFromFile(device, StringToWChar(texturePath.string()).c_str(), nullptr, m_SpecularTextureView.GetAddressOf());
+			if (FAILED(hr))
+			{
+				LOG_ERROR("Failed to create WIC SpecularTexture from file: {}", hr);
+			}
+		}
+		if (!m_MetallicTexturePath.empty())
+		{
+			std::filesystem::path texturePath = GetAssetsDirectory() / m_MetallicTexturePath;
+			HRESULT hr = DirectX::CreateWICTextureFromFile(device, StringToWChar(texturePath.string()).c_str(), nullptr, m_MetallicTextureView.GetAddressOf());
+			if (FAILED(hr))
+			{
+				LOG_ERROR("Failed to create WIC MetallicTexture from file: {}", hr);
+			}
+		}
+		if (!m_RoughnessTexturePath.empty())
+		{
+			std::filesystem::path texturePath = GetAssetsDirectory() / m_RoughnessTexturePath;
+			HRESULT hr = DirectX::CreateWICTextureFromFile(device, StringToWChar(texturePath.string()).c_str(), nullptr, m_RoughnessTextureView.GetAddressOf());
+			if (FAILED(hr))
+			{
+				LOG_ERROR("Failed to create WIC RoughnessTexture from file: {}", hr);
 			}
 		}
 		return true;

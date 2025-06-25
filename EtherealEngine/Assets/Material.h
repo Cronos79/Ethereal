@@ -29,9 +29,9 @@ namespace Ethereal
 		// Setters
 		void SetDiffuseTexturePath(const std::string& path);
 		void SetNormalTexturePath(const std::string& path);
-		void SetSpecularTextureName(const std::string& name);
-		void SetMetallicTextureName(const std::string& name);
-		void SetRoughnessTextureName(const std::string& name);
+		void SetSpecularTexturePath(const std::string& path);
+		void SetMetallicTexturePath(const std::string& path);
+		void SetRoughnessTexturePath(const std::string& path);
 		void SetDiffuseColor(const DirectX::XMFLOAT3& color);
 		void SetVertexShaderName(const std::string& name);
 		void SetPixelShaderName(const std::string& name);
@@ -75,9 +75,9 @@ namespace Ethereal
 
 		std::string m_DiffuseTexturePath;
 		std::string m_NormalTexturePath;
-		std::string m_SpecularTextureName;
-		std::string m_MetallicTextureName;
-		std::string m_RoughnessTextureName;
+		std::string m_SpecularTexturePath;
+		std::string m_MetallicTexturePath;
+		std::string m_RoughnessTexturePath;
 		DirectX::XMFLOAT3 m_DiffuseColor;
 
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_DiffuseTextureView;
