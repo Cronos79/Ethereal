@@ -167,6 +167,7 @@
     <ClCompile Include="Assets\Model.cpp" />
     <ClCompile Include="Assets\Scene.cpp" />
     <ClCompile Include="Assets\Shaders.cpp" />
+    <ClCompile Include="Assets\Texture.cpp" />
     <ClCompile Include="Core\AssetManager.cpp" />
     <ClCompile Include="Core\EEApplication.cpp" />
     <ClCompile Include="Core\EEContext.cpp" />
@@ -202,6 +203,7 @@
     <ClInclude Include="Assets\Model.h" />
     <ClInclude Include="Assets\Scene.h" />
     <ClInclude Include="Assets\Shaders.h" />
+    <ClInclude Include="Assets\Texture.h" />
     <ClInclude Include="Assets\Transform.h" />
     <ClInclude Include="Core\AssetManager.h" />
     <ClInclude Include="Core\EEApplication.h" />

@@ -22,6 +22,7 @@ namespace Ethereal
 		bool LoadShader(const std::string& name, ShaderType shaderType);
 		bool LoadModel(const std::string& name);
 		bool LoadGameObject(const std::string& name);
+		bool LoadTexture(const std::string& name);
 
 		template<typename T>
 		std::shared_ptr<T> Get(const std::string& name)

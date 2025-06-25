@@ -9,6 +9,7 @@
 #include "Assets/Model.h"
 #include "Assets/GameObject.h"
 #include "Assets/LightObject.h"
+#include "Assets/Texture.h"
 
 
 namespace Ethereal
@@ -148,6 +149,10 @@ namespace Ethereal
 					mat.pixelShader = matJson.value("pixelShader", "PixelShader");
 					mat.diffuseTexture = matJson.value("diffuseTexture", "Textures/UV.png");
 					mat.normalTexture = matJson.value("normalTexture", "");
+					mat.specularTexture = matJson.value("specularTexture", "");
+					mat.metallicTexture = matJson.value("metallicTexture", "");
+					mat.roughnessTexture = matJson.value("roughnessTexture", "");
+					mat.aoTexture = matJson.value("aoTexture", "");
 
 					if (matJson.contains("inputLayout"))
 						mat.inputLayout = matJson["inputLayout"];
@@ -163,20 +168,6 @@ namespace Ethereal
 			}
 
 			m_Assets[name] = model;
-			//LOG_INFO("Loaded model '{}' from JSON", name);
-			return true;
-		}
-		else
-		{
-			// Legacy FBX path
-			auto model = std::make_shared<Model>();
-			if (!model->LoadFromFile(fullPath.string()))
-			{
-				LOG_ERROR("Failed to load model: {}", fullPath.string());
-				return false;
-			}
-			m_Assets[name] = model;
-			//LOG_INFO("Loaded model '{}'", name);
 			return true;
 		}
 	}
@@ -267,6 +258,37 @@ namespace Ethereal
 
 		m_Assets[name] = gameObject;
 		//LOG_INFO("Loaded GameObject '{}'", name);
+		return true;
+	}
+
+	bool AssetManager::LoadTexture(const std::string& name)
+	{
+		// Already loaded?
+		if (m_Assets.find(name) != m_Assets.end())
+			return true;
+
+		// Look up path in registry
+		auto it = m_Registry.find(name);
+		if (it == m_Registry.end())
+		{
+			LOG_ERROR("Texture '{}' not found in registry.", name);
+			return false;
+		}
+
+		// Construct full path
+		std::filesystem::path fullPath = GetAssetsDirectory();
+		fullPath /= it->second;
+
+		// Load texture
+		auto texture = std::make_shared<Texture>();
+		if (!texture->LoadFromFile(fullPath.string()))
+		{
+			LOG_ERROR("Failed to load texture: {}", fullPath.string());
+			return false;
+		}
+
+		m_Assets[name] = texture;
+		LOG_INFO("Loaded texture '{}'", name);
 		return true;
 	}
 

@@ -4,6 +4,7 @@
 #include "Renderer/DX11/AdapterReader.h"
 #include "Core/EEContext.h"
 #include <d3d11_1.h> // For CD3D11_* helpers
+#include "Assets/Texture.h"
 
 namespace Ethereal
 {
@@ -188,6 +189,10 @@ namespace Ethereal
 
 			InitImGui(hwnd); // Initialize ImGui with the main window handle
 			// Finished initializing DirectX 11
+
+			EEContext::Get().GetAssetManager().LoadTexture("WhiteTexture");
+			EEContext::Get().GetAssetManager().LoadTexture("BlackTexture");
+			EEContext::Get().GetAssetManager().LoadTexture("NormalTexture");
 		}
 		catch (const COMException& e)
 		{
@@ -301,6 +306,11 @@ namespace Ethereal
 		const auto& materials = model->GetMaterials();
 		UINT offset = 0;
 
+		auto assetManager = EEContext::Get().GetAssetManager();
+		auto white = assetManager.Get<Texture>("WhiteTexture")->GetTextureView();
+		auto black = assetManager.Get<Texture>("BlackTexture")->GetTextureView();
+		auto flatNormal = assetManager.Get<Texture>("NormalTexture")->GetTextureView();
+
 		for (const auto& mesh : meshes)
 		{
 			if (!mesh) continue;
@@ -320,11 +330,21 @@ namespace Ethereal
 			m_Context->VSSetShader(material->GetVertexShader()->GetVertexShader(), NULL, 0);
 			m_Context->PSSetShader(material->GetPixelShader()->GetPixelShader(), NULL, 0);
 
-			ID3D11ShaderResourceView* diffuseSRV = material->GetDiffuseTexture();
-			m_Context->PSSetShaderResources(0, 1, &diffuseSRV);
+			ID3D11ShaderResourceView* diffuseSRV = material->GetDiffuseTexture() ? material->GetDiffuseTexture() : white;
+			ID3D11ShaderResourceView* normalSRV = material->GetNormalTexture() ? material->GetNormalTexture() : flatNormal;
+			ID3D11ShaderResourceView* specularSRV = material->GetSpecularTexture() ? material->GetSpecularTexture() : black;
+			ID3D11ShaderResourceView* metallicSRV = material->GetMetallicTexture() ? material->GetMetallicTexture() : black;
+			ID3D11ShaderResourceView* roughnessSRV = material->GetRoughnessTexture() ? material->GetRoughnessTexture() : white;
+			ID3D11ShaderResourceView* aoSRV = material->GetAOTexture() ? material->GetAOTexture() : white;
+			ID3D11ShaderResourceView* emissiveSRV = material->GetEmissiveTexture() ? material->GetEmissiveTexture() : black;
 
-			ID3D11ShaderResourceView* normalSRV = material->GetNormalTexture();
+			m_Context->PSSetShaderResources(0, 1, &diffuseSRV);
 			m_Context->PSSetShaderResources(1, 1, &normalSRV);
+			m_Context->PSSetShaderResources(2, 1, &specularSRV);
+			m_Context->PSSetShaderResources(3, 1, &metallicSRV);
+			m_Context->PSSetShaderResources(4, 1, &roughnessSRV);
+			m_Context->PSSetShaderResources(5, 1, &aoSRV);
+			m_Context->PSSetShaderResources(6, 1, &emissiveSRV);
 
 			if (!material->GetConstantBuffer().IsBufferInitialized())
 				material->GetConstantBuffer().Initialize(m_Device.Get(), m_Context.Get());

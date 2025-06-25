@@ -11,5 +11,8 @@
     "TestCube": "GameObjects/TestCube.json",
     "EmptyGO": "GameObjects/Empty.json",
     "GO_SmallCone": "GameObjects/SmallCone.json",
-    "MainLight": "GameObjects/MainLight.json"
+    "MainLight": "GameObjects/MainLight.json",
+    "WhiteTexture": "Textures/White.png",
+    "BlackTexture": "Textures/Black.png",
+    "NormalTexture": "Textures/Normal.png"
 }
