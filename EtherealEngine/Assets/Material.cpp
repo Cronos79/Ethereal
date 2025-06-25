@@ -8,64 +8,71 @@
 
 namespace Ethereal
 {
-
-
 	void Material::SetDiffuseTexturePath(const std::string& path)
 	{
 		m_DiffuseTexturePath = path;
 	}
-
 	void Material::SetNormalTexturePath(const std::string& path)
 	{
 		m_NormalTexturePath = path;
 	}
-
 	void Material::SetSpecularTexturePath(const std::string& path)
 	{
 		m_SpecularTexturePath = path;
 	}
-
 	void Material::SetMetallicTexturePath(const std::string& path)
 	{
 		m_MetallicTexturePath = path;
 	}
-
 	void Material::SetRoughnessTexturePath(const std::string& path)
 	{
 		m_RoughnessTexturePath = path;
 	}
-
+	void Material::SetAOTexturePath(const std::string& path)
+	{
+		m_AOTexturePath = path;
+	}
+	void Material::SetEmissiveTexturePath(const std::string& path)
+	{
+		m_EmissiveTexturePath = path;
+	}
 	void Material::SetDiffuseColor(const DirectX::XMFLOAT3& color)
 	{
 		m_DiffuseColor = color;
 	}
-
+	void Material::SetEmissiveColor(const DirectX::XMFLOAT3& color)
+	{
+		m_EmissiveColor = color;
+	}
 	void Material::SetVertexShaderName(const std::string& name)
 	{
 		m_VertexShaderName = name;
 	}
-
 	void Material::SetPixelShaderName(const std::string& name)
 	{
 		m_PixelShaderName = name;
 	}
-
 	void Material::SetInputLayoutJson(const nlohmann::json& json)
 	{
 		m_InputLayoutJson = json;
 	}
+	void Material::SetMetallicValue(float value)
+	{
+		m_MetallicValue = value;
+	}
+	void Material::SetRoughnessValue(float value)
+	{
+		m_RoughnessValue = value;
+	}
+	void Material::SetSpecularStrength(float strength)
+	{
+		m_SpecularStrength = strength;
+	}
 
 	bool Material::Initialize()
-	{	
-		if (!ResolveShaders())
-		{
-			return false;
-		}
-		if (!ResolveTextures())
-		{
-			return false;
-		}
-	
+	{
+		if (!ResolveShaders() || !ResolveTextures()) return false;
+
 		ID3D11Device* device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());
 		ID3D11DeviceContext* context = static_cast<ID3D11DeviceContext*>(EEContext::Get().GetContext());
 		HRESULT hr = m_PSConstantBuffer.Initialize(device, context);
@@ -87,82 +94,41 @@ namespace Ethereal
 	bool Material::ResolveTextures()
 	{
 		ID3D11Device* device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());
-		// Get the file path with GetAssetsDirectory()
-		if (!m_DiffuseTexturePath.empty())
-		{
-			std::filesystem::path texturePath = GetAssetsDirectory() / m_DiffuseTexturePath;
-			std::wstring wpath = StringToWChar(texturePath.string());
+		auto load = [&](const std::string& path, auto& view, bool& hasFlag) -> bool {
+			if (path.empty()) return false;
+			auto fullPath = GetAssetsDirectory() / path;
+			HRESULT hr = DirectX::CreateWICTextureFromFile(device, StringToWChar(fullPath.string()).c_str(), nullptr, view.GetAddressOf());
+			hasFlag = SUCCEEDED(hr);
+			if (!hasFlag) LOG_ERROR("Failed to load texture: {}", fullPath.string());
+			return hasFlag;
+			};
 
-			HRESULT hr = DirectX::CreateWICTextureFromFile(device, texturePath.c_str(), nullptr, m_DiffuseTextureView.GetAddressOf());
-
-			if (FAILED(hr))
-			{
-				LOG_ERROR("Failed to create WIC DiffuseTexture from file: {}", hr);
-				return false;
-			}
-		}
-		if (!m_NormalTexturePath.empty())
-		{
-			std::filesystem::path texturePath = GetAssetsDirectory() / m_NormalTexturePath;
-			HRESULT hr = DirectX::CreateWICTextureFromFile(device, StringToWChar(texturePath.string()).c_str(), nullptr, m_NormalTextureView.GetAddressOf());
-			if (FAILED(hr))
-			{
-				LOG_ERROR("Failed to create WIC NormalTexture from file: {}", hr);
-			}
-		}
-		if (!m_SpecularTexturePath.empty())
-		{
-			std::filesystem::path texturePath = GetAssetsDirectory() / m_SpecularTexturePath;
-			HRESULT hr = DirectX::CreateWICTextureFromFile(device, StringToWChar(texturePath.string()).c_str(), nullptr, m_SpecularTextureView.GetAddressOf());
-			if (FAILED(hr))
-			{
-				LOG_ERROR("Failed to create WIC SpecularTexture from file: {}", hr);
-			}
-		}
-		if (!m_MetallicTexturePath.empty())
-		{
-			std::filesystem::path texturePath = GetAssetsDirectory() / m_MetallicTexturePath;
-			HRESULT hr = DirectX::CreateWICTextureFromFile(device, StringToWChar(texturePath.string()).c_str(), nullptr, m_MetallicTextureView.GetAddressOf());
-			if (FAILED(hr))
-			{
-				LOG_ERROR("Failed to create WIC MetallicTexture from file: {}", hr);
-			}
-		}
-		if (!m_RoughnessTexturePath.empty())
-		{
-			std::filesystem::path texturePath = GetAssetsDirectory() / m_RoughnessTexturePath;
-			HRESULT hr = DirectX::CreateWICTextureFromFile(device, StringToWChar(texturePath.string()).c_str(), nullptr, m_RoughnessTextureView.GetAddressOf());
-			if (FAILED(hr))
-			{
-				LOG_ERROR("Failed to create WIC RoughnessTexture from file: {}", hr);
-			}
-		}
+		load(m_DiffuseTexturePath, m_DiffuseTextureView, m_HasDiffuse);
+		load(m_NormalTexturePath, m_NormalTextureView, m_HasNormal);
+		load(m_SpecularTexturePath, m_SpecularTextureView, m_HasSpecular);
+		load(m_MetallicTexturePath, m_MetallicTextureView, m_HasMetallic);
+		load(m_RoughnessTexturePath, m_RoughnessTextureView, m_HasRoughness);
+		load(m_AOTexturePath, m_AOTextureView, m_HasAO);
+		load(m_EmissiveTexturePath, m_EmissiveTextureView, m_HasEmissive);
 		return true;
 	}
 
 	bool Material::ResolveShaders()
 	{
-		// Load the shaders into the asset manager
-		EEContext::Get().GetAssetManager().LoadShader(m_VertexShaderName, ShaderType::VERTEX_SHADER);
-		EEContext::Get().GetAssetManager().LoadShader(m_PixelShaderName, ShaderType::PIXEL_SHADER);
+		auto& manager = EEContext::Get().GetAssetManager();
+		manager.LoadShader(m_VertexShaderName, ShaderType::VERTEX_SHADER);
+		manager.LoadShader(m_PixelShaderName, ShaderType::PIXEL_SHADER);
 
-		// Get the Vertex shader from the asset manager
-		m_VertexShaderAsset = EEContext::Get().GetAssetManager().Get<Shaders>(m_VertexShaderName);
-		if (!m_VertexShaderAsset)
+		m_VertexShaderAsset = manager.Get<Shaders>(m_VertexShaderName);
+		m_VertexBlob = m_VertexShaderAsset ? m_VertexShaderAsset->GetVertexShaderBuffer() : nullptr;
+		m_PixelShaderAsset = manager.Get<Shaders>(m_PixelShaderName);
+		m_PixelBlob = m_PixelShaderAsset ? m_PixelShaderAsset->GetPixelShaderBuffer() : nullptr;
+
+		if (!m_VertexShaderAsset || !m_PixelShaderAsset)
 		{
-			LOG_ERROR("Vertex shader '{}' not loaded", m_VertexShaderName);
+			LOG_ERROR("Failed to resolve shaders: VS '{}', PS '{}'", m_VertexShaderName, m_PixelShaderName);
 			return false;
 		}
-		m_VertexBlob = m_VertexShaderAsset->GetVertexShaderBuffer();
-
-		// Get the Pixel shader from the asset manager
-		m_PixelShaderAsset = EEContext::Get().GetAssetManager().Get<Shaders>(m_PixelShaderName);
-		if (!m_PixelShaderAsset)
-		{
-			LOG_ERROR("Pixel shader '{}' not loaded", m_PixelShaderName);
-			return false;
-		}
-		m_PixelBlob = m_PixelShaderAsset->GetPixelShaderBuffer();
 		return true;
 	}
 
@@ -170,29 +136,22 @@ namespace Ethereal
 	{
 		std::vector<D3D11_INPUT_ELEMENT_DESC> layoutDesc;
 		std::vector<std::string> stableNames;
-		stableNames.reserve(m_InputLayoutJson.size()); // avoid reallocations
+		stableNames.reserve(m_InputLayoutJson.size());
 
 		if (!m_InputLayoutJson.empty())
 		{
 			for (const auto& elem : m_InputLayoutJson)
 			{
 				D3D11_INPUT_ELEMENT_DESC desc = {};
-
-				// Push string and immediately get pointer
 				stableNames.emplace_back(elem.value("semantic", "POSITION"));
-				const char* semanticCStr = stableNames.back().c_str();
-				desc.SemanticName = semanticCStr;
-
+				desc.SemanticName = stableNames.back().c_str();
 				desc.SemanticIndex = elem.value("index", 0);
 				desc.Format = FormatStringToDXGI(elem.value("format", "R32G32B32_FLOAT"));
 				desc.InputSlot = 0;
-
 				int offset = elem.value("offset", -1);
 				desc.AlignedByteOffset = (offset == -1) ? D3D11_APPEND_ALIGNED_ELEMENT : static_cast<UINT>(offset);
-
 				desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 				desc.InstanceDataStepRate = 0;
-
 				layoutDesc.push_back(desc);
 			}
 		}
@@ -204,13 +163,7 @@ namespace Ethereal
 				{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 			};
 		}
-
-		if (!CreateInputLayout(layoutDesc))
-		{
-			LOG_ERROR("Failed to create input layout");
-			return false;
-		}
-		return true;
+		return CreateInputLayout(layoutDesc);
 	}
 
 	bool Material::CreateInputLayout(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layoutDesc)
@@ -222,8 +175,7 @@ namespace Ethereal
 			static_cast<UINT>(layoutDesc.size()),
 			vertexShaderBlob->GetBufferPointer(),
 			vertexShaderBlob->GetBufferSize(),
-			&m_InputLayout
-		);
+			&m_InputLayout);
 		if (FAILED(hr))
 		{
 			LOG_ERROR("Failed to create input layout: {}", hr);
@@ -232,39 +184,112 @@ namespace Ethereal
 		return true;
 	}
 
+	Ethereal::Shaders* Material::GetVertexShader()
+	{
+		return m_VertexShaderAsset.get();
+	}
+
+	Ethereal::Shaders* Material::GetPixelShader()
+	{
+		return m_PixelShaderAsset.get();
+	}
+
+	ConstantBuffer<CB_PS_pixelshader>& Material::GetConstantBuffer()
+	{
+		return m_PSConstantBuffer;
+	}
+
+	ID3D11InputLayout* Material::GetInputLayout()
+	{
+		return m_InputLayout.Get();
+	}
+
 	const std::string& Material::GetDiffuseTexturePath() const
 	{
 		return m_DiffuseTexturePath;
 	}
-
 	ID3D11ShaderResourceView* Material::GetDiffuseTexture() const
 	{
 		return m_DiffuseTextureView.Get();
 	}
-
 	ID3D11ShaderResourceView* Material::GetNormalTexture() const
 	{
 		return m_NormalTextureView.Get();
 	}
-
 	ID3D11ShaderResourceView* Material::GetSpecularTexture() const
 	{
 		return m_SpecularTextureView.Get();
 	}
-
 	ID3D11ShaderResourceView* Material::GetMetallicTexture() const
 	{
 		return m_MetallicTextureView.Get();
 	}
-
 	ID3D11ShaderResourceView* Material::GetRoughnessTexture() const
 	{
 		return m_RoughnessTextureView.Get();
 	}
-
+	ID3D11ShaderResourceView* Material::GetAOTexture() const
+	{
+		return m_AOTextureView.Get();
+	}
+	ID3D11ShaderResourceView* Material::GetEmissiveTexture() const
+	{
+		return m_EmissiveTextureView.Get();
+	}
 	const DirectX::XMFLOAT3& Material::GetDiffuseColor() const
 	{
 		return m_DiffuseColor;
 	}
+	const DirectX::XMFLOAT3& Material::GetEmissiveColor() const
+	{
+		return m_EmissiveColor;
+	}
 
-}
+	bool Material::HasDiffuseMap() const
+	{
+		return m_HasDiffuse;
+	}
+
+	bool Material::HasNormalMap() const
+	{
+		return m_HasNormal;
+	}
+
+	bool Material::HasMetallicMap() const
+	{
+		return m_HasMetallic;
+	}
+
+	bool Material::HasRoughnessMap() const
+	{
+		return m_HasRoughness;
+	}
+
+	bool Material::HasSpecularMap() const
+	{
+		return m_HasSpecular;
+	}
+
+	bool Material::HasAOMap() const
+	{
+		return m_HasAO;
+	}
+
+	bool Material::HasEmissiveMap() const
+	{
+		return m_HasEmissive;
+	}
+
+	float Material::GetMetallicValue() const
+	{
+		return m_MetallicValue;
+	}
+	float Material::GetRoughnessValue() const
+	{
+		return m_RoughnessValue;
+	}
+	float Material::GetSpecularStrength() const
+	{
+		return m_SpecularStrength;
+	}
+} // namespace Ethereal
