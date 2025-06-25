@@ -43,7 +43,21 @@ namespace Ethereal
 
 	DirectX::XMFLOAT3 LightObject::GetLightDirection() const
 	{
-		return m_LightDirection;
+		// Convert direction to XMVECTOR
+		using namespace DirectX;
+		XMVECTOR dir = XMLoadFloat3(&m_LightDirection);
+
+		// Get rotation matrix from transform
+		XMMATRIX rotationMatrix = GetTransform().GetRotationMatrix(); // You must implement this
+
+		// Rotate the direction vector
+		dir = XMVector3TransformNormal(dir, rotationMatrix);
+
+		// Return as XMFLOAT3
+		XMFLOAT3 result;
+		XMStoreFloat3(&result, dir);
+		return result;
+		//return m_LightDirection;
 	}
 
 	DirectX::XMFLOAT3 LightObject::GetLightColor() const

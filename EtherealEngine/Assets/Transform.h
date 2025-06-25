@@ -73,10 +73,20 @@ namespace Ethereal
 			XMMATRIX scaleMatrix = XMMatrixScaling(m_Scale.x, m_Scale.y, m_Scale.z);
 			return scaleMatrix * rotationMatrix * translationMatrix; // Scale, then rotate, then translate
 		}
+		DirectX::XMMATRIX GetRotationMatrix() const
+		{
+			using namespace DirectX;
+			return XMMatrixRotationRollPitchYaw(
+				XMConvertToRadians(m_Rotation.x),
+				XMConvertToRadians(m_Rotation.y),
+				XMConvertToRadians(m_Rotation.z)
+			);
+		}
 	private:
 		// Transform
 		DirectX::XMFLOAT3 m_Position = { 0.0f, 0.0f, 0.0f };
 		DirectX::XMFLOAT3 m_Rotation = { 0.0f, 0.0f, 0.0f }; // In degrees, XYZ (pitch, yaw, roll)
 		DirectX::XMFLOAT3 m_Scale = { 1.0f, 1.0f, 1.0f };
+
 	};
 }
