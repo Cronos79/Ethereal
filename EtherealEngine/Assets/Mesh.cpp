@@ -28,13 +28,13 @@ namespace Ethereal
 
 		if (!m_VertexData.empty() && !m_VertexBuffer.Get())
 		{
-			LOG_INFO("Uploading vertex buffer with {} bytes", m_VertexData.size());
+			//LOG_INFO("Uploading vertex buffer with {} bytes", m_VertexData.size());
 			m_VertexBuffer.Initialize(device, m_VertexData.data(), static_cast<UINT>(m_VertexData.size()), m_VertexLayout.GetStride());
 		}
 
 		if (!m_Indices.empty() && !m_IndexBuffer.Get())
 		{
-			LOG_INFO("Uploading index buffer with {} indices", m_Indices.size());
+			//LOG_INFO("Uploading index buffer with {} indices", m_Indices.size());
 			m_IndexBuffer.Initialize(device, reinterpret_cast<DWORD*>(m_Indices.data()), (UINT)m_Indices.size());
 		}
 	}

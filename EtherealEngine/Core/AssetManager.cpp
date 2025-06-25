@@ -39,7 +39,7 @@ namespace Ethereal
 		for (auto& [key, value] : json.items())
 		{
 			m_Registry[key] = value;
-			LOG_INFO("Registered asset: '{}' -> '{}'", key, value.get<std::string>());
+			//LOG_INFO("Registered asset: '{}' -> '{}'", key, value.get<std::string>());
 		}
 		return true;
 	}
@@ -92,7 +92,7 @@ namespace Ethereal
 		shader->LoadShader(fullPath.string(), shaderType);
 
 		m_Assets[name] = shader;
-		LOG_INFO("Loaded shader '{}' of type '{}'", name, ShaderTypeToString(shaderType));
+		//LOG_INFO("Loaded shader '{}' of type '{}'", name, ShaderTypeToString(shaderType));
 		return true;
 	}	
 
@@ -163,7 +163,7 @@ namespace Ethereal
 			}
 
 			m_Assets[name] = model;
-			LOG_INFO("Loaded model '{}' from JSON", name);
+			//LOG_INFO("Loaded model '{}' from JSON", name);
 			return true;
 		}
 		else
@@ -176,7 +176,7 @@ namespace Ethereal
 				return false;
 			}
 			m_Assets[name] = model;
-			LOG_INFO("Loaded model '{}'", name);
+			//LOG_INFO("Loaded model '{}'", name);
 			return true;
 		}
 	}
@@ -266,7 +266,7 @@ namespace Ethereal
 		}
 
 		m_Assets[name] = gameObject;
-		LOG_INFO("Loaded GameObject '{}'", name);
+		//LOG_INFO("Loaded GameObject '{}'", name);
 		return true;
 	}
 

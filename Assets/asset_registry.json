@@ -6,5 +6,10 @@
     "PBR_PS": "Shaders/PBR_PS.cso",
     "Texture": "Textures/Test.png",
     "TestModel": "Models/TestCube.json",
-    "TestCube": "GameObjects/TestCube.json"
+    "SmallConeModel": "Models/SmallConeModel.json",
+    "EmptyModel": "Models/Empty.json",
+    "TestCube": "GameObjects/TestCube.json",
+    "EmptyGO": "GameObjects/Empty.json",
+    "GO_SmallCone": "GameObjects/SmallCone.json",
+    "MainLight": "GameObjects/MainLight.json"
 }

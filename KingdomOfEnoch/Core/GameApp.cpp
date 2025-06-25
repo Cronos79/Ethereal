@@ -61,7 +61,7 @@ void GameApp::OnHandleInput(float deltaTime)
 	if (keyboard.IsKeyDown(VK_SHIFT))
 	{
 		newMouseSensitivity = m_MouseSensitivity * 2.0f; // Increase mouse sensitivity when Shift is pressed
-		newCameraSpeed = m_CameraSpeed * 2.0f; // Increase camera speed when Shift is pressed
+		newCameraSpeed = m_CameraSpeed * 4.0f; // Increase camera speed when Shift is pressed
 	}
 	camera.HandleInput(mouse, keyboard, 1.0f, newCameraSpeed, newMouseSensitivity);	
 }

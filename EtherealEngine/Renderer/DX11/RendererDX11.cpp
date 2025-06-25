@@ -258,6 +258,24 @@ namespace Ethereal
 	
 	void RendererDX11::Draw(const std::shared_ptr<GameObject>& obj)
 	{
+		// Upload light buffer once (shared by all objects)
+		auto scene = EEContext::Get().GetSceneManager().GetCurrentScene();
+		auto lightObj = scene->GetMainLight();
+		if (lightObj)
+		{
+			CB_PS_Light lightData;
+			lightData.lightDirection = lightObj->GetLightDirection();
+			lightData.lightColor = lightObj->GetLightColor();
+			lightData.ambientStrength = lightObj->GetAmbientStrength();
+
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+			m_Context->Map(m_LightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+			memcpy(mappedResource.pData, &lightData, sizeof(CB_PS_Light));
+			m_Context->Unmap(m_LightBuffer.Get(), 0);
+
+			m_Context->PSSetConstantBuffers(1, 1, m_LightBuffer.GetAddressOf());
+		}
+
 		auto model = obj->GetModel();
 		if (!model) return;
 
@@ -277,25 +295,7 @@ namespace Ethereal
 		auto& constantBuffer = model->GetConstantBuffer();
 		constantBuffer.data.mat = DirectX::XMMatrixTranspose(world * camera.GetViewMatrix() * camera.GetProjectionMatrix());
 		constantBuffer.ApplyChanges();
-		m_Context->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
-
-		// Upload light buffer once (shared by all objects)
-		auto scene = EEContext::Get().GetSceneManager().GetCurrentScene();
-		auto lightObj = scene->GetMainLight();
-		if (lightObj)
-		{
-			CB_PS_Light lightData;
-			lightData.lightDirection = lightObj->GetLightDirection();
-			lightData.lightColor = lightObj->GetLightColor();
-			lightData.ambientStrength = lightObj->GetAmbientStrength();
-
-			D3D11_MAPPED_SUBRESOURCE mappedResource;
-			m_Context->Map(m_LightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-			memcpy(mappedResource.pData, &lightData, sizeof(CB_PS_Light));
-			m_Context->Unmap(m_LightBuffer.Get(), 0);
-
-			m_Context->PSSetConstantBuffers(1, 1, m_LightBuffer.GetAddressOf());
-		}
+		m_Context->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());		
 
 		const auto& meshes = model->GetMeshes();
 		const auto& materials = model->GetMaterials();

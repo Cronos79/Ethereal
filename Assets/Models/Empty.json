@@ -1,0 +1,16 @@
+{
+  "mesh": "Models/SM_Empty.fbx",
+  "materials": [
+    {
+      "ID": 0,
+      "vertexShader": "VertexShader",
+      "pixelShader": "PixelShader",
+      "diffuseTexture": "Textures/Mushroom.png",
+        "inputLayout": [
+        { "semantic": "POSITION", "index": 0, "format": "R32G32B32_FLOAT", "offset": 0 },
+        { "semantic": "NORMAL", "index": 0, "format": "R32G32B32_FLOAT", "offset": -1 },
+        { "semantic": "TEXCOORD", "index": 0, "format": "R32G32_FLOAT", "offset": -1 }
+      ]
+    }
+]
+}

@@ -135,8 +135,8 @@ namespace Ethereal
 			mesh->Initialize(std::move(vertexData), std::move(layout), std::move(indices));
 			m_Meshes.push_back(mesh);
 
-			LOG_INFO("Loaded mesh '{}' with {} verts, {} indices, material {}",
-				mesh->GetName(), assimpMesh->mNumVertices, indices.size(), mesh->GetMaterialIndex());
+			/*LOG_INFO("Loaded mesh '{}' with {} verts, {} indices, material {}",
+				mesh->GetName(), assimpMesh->mNumVertices, indices.size(), mesh->GetMaterialIndex());*/
 		}
 
 		if (!CreateConstantBuffer())

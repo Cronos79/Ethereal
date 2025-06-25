@@ -61,7 +61,7 @@ public:
 	{
 		if (deviceContext == nullptr)
 		{
-			LOG_ERROR("Device context is null.");
+			LOG_WARN("Device context is null.");
 			return false;
 		}
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -80,7 +80,7 @@ public:
 	{
 		if(deviceContext == nullptr)
 		{
-			LOG_ERROR("Device context is null.");
+			//LOG_ERROR("Device context is null.");
 			return false;
 		}
 		return IsInitialized;

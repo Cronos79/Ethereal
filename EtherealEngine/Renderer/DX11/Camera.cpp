@@ -214,23 +214,23 @@ namespace Ethereal
 		{
 			MoveForward(0.1f * cameraSpeed);
 		}
-		else if (keyboard.IsKeyDown('S'))
+		if (keyboard.IsKeyDown('S'))
 		{
 			MoveBackward(0.1f * cameraSpeed);
 		}
-		else if (keyboard.IsKeyDown('A'))
+		if (keyboard.IsKeyDown('A'))
 		{
 			MoveLeft(0.1f * cameraSpeed);
 		}
-		else if (keyboard.IsKeyDown('D'))
+		if (keyboard.IsKeyDown('D'))
 		{
 			MoveRight(0.1f * cameraSpeed);
 		}
-		else if (keyboard.IsKeyDown('Q'))
+		if (keyboard.IsKeyDown('Q'))
 		{
 			MoveUp(0.1f * cameraSpeed);
 		}
-		else if (keyboard.IsKeyDown('E'))
+		if (keyboard.IsKeyDown('E'))
 		{
 			MoveDown(0.1f * cameraSpeed);
 		}
