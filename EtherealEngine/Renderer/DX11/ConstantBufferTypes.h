@@ -6,6 +6,12 @@ struct CB_VS_PerObject
 	DirectX::XMMATRIX worldViewProj;
 };
 
+struct CB_Camera
+{
+	DirectX::XMMATRIX view;
+	DirectX::XMMATRIX projection;
+};
+
 struct CB_PS_pixelshader
 {
 	float alpha = 1.0f;

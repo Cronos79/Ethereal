@@ -301,6 +301,9 @@ namespace Ethereal
 		constantBuffer.data.mat = DirectX::XMMatrixTranspose(world * camera.GetViewMatrix() * camera.GetProjectionMatrix());
 		constantBuffer.ApplyChanges();
 		m_Context->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());	*/	
+		auto& camera = EEContext::Get().GetCameraManager().GetCurrentCamera();	
+		camera.UpdateBuffer();
+		m_Context->VSSetConstantBuffers(1, 1, camera.GetConstantBuffer().GetAddressOf());
 
 		const auto& meshes = model->GetMeshes();
 		const auto& materials = model->GetMaterials();
@@ -350,11 +353,12 @@ namespace Ethereal
 				mesh->GetPerObjectCB().Initialize(m_Device.Get(), m_Context.Get());
 
 			DirectX::XMMATRIX world = obj->GetTransform().GetMatrix();
-			CB_VS_PerObject& cbData = mesh->GetPerObjectCB().data;
-			auto& camera = EEContext::Get().GetCameraManager().GetCurrentCamera();
+			mesh->UpdateBuffer(world, camera.GetViewMatrix(), camera.GetProjectionMatrix());
+			m_Context->VSSetConstantBuffers(0, 1, mesh->GetPerObjectCB().GetAddressOf());
+		/*	CB_VS_PerObject& cbData = mesh->GetPerObjectCB().data;			
 			cbData.worldViewProj = XMMatrixTranspose(world * camera.GetViewMatrix() * camera.GetProjectionMatrix());
 			mesh->GetPerObjectCB().ApplyChanges();
-			m_Context->VSSetConstantBuffers(0, 1, mesh->GetPerObjectCB().GetAddressOf());
+			m_Context->VSSetConstantBuffers(0, 1, mesh->GetPerObjectCB().GetAddressOf());*/
 
 			if (!material->GetConstantBuffer().IsBufferInitialized())
 				material->GetConstantBuffer().Initialize(m_Device.Get(), m_Context.Get());

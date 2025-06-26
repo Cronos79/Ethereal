@@ -1,5 +1,6 @@
 #include "Renderer/DX11/Camera.h"
 #include "imgui/imgui.h"
+#include "Core/EEContext.h"
 
 namespace Ethereal
 {
@@ -13,6 +14,11 @@ namespace Ethereal
 		this->rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		this->rotVector = XMLoadFloat3(&this->rot);
 		this->UpdateViewMatrix();
+		m_CameraBuffer = ConstantBuffer<CB_Camera>();
+		if (!InitializeBuffer())
+		{
+			LOG_ERROR("Failed to initialize camera constant buffer.");
+		}
 	}
 
 	void Camera::SetProjectionValues(float fovDegrees, float aspectRatio, float nearZ, float farZ)
@@ -275,6 +281,31 @@ namespace Ethereal
 	float Camera::GetFarPlane() const
 	{
 		return m_FarPlane;
+	}
+
+	ConstantBuffer<CB_Camera>& Camera::GetConstantBuffer()
+	{
+		return m_CameraBuffer;
+	}
+
+	bool Camera::InitializeBuffer()
+	{
+		ID3D11Device* device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());
+		ID3D11DeviceContext* context = static_cast<ID3D11DeviceContext*>(EEContext::Get().GetContext());
+		HRESULT hr = m_CameraBuffer.Initialize(device, context);
+		if (FAILED(hr))
+		{
+			LOG_ERROR("Failed to initialize camera constant buffer: {}", hr);
+			return false;
+		}
+		return true;
+	}
+
+	void Camera::UpdateBuffer()
+	{
+		m_CameraBuffer.data.view = DirectX::XMMatrixTranspose(this->viewMatrix);
+		m_CameraBuffer.data.projection = DirectX::XMMatrixTranspose(this->projectionMatrix);
+		m_CameraBuffer.ApplyChanges();
 	}
 
 	void Camera::UpdateViewMatrix() //Updates view matrix and also updates the movement vectors

@@ -3,6 +3,12 @@ cbuffer PerObjectCB : register(b0)
     matrix worldViewProj;
 };
 
+cbuffer CameraCB : register(b1)
+{
+    matrix view;
+    matrix projection;
+};
+
 struct VS_INPUT
 {
     float3 inPos : POSITION;

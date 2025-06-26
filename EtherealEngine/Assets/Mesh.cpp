@@ -45,6 +45,17 @@ namespace Ethereal
 		}
 	}
 
+	void Mesh::UpdateBuffer(const DirectX::XMMATRIX& worldMatrix, const DirectX::XMMATRIX& viewMatrix, const DirectX::XMMATRIX& projMatrix)
+	{
+		//ID3D11DeviceContext* context = static_cast<ID3D11DeviceContext*>(EEContext::Get().GetContext());
+
+		DirectX::XMMATRIX wvp = XMMatrixTranspose(worldMatrix * viewMatrix * projMatrix);
+		m_PerObjectCB.data.worldViewProj = wvp;
+		m_PerObjectCB.ApplyChanges();
+
+		//context->VSSetConstantBuffers(0, 1, m_PerObjectCB.GetAddressOf()); // bind at b0
+	}
+
 	bool Mesh::CreateConstantBuffer()
 	{
 		ID3D11Device* device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());

@@ -3,6 +3,8 @@
 #include "Core/EtherealIncludes.h"
 #include "Platform/Mouse.h"
 #include "Platform/Keyboard.h"
+#include "ConstantBufferTypes.h"
+#include "ConstantBuffer.h"
 using namespace DirectX;
 
 namespace Ethereal
@@ -47,6 +49,10 @@ namespace Ethereal
 		float GetFovDegrees() const;
 		float GetNearPlane() const;
 		float GetFarPlane() const;
+
+		ConstantBuffer<CB_Camera>& GetConstantBuffer();
+		bool InitializeBuffer();
+		void UpdateBuffer();
 	private:
 		void UpdateViewMatrix();
 		XMVECTOR posVector;
@@ -71,5 +77,7 @@ namespace Ethereal
 		float m_FovDegrees;
 		float m_NearPlane;
 		float m_FarPlane;
+
+		ConstantBuffer<CB_Camera> m_CameraBuffer;
 	};
 } // namespace Ethereal

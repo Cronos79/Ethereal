@@ -22,6 +22,7 @@ namespace Ethereal
 		bool Initialize(const std::vector<uint8_t>& vertexData, const VertexBufferLayout& layout, const std::vector<uint32_t>& indices);
 		bool Initialize(std::vector<uint8_t>&& vertexData, VertexBufferLayout&& layout, std::vector<uint32_t>&& indices);
 		void UploadToGPU();
+		void UpdateBuffer(const DirectX::XMMATRIX& worldMatrix, const DirectX::XMMATRIX& viewMatrix, const DirectX::XMMATRIX& projMatrix);
 
 		ID3D11Buffer* GetVertexBuffer() const
 		{
