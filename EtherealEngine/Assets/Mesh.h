@@ -8,6 +8,8 @@
 #include <d3d11.h>
 #include <memory>
 #include <vector>
+#include "Renderer/DX11/ConstantBufferTypes.h"
+#include "Renderer/DX11/ConstantBuffer.h"
 
 namespace Ethereal
 {
@@ -69,6 +71,14 @@ namespace Ethereal
 			return m_VertexData;
 		}
 
+		ConstantBuffer<CB_VS_PerObject>& GetPerObjectCB()
+		{
+			return m_PerObjectCB;
+		}
+
+	private:
+		bool CreateConstantBuffer();
+
 	private:
 		std::string m_Name;
 		uint32_t m_MaterialIndex = 0;
@@ -79,5 +89,6 @@ namespace Ethereal
 
 		VertexBuffer m_VertexBuffer;
 		IndexBuffer m_IndexBuffer;
+		ConstantBuffer<CB_VS_PerObject> m_PerObjectCB;
 	};
 }

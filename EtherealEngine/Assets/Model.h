@@ -17,7 +17,6 @@ namespace Ethereal
 		virtual ~Model() = default;
 
 		bool LoadFromFile(const std::string& path);
-		ConstantBuffer<CB_VS_vertexshader>& GetConstantBuffer();
 
 		void SetMaterials(std::vector<std::shared_ptr<Material>>&& materials);
 		const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
@@ -34,13 +33,11 @@ namespace Ethereal
 		void SetMaterialOverride(int materialIndex, const MaterialOverride & override);
 
 	private:
-		bool CreateConstantBuffer();
 
 		std::vector<std::shared_ptr<Material>> m_Materials;
 		std::vector<std::shared_ptr<Mesh>> m_Meshes;
 		std::unordered_map<int, MaterialOverride> m_MaterialOverrides;
 
-		ConstantBuffer<CB_VS_vertexshader> m_ConstantBuffer;
 		std::string m_VertexShaderName = "VertexShader";
 		std::string m_PixelShaderName = "PixelShader";
 		std::string m_DiffuseTexturePath = "Textures/Test.png";

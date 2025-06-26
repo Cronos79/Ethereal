@@ -59,7 +59,6 @@ namespace Ethereal
 				material->SetVertexShaderName(m_VertexShaderName);
 				material->SetPixelShaderName(m_PixelShaderName);
 				material->SetDiffuseTexturePath(m_DiffuseTexturePath);
-				material->SetNormalTexturePath(m_NormalTexturePath);
 			}
 
 			if (!material->Initialize())
@@ -133,20 +132,10 @@ namespace Ethereal
 			m_Meshes.push_back(mesh);
 		}
 
-		if (!CreateConstantBuffer())
-		{
-			LOG_ERROR("Failed to create constant buffer for model: {}", path);
-			return false;
-		}
-
 		LOG_INFO("Model '{}' loaded with {} mesh(es)", path, m_Meshes.size());
 		return true;
 	}
 
-	ConstantBuffer<CB_VS_vertexshader>& Model::GetConstantBuffer()
-	{
-		return m_ConstantBuffer;
-	}
 
 	void Model::SetMaterialOverride(int materialIndex, const MaterialOverride & override)
 	{
@@ -181,18 +170,5 @@ namespace Ethereal
 	std::shared_ptr<Mesh> Model::GetMesh(size_t index) const
 	{
 		return (index < m_Meshes.size()) ? m_Meshes[index] : nullptr;
-	}
-
-	bool Model::CreateConstantBuffer()
-	{
-		ID3D11Device* device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());
-		ID3D11DeviceContext* context = static_cast<ID3D11DeviceContext*>(EEContext::Get().GetContext());
-		HRESULT hr = m_ConstantBuffer.Initialize(device, context);
-		if (FAILED(hr))
-		{
-			LOG_ERROR("Failed to initialize model constant buffer: {}", hr);
-			return false;
-		}
-		return true;
 	}
 } 

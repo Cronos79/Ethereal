@@ -1,9 +1,9 @@
 #pragma once
 #include <DirectXMath.h>
 
-struct CB_VS_vertexshader
+struct CB_VS_PerObject
 {
-	DirectX::XMMATRIX mat; // World matrix for vertex shader
+	DirectX::XMMATRIX worldViewProj;
 };
 
 struct CB_PS_pixelshader

@@ -1,6 +1,6 @@
-cbuffer mycBuffer : register(b0)
+cbuffer PerObjectCB : register(b0)
 {
-    float4x4 mat;
+    matrix worldViewProj;
 };
 
 struct VS_INPUT
@@ -22,7 +22,7 @@ struct VS_OUTPUT
 VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output;
-    output.outPosition = mul(float4(input.inPos, 1.0f), mat);
+    output.outPosition = mul(float4(input.inPos, 1.0f), worldViewProj);
     output.outTexCoord = input.inTexCoord;
     output.outNormal = input.inNormal;
     output.outTangent = input.inTangent;

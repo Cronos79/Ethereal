@@ -9,6 +9,7 @@ namespace Ethereal
 		m_VertexData = vertexData;
 		m_VertexLayout = layout;
 		m_Indices = indices;
+		CreateConstantBuffer();
 		UploadToGPU();
 		return true;
 	}
@@ -18,6 +19,11 @@ namespace Ethereal
 		m_VertexData = std::move(vertexData);
 		m_VertexLayout = std::move(layout);
 		m_Indices = std::move(indices);
+		if (!CreateConstantBuffer())
+		{
+			LOG_ERROR("Failed to create constant buffer for mesh");
+			return false;
+		}
 		UploadToGPU();
 		return true;
 	}
@@ -38,4 +44,18 @@ namespace Ethereal
 			m_IndexBuffer.Initialize(device, reinterpret_cast<DWORD*>(m_Indices.data()), (UINT)m_Indices.size());
 		}
 	}
+
+	bool Mesh::CreateConstantBuffer()
+	{
+		ID3D11Device* device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());
+		ID3D11DeviceContext* context = static_cast<ID3D11DeviceContext*>(EEContext::Get().GetContext());
+		HRESULT hr = m_PerObjectCB.Initialize(device, context);
+		if (FAILED(hr))
+		{
+			LOG_ERROR("Failed to initialize model constant buffer: {}", hr);
+			return false;
+		}
+		return true;
+	}
+
 }
