@@ -1,5 +1,0 @@
-{
-    "GameConfig": "Configs/GameConfig.json",
-    "VertexShader": "Shaders/VertexShader.cso",
-    "PixelShader": "Shaders/PixelShader.cso"
-}
