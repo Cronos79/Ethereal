@@ -289,12 +289,7 @@ namespace Ethereal
 		m_Context->RSSetState(m_RasterizerState.Get());
 		m_Context->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
 		m_Context->OMSetBlendState(m_BlendState.Get(), nullptr, 0xFFFFFFFF);
-		m_Context->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
-
-		// Camera and World Matrix
-		auto& camera = EEContext::Get().GetCameraManager().GetCurrentCamera();	
-		camera.UpdateBuffer();
-		m_Context->VSSetConstantBuffers(1, 1, camera.GetConstantBuffer().GetAddressOf());
+		m_Context->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());	
 
 		const auto& meshes = model->GetMeshes();
 		const auto& materials = model->GetMaterials();
@@ -343,6 +338,8 @@ namespace Ethereal
 			if (!mesh->GetPerObjectCB().IsBufferInitialized())
 				mesh->GetPerObjectCB().Initialize(m_Device.Get(), m_Context.Get());
 
+			// Camera and World Matrix
+			auto& camera = EEContext::Get().GetCameraManager().GetCurrentCamera();
 			DirectX::XMMATRIX world = obj->GetTransform().GetMatrix();
 			mesh->UpdateBuffer(world, camera.GetViewMatrix(), camera.GetProjectionMatrix());
 			m_Context->VSSetConstantBuffers(0, 1, mesh->GetPerObjectCB().GetAddressOf());

@@ -29,6 +29,7 @@ struct PS_INPUT
     float2 inTexCoord : TEXCOORD;
     float3 inNormal : NORMAL;
     float3 inTangent : TANGENT;
+    float3 inWorldPos : WORLD_POSITION;
 };
 
 float4 main(PS_INPUT input) : SV_TARGET
@@ -62,5 +63,6 @@ float4 main(PS_INPUT input) : SV_TARGET
     float3 lighting = ambient + diffuse + specular;
     float3 finalColor = baseColor * lighting + emissive;
 
-    return float4(finalColor, alpha);
+    //return float4(finalColor, alpha);
+    return float4(worldNormal * 0.5f + 0.5f, 1.0f);
 }

@@ -4,12 +4,7 @@
 struct CB_VS_PerObject
 {
 	DirectX::XMMATRIX worldViewProj;
-};
-
-struct CB_Camera
-{
-	DirectX::XMMATRIX view;
-	DirectX::XMMATRIX projection;
+	DirectX::XMMATRIX world;
 };
 
 struct CB_PS_pixelshader

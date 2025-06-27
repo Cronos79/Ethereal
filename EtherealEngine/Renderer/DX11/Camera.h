@@ -50,9 +50,6 @@ namespace Ethereal
 		float GetNearPlane() const;
 		float GetFarPlane() const;
 
-		ConstantBuffer<CB_Camera>& GetConstantBuffer();
-		bool InitializeBuffer();
-		void UpdateBuffer();
 	private:
 		void UpdateViewMatrix();
 		XMVECTOR posVector;
@@ -77,7 +74,5 @@ namespace Ethereal
 		float m_FovDegrees;
 		float m_NearPlane;
 		float m_FarPlane;
-
-		ConstantBuffer<CB_Camera> m_CameraBuffer;
 	};
 } // namespace Ethereal

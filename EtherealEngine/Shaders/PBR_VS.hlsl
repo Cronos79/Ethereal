@@ -1,12 +1,7 @@
 cbuffer PerObjectCB : register(b0)
 {
     matrix worldViewProj;
-};
-
-cbuffer CameraCB : register(b1)
-{
-    matrix view;
-    matrix projection;
+    matrix world;
 };
 
 struct VS_INPUT
@@ -23,6 +18,7 @@ struct VS_OUTPUT
     float2 outTexCoord : TEXCOORD;
     float3 outNormal : NORMAL;
     float3 outTangent : TANGENT;
+    float3 outWorldPos : WORLD_POSITION;
 };
 
 VS_OUTPUT main(VS_INPUT input)
@@ -30,7 +26,8 @@ VS_OUTPUT main(VS_INPUT input)
     VS_OUTPUT output;
     output.outPosition = mul(float4(input.inPos, 1.0f), worldViewProj);
     output.outTexCoord = input.inTexCoord;
-    output.outNormal = input.inNormal;
+    output.outNormal = normalize(mul(float4(input.inNormal, 0.0f), world));
     output.outTangent = input.inTangent;
+    output.outWorldPos = mul(float4(input.inPos, 1.0f), world);
     return output;
 }

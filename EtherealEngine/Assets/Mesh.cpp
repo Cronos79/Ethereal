@@ -47,6 +47,7 @@ namespace Ethereal
 	{
 		DirectX::XMMATRIX wvp = XMMatrixTranspose(worldMatrix * viewMatrix * projMatrix);
 		m_PerObjectCB.data.worldViewProj = wvp;
+		m_PerObjectCB.data.world = worldMatrix;
 		m_PerObjectCB.ApplyChanges();
 	}
 
