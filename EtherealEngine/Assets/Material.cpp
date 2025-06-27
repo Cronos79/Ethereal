@@ -292,4 +292,14 @@ namespace Ethereal
 	{
 		return m_SpecularStrength;
 	}
+	float Material::GetAlpha() const
+	{
+		return m_Alpha;
+	}
+
+	void Material::SetAlpha(float alpha)
+	{
+		m_Alpha = alpha;
+	}
+
 } // namespace Ethereal

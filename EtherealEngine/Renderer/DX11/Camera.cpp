@@ -14,6 +14,7 @@ namespace Ethereal
 		this->rot = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		this->rotVector = XMLoadFloat3(&this->rot);
 		this->UpdateViewMatrix();
+		CreateConstantBuffer();
 	}
 
 	void Camera::SetProjectionValues(float fovDegrees, float aspectRatio, float nearZ, float farZ)
@@ -276,6 +277,42 @@ namespace Ethereal
 	float Camera::GetFarPlane() const
 	{
 		return m_FarPlane;
+	}
+
+	bool Camera::CreateConstantBuffer()
+	{
+		ID3D11Device* device = static_cast<ID3D11Device*>(EEContext::Get().GetDevice());
+		ID3D11DeviceContext* context = static_cast<ID3D11DeviceContext*>(EEContext::Get().GetContext());
+
+		HRESULT hr = m_CameraCB.Initialize(device, context);
+		if (FAILED(hr))
+		{
+			LOG_ERROR("Failed to initialize camera constant buffer: {}", hr);
+			return false;
+		}
+		return true;
+	}
+
+	void Camera::UpdateCB()
+	{
+		// Transpose viewProj matrix before storing
+		DirectX::XMMATRIX viewProj = XMMatrixTranspose(this->viewMatrix * this->projectionMatrix);
+		m_CameraCB.data.viewProj = viewProj;
+
+		// Position and direction
+		const XMFLOAT3& pos = this->GetPositionFloat3();
+		m_CameraCB.data.cameraPosition = pos;
+
+		XMVECTOR forward = XMVector3Normalize(GetForwardVector());
+		XMFLOAT3 fwd;
+		XMStoreFloat3(&fwd, forward);
+		m_CameraCB.data.viewDirection = fwd;
+
+		// Alignment paddings
+		m_CameraCB.data.padding = 0.0f;
+		m_CameraCB.data.padding1 = 0.0f;
+
+		m_CameraCB.ApplyChanges();
 	}
 
 	void Camera::UpdateViewMatrix() //Updates view matrix and also updates the movement vectors

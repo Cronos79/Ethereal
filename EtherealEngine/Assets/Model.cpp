@@ -39,6 +39,15 @@ namespace Ethereal
 			{
 				material->SetDiffuseColor({ color.r, color.g, color.b });
 			}
+			float opacity = 1.0f;
+			if (AI_SUCCESS == aiMat->Get(AI_MATKEY_OPACITY, opacity))
+			{
+				material->SetAlpha(opacity);
+			}
+			else
+			{
+				material->SetAlpha(1.0f); // Default to fully opaque if not specified
+			}
 
 			auto ovr = m_MaterialOverrides.find(i);
 			if (ovr != m_MaterialOverrides.end())

@@ -79,6 +79,8 @@ namespace Ethereal
 		float GetMetallicValue() const;
 		float GetRoughnessValue() const;
 		float GetSpecularStrength() const;
+		float GetAlpha() const;
+		void SetAlpha(float alpha);
 
 	private:
 		nlohmann::json m_InputLayoutJson;
@@ -97,6 +99,7 @@ namespace Ethereal
 		float m_MetallicValue = 1.0f;
 		float m_RoughnessValue = 1.0f;
 		float m_SpecularStrength = 0.5f;
+		float m_Alpha = 1.0f;
 
 		bool m_HasDiffuse = false;
 		bool m_HasNormal = false;

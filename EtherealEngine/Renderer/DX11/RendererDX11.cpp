@@ -268,17 +268,12 @@ namespace Ethereal
 		auto lightObj = scene->GetMainLight();
 		if (lightObj)
 		{
-			CB_PS_Light lightData;
-			lightData.lightDirection = lightObj->GetLightDirection();
-			lightData.lightColor = lightObj->GetLightColor();
-			lightData.ambientStrength = lightObj->GetAmbientStrength();
+			m_LightBuffer.data.lightDirection = lightObj->GetLightDirection();
+			m_LightBuffer.data.lightColor = lightObj->GetLightColor();
+			m_LightBuffer.data.ambientStrength = lightObj->GetAmbientStrength();
+			m_LightBuffer.ApplyChanges();			
 
-			D3D11_MAPPED_SUBRESOURCE mappedResource;
-			m_Context->Map(m_LightBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-			memcpy(mappedResource.pData, &lightData, sizeof(CB_PS_Light));
-			m_Context->Unmap(m_LightBuffer.Get(), 0);
-
-			m_Context->PSSetConstantBuffers(1, 1, m_LightBuffer.GetAddressOf());
+			m_Context->PSSetConstantBuffers(0, 1, m_LightBuffer.GetAddressOf());
 		}
 
 		auto model = obj->GetModel();
@@ -345,11 +340,14 @@ namespace Ethereal
 			m_Context->VSSetConstantBuffers(0, 1, mesh->GetPerObjectCB().GetAddressOf());
 
 			if (!material->GetConstantBuffer().IsBufferInitialized())
-				material->GetConstantBuffer().Initialize(m_Device.Get(), m_Context.Get());
+				material->GetConstantBuffer().Initialize(m_Device.Get(), m_Context.Get());		
 
-			material->GetConstantBuffer().data.alpha = 1.0f;
+			camera.UpdateCB();
+			m_Context->PSSetConstantBuffers(1, 1, camera.GetCameraCB().GetAddressOf());
+
+			material->GetConstantBuffer().data.alpha = 1.0f;//material->GetAlpha();
 			material->GetConstantBuffer().ApplyChanges();
-			m_Context->PSSetConstantBuffers(0, 1, material->GetConstantBuffer().GetAddressOf());
+			m_Context->PSSetConstantBuffers(2, 1, material->GetConstantBuffer().GetAddressOf());
 
 			ID3D11Buffer* vb = mesh->GetVertexBuffer();
 			m_Context->IASetVertexBuffers(0, 1, &vb, mesh->GetStridePtr(), &offset);

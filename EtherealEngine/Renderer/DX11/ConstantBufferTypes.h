@@ -19,3 +19,12 @@ struct CB_PS_Light
 	DirectX::XMFLOAT3 lightColor = { 1.0f, 1.0f, 1.0f };
 	float ambientStrength = 0.2f;
 };
+
+struct CB_PS_Camera
+{
+	DirectX::XMMATRIX viewProj; // View * Projection matrix (transposed)
+	DirectX::XMFLOAT3 cameraPosition;
+	float padding; // maintain 16-byte alignment
+	DirectX::XMFLOAT3 viewDirection;  // Forward vector from camera
+	float padding1;                   // Padding again for alignment
+};
