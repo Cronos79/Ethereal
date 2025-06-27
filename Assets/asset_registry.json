@@ -7,12 +7,16 @@
     "Texture": "Textures/Test.png",
     "TestModel": "Models/TestCube.json",
     "SmallConeModel": "Models/SmallConeModel.json",
+    "CubeRingModel": "Models/CubeRingModel.json",
     "EmptyModel": "Models/Empty.json",
     "TestCube": "GameObjects/TestCube.json",
     "EmptyGO": "GameObjects/Empty.json",
     "GO_SmallCone": "GameObjects/SmallCone.json",
+    "GO_CubeRing": "GameObjects/CubeRing.json",
     "MainLight": "GameObjects/MainLight.json",
     "WhiteTexture": "Textures/White.png",
     "BlackTexture": "Textures/Black.png",
-    "NormalTexture": "Textures/Normal.png"
+    "NormalTexture": "Textures/Normal.png",
+    "TestScene": "Scenes/TestRoom01.json",
+    "TestScene2": "Scenes/TestRoom02.json"
 }

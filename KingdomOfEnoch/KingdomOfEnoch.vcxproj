@@ -162,14 +162,12 @@
     <ClCompile Include="Core\GameApp.cpp" />
     <ClCompile Include="Game\CubeRingObj.cpp" />
     <ClCompile Include="Game\TestObj.cpp" />
-    <ClCompile Include="Game\TestScene.cpp" />
     <ClCompile Include="Platform\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\GameApp.h" />
     <ClInclude Include="Game\CubeRingObj.h" />
     <ClInclude Include="Game\TestObj.h" />
-    <ClInclude Include="Game\TestScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EtherealEngine\EtherealEngine.vcxproj">

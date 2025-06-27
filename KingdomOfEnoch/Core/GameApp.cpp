@@ -7,7 +7,6 @@
 #include "Assets/Scene.h"
 #include "Assets/GameObject.h"
 #include "Game/TestObj.h"
-#include "Game/TestScene.h"
 #include "Assets/AssetFactory.h"
 
 using namespace Ethereal;
@@ -35,8 +34,10 @@ void GameApp::OnInitialize()
 		}
 	);
 	// Temp code *************************
-	TestScene* scene = new TestScene("TestScene");
-	m_SceneManager.AddScene(scene);
+	EEContext::Get().GetAssetManager().LoadScene("TestScene");
+	EEContext::Get().GetAssetManager().LoadScene("TestScene2");
+	auto scene = EEContext::Get().GetAssetManager().Get<Scene>("TestScene");
+	m_SceneManager.AddScene(scene.get());
 	// Temp code *************************
 	GAME_LOG_INFO("GameApp initialized successfully.");
 }
@@ -54,6 +55,20 @@ void GameApp::OnHandleInput(float deltaTime)
 	if (keyboard.GetKeyPressed(VK_F1))
 	{
 		GAME_LOG_INFO("F1 key pressed");
+	}
+
+	if (keyboard.GetKeyPressed('1'))
+	{
+		EEContext::Get().GetAssetManager().LoadScene("TestScene");
+		auto scene = EEContext::Get().GetAssetManager().Get<Scene>("TestScene");
+		m_SceneManager.SetCurrentScene(scene.get());
+	}
+
+	if (keyboard.GetKeyPressed('2'))
+	{
+		EEContext::Get().GetAssetManager().LoadScene("TestScene2");
+		auto scene = EEContext::Get().GetAssetManager().Get<Scene>("TestScene2");
+		m_SceneManager.SetCurrentScene(scene.get());
 	}
 
 	float newMouseSensitivity = m_MouseSensitivity;

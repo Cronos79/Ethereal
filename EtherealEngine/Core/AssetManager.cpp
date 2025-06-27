@@ -10,6 +10,7 @@
 #include "Assets/GameObject.h"
 #include "Assets/LightObject.h"
 #include "Assets/Texture.h"
+#include "Assets/Scene.h"
 
 
 namespace Ethereal
@@ -289,6 +290,103 @@ namespace Ethereal
 
 		m_Assets[name] = texture;
 		LOG_INFO("Loaded texture '{}'", name);
+		return true;
+	}
+
+	bool AssetManager::LoadScene(const std::string& name)
+	{
+		if (m_Assets.find(name) != m_Assets.end())
+			return true;
+
+		auto it = m_Registry.find(name);
+		if (it == m_Registry.end())
+		{
+			LOG_ERROR("Scene '{}' not found in registry.", name);
+			return false;
+		}
+
+		std::filesystem::path fullPath = GetAssetsDirectory() / it->second;
+		std::ifstream file(fullPath);
+		if (!file.is_open())
+		{
+			LOG_ERROR("Failed to open Scene file: {}", fullPath.string());
+			return false;
+		}
+
+		nlohmann::json sceneJson;
+		file >> sceneJson;
+
+		auto scene = std::make_shared<Scene>();
+		scene->SetName(sceneJson.value("name", name));
+
+		if (sceneJson.contains("gameObjects"))
+		{
+			for (const auto& objJson : sceneJson["gameObjects"])
+			{
+				std::string refName = objJson.value("ref", "");
+				if (refName.empty())
+				{
+					LOG_WARN("Scene object missing 'ref' field.");
+					continue;
+				}
+
+				// Load the referenced GameObject asset if not already
+				if (!LoadGameObject(refName))
+				{
+					LOG_WARN("Referenced GameObject '{}' could not be loaded.", refName);
+					continue;
+				}
+
+				auto original = Get<GameObject>(refName);
+				if (!original)
+				{
+					LOG_WARN("Referenced GameObject '{}' not found after loading.", refName);
+					continue;
+				}
+
+				auto clone = original->Clone();
+
+				// Override transform if provided
+				if (objJson.contains("transform"))
+				{
+					const auto& t = objJson["transform"];
+					DirectX::XMFLOAT3 position = { 0, 0, 0 };
+					DirectX::XMFLOAT3 rotation = { 0, 0, 0 };
+					DirectX::XMFLOAT3 scale = { 1, 1, 1 };
+
+					if (t.contains("position") && t["position"].is_array() && t["position"].size() == 3)
+					{
+						position = {
+							static_cast<float>(t["position"].at(0)),
+							static_cast<float>(t["position"].at(1)),
+							static_cast<float>(t["position"].at(2))
+						};
+					}
+					if (t.contains("rotation") && t["rotation"].is_array() && t["rotation"].size() == 3)
+					{
+						rotation = {
+							static_cast<float>(t["rotation"].at(0)),
+							static_cast<float>(t["rotation"].at(1)),
+							static_cast<float>(t["rotation"].at(2))
+						};
+					}
+					if (t.contains("scale") && t["scale"].is_array() && t["scale"].size() == 3)
+					{
+						scale = {
+							static_cast<float>(t["scale"].at(0)),
+							static_cast<float>(t["scale"].at(1)),
+							static_cast<float>(t["scale"].at(2))
+						};
+					}
+					clone->SetTransform(position, rotation, scale);
+				}
+
+				scene->AddGameObject(clone);
+			}
+		}
+
+		m_Assets[name] = scene;
+		LOG_INFO("Loaded scene '{}'", name);
 		return true;
 	}
 

@@ -18,7 +18,8 @@ namespace Ethereal
 		{
 			return m_CurrentScene;
 		}
-		void SetCurrentScene(Scene* scene);
+		bool SetCurrentScene(Scene* scene);
+		bool SetCurrentScene(const std::string& sceneName);
 		void AddScene(Scene* scene, bool setCurrentScene = false);
 		void RemoveScene(Scene* scene);
 		void ClearScenes();

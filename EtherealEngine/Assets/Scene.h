@@ -6,10 +6,11 @@
 #include <memory>
 #include "UI/EditorGui.h"
 #include "LightObject.h"
+#include "IAsset.h"
 
 namespace Ethereal
 {
-	class ETHEREAL_API Scene
+	class ETHEREAL_API Scene : public IAsset
 	{
 	public:
 		Scene();

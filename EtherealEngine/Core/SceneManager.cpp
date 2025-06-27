@@ -1,4 +1,5 @@
 #include "Core/SceneManager.h"
+#include "EEContext.h"
 
 namespace Ethereal
 {
@@ -11,11 +12,11 @@ namespace Ethereal
 
 	}
 
-	void SceneManager::SetCurrentScene(Scene* scene)
+	bool SceneManager::SetCurrentScene(Scene* scene)
 	{
 		if (scene == nullptr)
 		{
-			return; // Avoid setting null scenes
+			return false; // Avoid setting null scenes
 		}
 		if (m_CurrentScene != nullptr)
 		{
@@ -23,6 +24,17 @@ namespace Ethereal
 		}
 		m_CurrentScene = scene;
 		m_CurrentScene->OnActivate();
+		return true;
+	}
+
+	bool SceneManager::SetCurrentScene(const std::string& sceneName)
+	{
+		auto scene = EEContext::Get().GetAssetManager().Get<Scene>(sceneName);
+		if (scene)
+		{
+			return SetCurrentScene(scene.get());
+		}
+		return false;
 	}
 
 	void SceneManager::AddScene(Scene* scene, bool setCurrentScene)

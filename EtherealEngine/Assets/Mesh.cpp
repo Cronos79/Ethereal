@@ -34,26 +34,20 @@ namespace Ethereal
 
 		if (!m_VertexData.empty() && !m_VertexBuffer.Get())
 		{
-			//LOG_INFO("Uploading vertex buffer with {} bytes", m_VertexData.size());
 			m_VertexBuffer.Initialize(device, m_VertexData.data(), static_cast<UINT>(m_VertexData.size()), m_VertexLayout.GetStride());
 		}
 
 		if (!m_Indices.empty() && !m_IndexBuffer.Get())
 		{
-			//LOG_INFO("Uploading index buffer with {} indices", m_Indices.size());
 			m_IndexBuffer.Initialize(device, reinterpret_cast<DWORD*>(m_Indices.data()), (UINT)m_Indices.size());
 		}
 	}
 
 	void Mesh::UpdateBuffer(const DirectX::XMMATRIX& worldMatrix, const DirectX::XMMATRIX& viewMatrix, const DirectX::XMMATRIX& projMatrix)
 	{
-		//ID3D11DeviceContext* context = static_cast<ID3D11DeviceContext*>(EEContext::Get().GetContext());
-
 		DirectX::XMMATRIX wvp = XMMatrixTranspose(worldMatrix * viewMatrix * projMatrix);
 		m_PerObjectCB.data.worldViewProj = wvp;
 		m_PerObjectCB.ApplyChanges();
-
-		//context->VSSetConstantBuffers(0, 1, m_PerObjectCB.GetAddressOf()); // bind at b0
 	}
 
 	bool Mesh::CreateConstantBuffer()
