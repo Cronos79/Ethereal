@@ -47,8 +47,7 @@ namespace Ethereal
 				}
 			});
 
-		GUI::SetLicense(NS_LICENSE_NAME, NS_LICENSE_KEY);
-		//SetLicense();
+		SetLicense();
 		GUI::Init();
 
 		// Set resource providers
@@ -96,8 +95,8 @@ namespace Ethereal
 			return false;
 		}
 
-		//I::SetLicense(user.c_str(), key.c_str());
-		GUI::SetLicense(NS_LICENSE_NAME, NS_LICENSE_KEY);
+		GUI::SetLicense(user.c_str(), key.c_str());
+		//GUI::SetLicense(NS_LICENSE_NAME, NS_LICENSE_KEY);
 		LOG_INFO("Noesis license set successfully: {}", user);
 		return true;
 	}
