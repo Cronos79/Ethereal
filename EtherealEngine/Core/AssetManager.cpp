@@ -11,6 +11,8 @@
 #include "Assets/LightObject.h"
 #include "Assets/Texture.h"
 #include "Assets/Scene.h"
+#include "EEContext.h"
+#include "UI/NoesisUI.h"
 
 
 namespace Ethereal
@@ -318,6 +320,7 @@ namespace Ethereal
 
 		auto scene = std::make_shared<Scene>();
 		scene->SetName(sceneJson.value("name", name));
+		scene->SetUIPath(sceneJson.value("UIPath", ""));		
 
 		if (sceneJson.contains("gameObjects"))
 		{
@@ -384,7 +387,7 @@ namespace Ethereal
 				scene->AddGameObject(clone);
 			}
 		}
-
+		scene->OnActivate();
 		m_Assets[name] = scene;
 		LOG_INFO("Loaded scene '{}'", name);
 		return true;

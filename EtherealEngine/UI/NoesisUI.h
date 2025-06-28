@@ -29,6 +29,7 @@ namespace Ethereal
 		void Initialize();
 		bool SetLicense();
 		void LoadXamlView(const std::string& name);
+		void UnloadXamlView();
 		void Render();
 
 		Noesis::Ptr<Noesis::IView> GetView() const
@@ -46,5 +47,7 @@ namespace Ethereal
 	private:
 		Noesis::Ptr<Noesis::IView> m_View;
 		Noesis::Ptr<Noesis::RenderDevice> m_RenderDevice;
+
+		bool m_Initialized = false;
 	};
 }

@@ -17,6 +17,7 @@ namespace Ethereal
 
 	Scene::~Scene()
 	{
+		OnDeactivate();
 #ifdef EDITOR_BUILD
 		if (m_Editor)
 		{
@@ -172,13 +173,26 @@ namespace Ethereal
 		return m_Name;
 	}
 
+	void Scene::SetUIPath(const std::string& path)
+	{
+		m_UIPath = path;
+	}
+
+	const std::string& Scene::GetUIPath() const
+	{
+		return m_UIPath;
+	}
+
 	void Scene::OnActivate()
 	{
-
+		if (!GetUIPath().empty())
+		{
+			EEContext::Get().GetNoesisUI().LoadXamlView(GetUIPath());
+		}
 	}
 
 	void Scene::OnDeactivate()
 	{
-		
+		EEContext::Get().GetNoesisUI().UnloadXamlView();
 	}
 }

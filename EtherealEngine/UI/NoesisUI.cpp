@@ -36,6 +36,8 @@ namespace Ethereal
 
 	void NoesisUI::Initialize()
 	{
+		if (m_Initialized) return;
+
 		Noesis::SetLogHandler([](const char*, uint32_t, uint32_t level, const char*, const char* msg)
 			{
 				switch (level)
@@ -53,7 +55,7 @@ namespace Ethereal
 		// Set resource providers
 		auto xamlPath = (GetAssetsDirectory() / "UI").string();
 		auto fontPath = (GetAssetsDirectory() / "Fonts").string();
-		auto texturePath = (GetAssetsDirectory() / "Textures").string();
+		auto texturePath = (GetAssetsDirectory() / "UI").string();
 
 		GUI::SetXamlProvider(MakePtr<LocalXamlProvider>(xamlPath.c_str()));
 		GUI::SetFontProvider(MakePtr<LocalFontProvider>(fontPath.c_str()));
@@ -64,7 +66,7 @@ namespace Ethereal
 		GUI::SetFontDefaultProperties(15.0f, FontWeight_Normal, FontStretch_Normal, FontStyle_Normal);
 
 		InitializeRenderDevice();
-		LoadXamlView("HelloWorld.xaml");
+		m_Initialized = true;
 	}
 
 	bool NoesisUI::SetLicense()
@@ -96,7 +98,6 @@ namespace Ethereal
 		}
 
 		GUI::SetLicense(user.c_str(), key.c_str());
-		//GUI::SetLicense(NS_LICENSE_NAME, NS_LICENSE_KEY);
 		LOG_INFO("Noesis license set successfully: {}", user);
 		return true;
 	}
@@ -111,6 +112,14 @@ namespace Ethereal
 
 	void NoesisUI::LoadXamlView(const std::string& name)
 	{
+		if (!m_Initialized)
+		{
+			Initialize();
+		}
+		if (!m_RenderDevice)
+		{
+			InitializeRenderDevice();
+		}
 		auto width = EEContext::Get().GetWidth();
 		auto height = EEContext::Get().GetHeight();
 
@@ -121,8 +130,22 @@ namespace Ethereal
 		m_View->GetRenderer()->Init(m_RenderDevice);
 	}
 
+	void NoesisUI::UnloadXamlView()
+	{
+		if (m_View)
+		{
+			m_View->GetRenderer()->Shutdown();
+			m_View.Reset();
+		}
+	}
+
 	void NoesisUI::Render()
 	{
+		if (!m_Initialized || !m_View)
+		{
+			LOG_ERROR("NoesisUI not initialized or view not loaded");
+			return;
+		}
 		auto deltaTime = EEContext::Get().GetDeltaTime();
 		m_View->Update(deltaTime);
 
