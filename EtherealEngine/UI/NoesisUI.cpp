@@ -28,9 +28,12 @@ namespace Ethereal
 
 	NoesisUI::~NoesisUI()
 	{
-		m_View->GetRenderer()->Shutdown();
-		m_View.Reset();
-		m_RenderDevice.Reset();
+		UnloadXamlViews();
+		if (m_RenderDevice)
+		{
+			m_RenderDevice.Reset();
+			m_RenderDevice = nullptr;
+		}		
 		Noesis::GUI::Shutdown();
 	}
 
@@ -110,7 +113,7 @@ namespace Ethereal
 		m_RenderDevice = NoesisApp::CreateRenderDevice(device, context);
 	}
 
-	void NoesisUI::LoadXamlView(const std::string& name)
+	void NoesisUI::LoadXamlView(const std::string& path, const std::string& name, bool isVisible)
 	{
 		if (!m_Initialized)
 		{
@@ -123,37 +126,53 @@ namespace Ethereal
 		auto width = EEContext::Get().GetWidth();
 		auto height = EEContext::Get().GetHeight();
 
-		auto xaml = GUI::LoadXaml<FrameworkElement>(Uri(name.c_str()));
-		m_View = GUI::CreateView(xaml);
-		m_View->SetFlags(RenderFlags_PPAA | RenderFlags_LCD);
-		m_View->SetSize(width, height);
-		m_View->GetRenderer()->Init(m_RenderDevice);
+		NoesisView nView = {};
+		auto xaml = GUI::LoadXaml<FrameworkElement>(Uri(path.c_str()));
+		nView.View = GUI::CreateView(xaml);
+		nView.View->SetFlags(RenderFlags_PPAA | RenderFlags_LCD);
+		nView.View->SetSize(width, height);
+		nView.View->GetRenderer()->Init(m_RenderDevice);
+
+		nView.Name = name;
+		nView.IsVisable = isVisible;
+		m_Views.push_back(nView);
 	}
 
-	void NoesisUI::UnloadXamlView()
+	void NoesisUI::UnloadXamlViews()
 	{
-		if (m_View)
+		// loop through all views and unload them
+		for (auto& view : m_Views)
 		{
-			m_View->GetRenderer()->Shutdown();
-			m_View.Reset();
+			if (view.View)
+			{
+				view.View->GetRenderer()->Shutdown();
+				view.View.Reset();
+			}
 		}
 	}
 
 	void NoesisUI::Render()
 	{
-		if (!m_Initialized || !m_View)
+		if (!m_Initialized)
 		{
 			LOG_ERROR("NoesisUI not initialized or view not loaded");
 			return;
 		}
 		auto deltaTime = EEContext::Get().GetDeltaTime();
-		m_View->Update(deltaTime);
+		for (auto& view : m_Views)
+		{
+			if (view.View && view.IsVisable)
+			{
+				view.View->Update(deltaTime);
 
-		// Update UI render tree and draw internal textures
-		m_View->GetRenderer()->UpdateRenderTree();
-		m_View->GetRenderer()->RenderOffscreen();
+				// Update UI render tree and draw internal textures
+				view.View->GetRenderer()->UpdateRenderTree();
+				view.View->GetRenderer()->RenderOffscreen();
 
-		m_View->GetRenderer()->Render();
+				view.View->GetRenderer()->Render();
+			}
+		}
+	
 	}
 
 }

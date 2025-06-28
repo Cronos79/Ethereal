@@ -57,14 +57,7 @@ namespace Ethereal
 
 	void GameObject::DrawUI(float deltaTime)
 	{
-		ImGui::Begin("Info");
-		ImGui::Text("Name: %s", m_Name.c_str());
-		ImGui::Text("ID: %d", m_ID);
-		// Display position, rotation, scale
-		ImGui::Text("Position: (%.2f, %.2f, %.2f)", m_Transform.GetPosition().x, m_Transform.GetPosition().y, m_Transform.GetPosition().z);
-		ImGui::Text("Rotation: (%.2f, %.2f, %.2f)", m_Transform.GetRotation().x, m_Transform.GetRotation().y, m_Transform.GetRotation().z);
-		ImGui::Text("Scale: (%.2f, %.2f, %.2f)", m_Transform.GetScale().x, m_Transform.GetScale().y, m_Transform.GetScale().z);
-		ImGui::End();
+	
 	}
 
 	void GameObject::Update(float deltaTime)

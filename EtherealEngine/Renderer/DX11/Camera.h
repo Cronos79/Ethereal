@@ -84,5 +84,6 @@ namespace Ethereal
 		float m_FarPlane;
 
 		ConstantBuffer<CB_PS_Camera> m_CameraCB;
+		bool m_ShowControls = false;
 	};
 } // namespace Ethereal

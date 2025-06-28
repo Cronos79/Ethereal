@@ -236,6 +236,10 @@ namespace Ethereal
 		{
 			MoveDown(0.1f * cameraSpeed);
 		}
+		if (keyboard.GetKeyPressed('C'))
+		{
+			m_ShowControls = !m_ShowControls; // Toggle camera controls UI
+		}
 
 		// Handle mouse movement for camera rotation
 		while (auto rawDelta = mouse.ReadRawDelta())
@@ -250,18 +254,22 @@ namespace Ethereal
 
 	void Camera::UIControls()
 	{
-		ImGui::Begin("Camera Controls");
-		ImGui::Text("Use WASDQE to move the camera.");
-		ImGui::Text("Use mouse to look around.");
-		ImGui::SliderFloat("FOV", &m_FovDegrees, 1.0f, 120.0f);
-		ImGui::SliderFloat("Near Plane", &m_NearPlane, 0.01f, 10.0f);
-		ImGui::SliderFloat("Far Plane", &m_FarPlane, 100.0f, 10000.0f);
-		// Set position
-		if (ImGui::InputFloat3("Position", &this->pos.x))
+		if (m_ShowControls)
 		{
-			this->SetPosition(this->pos.x, this->pos.y, this->pos.z);
+			ImGui::Begin("Camera Controls");
+			ImGui::Text("Use WASDQE to move the camera.");
+			ImGui::Text("Use mouse to look around.");
+			if (ImGui::InputFloat3("Position", &this->pos.x))
+			{
+				this->SetPosition(this->pos.x, this->pos.y, this->pos.z);
+			}
+			if (ImGui::Button("Reset Camera"))
+			{
+				this->SetPosition(0.0f, 0.0f, 0.0f);
+				this->SetRotation(0.0f, 0.0f, 0.0f);
+			}
+			ImGui::End();
 		}
-		ImGui::End();
 	}
 
 	float Camera::GetFovDegrees() const

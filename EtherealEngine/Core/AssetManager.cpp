@@ -319,9 +319,18 @@ namespace Ethereal
 		file >> sceneJson;
 
 		auto scene = std::make_shared<Scene>();
-		scene->SetName(sceneJson.value("name", name));
-		scene->SetUIPath(sceneJson.value("UIPath", ""));		
-
+		scene->SetName(sceneJson.value("name", name));	
+		if (sceneJson.contains("noesisViews"))
+		{
+			for (const auto& objJson : sceneJson["noesisViews"])
+			{
+				auto view = std::make_shared<NoesisView>();
+				view->Path = objJson.value("uiPath", "");
+				view->Name = objJson.value("uiName", "");				
+				view->IsVisable = objJson.value("isVisible", false);
+				scene->AddNoesisView(view);
+			}
+		}
 		if (sceneJson.contains("gameObjects"))
 		{
 			for (const auto& objJson : sceneJson["gameObjects"])
@@ -386,6 +395,13 @@ namespace Ethereal
 
 				scene->AddGameObject(clone);
 			}
+		}
+		else
+		{
+			auto defaultGO = std::make_shared<GameObject>();
+			defaultGO->SetName("DefaultGameObject");
+			defaultGO->SetTransform({ 0, 0, 0 }, { 0, 0, 0 }, { 1, 1, 1 });
+			scene->AddGameObject(defaultGO);
 		}
 		scene->OnActivate();
 		m_Assets[name] = scene;

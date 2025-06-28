@@ -7,6 +7,7 @@
 #include "UI/EditorGui.h"
 #include "LightObject.h"
 #include "IAsset.h"
+#include "UI/NoesisUI.h"
 
 namespace Ethereal
 {
@@ -32,8 +33,9 @@ namespace Ethereal
 		std::vector<std::shared_ptr<GameObject>>& GetGameObjects();
 		void SetName(const std::string& name);
 		const std::string& GetName() const;
-		void SetUIPath(const std::string& path);
-		const std::string& GetUIPath() const;
+		void AddNoesisView(const std::shared_ptr<NoesisView>& view);
+		void RemoveNoesisView(const std::shared_ptr<NoesisView>& view);
+		std::vector<std::shared_ptr<NoesisView>>& GetNoesisViews();
 
 		void OnActivate();
 		void OnDeactivate();	
@@ -44,6 +46,6 @@ namespace Ethereal
 		std::string m_Name;
 		std::unique_ptr<EditorGui> m_Editor;
 		std::shared_ptr<LightObject> m_CachedLight = nullptr;
-		std::string m_UIPath = "";
+		std::vector<std::shared_ptr<NoesisView>> m_NoesisViews;
 	};
 }

@@ -23,8 +23,6 @@ GameApp::~GameApp()
 
 void GameApp::OnInitialize()
 {
-	
-
 	EEContext::Get().GetAssetManager().RegisterGameObjectFactory(
 		[](const std::string& type) -> std::shared_ptr<GameObject>
 		{
@@ -34,9 +32,10 @@ void GameApp::OnInitialize()
 		}
 	);
 	// Temp code *************************
+	EEContext::Get().GetAssetManager().LoadScene("MainMenuScene");
 	EEContext::Get().GetAssetManager().LoadScene("TestScene");
 	EEContext::Get().GetAssetManager().LoadScene("TestScene2");
-	auto scene = EEContext::Get().GetAssetManager().Get<Scene>("TestScene");
+	auto scene = EEContext::Get().GetAssetManager().Get<Scene>("MainMenuScene");
 	m_SceneManager.AddScene(scene.get());
 	// Temp code *************************
 	GAME_LOG_INFO("GameApp initialized successfully.");

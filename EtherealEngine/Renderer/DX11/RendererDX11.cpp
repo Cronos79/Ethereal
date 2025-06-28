@@ -279,9 +279,6 @@ namespace Ethereal
 			m_Context->PSSetConstantBuffers(0, 1, m_LightBuffer.GetAddressOf());
 		}
 
-		auto model = obj->GetModel();
-		if (!model) return;
-
 		// --- Set once per model ---
 		m_Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_Context->RSSetState(m_RasterizerState.Get());
@@ -289,74 +286,77 @@ namespace Ethereal
 		m_Context->OMSetBlendState(m_BlendState.Get(), nullptr, 0xFFFFFFFF);
 		m_Context->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());	
 
-		const auto& meshes = model->GetMeshes();
-		const auto& materials = model->GetMaterials();
-		UINT offset = 0;
-
-		auto assetManager = EEContext::Get().GetAssetManager();
-		auto white = assetManager.Get<Texture>("WhiteTexture")->GetTextureView();
-		auto black = assetManager.Get<Texture>("BlackTexture")->GetTextureView();
-		auto flatNormal = assetManager.Get<Texture>("NormalTexture")->GetTextureView();
-
-		for (const auto& mesh : meshes)
+		auto model = obj->GetModel();
+		if (model)
 		{
-			if (!mesh) continue;
+			auto assetManager = EEContext::Get().GetAssetManager();
+			auto white = assetManager.Get<Texture>("WhiteTexture")->GetTextureView();
+			auto black = assetManager.Get<Texture>("BlackTexture")->GetTextureView();
+			auto flatNormal = assetManager.Get<Texture>("NormalTexture")->GetTextureView();
 
-			std::shared_ptr<Material> material;
-			if (materials.size() == 1)
-				material = materials[0];
-			else if (mesh->GetMaterialIndex() < materials.size())
-				material = materials[mesh->GetMaterialIndex()];
-			else
-				material = nullptr;
+			const auto& meshes = model->GetMeshes();
+			const auto& materials = model->GetMaterials();
+			UINT offset = 0;
+			for (const auto& mesh : meshes)
+			{
+				if (!mesh) continue;
 
-			if (!material) continue;
+				std::shared_ptr<Material> material;
+				if (materials.size() == 1)
+					material = materials[0];
+				else if (mesh->GetMaterialIndex() < materials.size())
+					material = materials[mesh->GetMaterialIndex()];
+				else
+					material = nullptr;
 
-			m_Context->IASetInputLayout(material->GetInputLayout());
+				if (!material) continue;
 
-			m_Context->VSSetShader(material->GetVertexShader()->GetVertexShader(), NULL, 0);
-			m_Context->PSSetShader(material->GetPixelShader()->GetPixelShader(), NULL, 0);
+				m_Context->IASetInputLayout(material->GetInputLayout());
 
-			ID3D11ShaderResourceView* diffuseSRV = material->GetDiffuseTexture() ? material->GetDiffuseTexture() : white;
-			ID3D11ShaderResourceView* normalSRV = material->GetNormalTexture() ? material->GetNormalTexture() : flatNormal;
-			ID3D11ShaderResourceView* specularSRV = material->GetSpecularTexture() ? material->GetSpecularTexture() : black;
-			ID3D11ShaderResourceView* metallicSRV = material->GetMetallicTexture() ? material->GetMetallicTexture() : black;
-			ID3D11ShaderResourceView* roughnessSRV = material->GetRoughnessTexture() ? material->GetRoughnessTexture() : white;
-			ID3D11ShaderResourceView* aoSRV = material->GetAOTexture() ? material->GetAOTexture() : white;
-			ID3D11ShaderResourceView* emissiveSRV = material->GetEmissiveTexture() ? material->GetEmissiveTexture() : black;
+				m_Context->VSSetShader(material->GetVertexShader()->GetVertexShader(), NULL, 0);
+				m_Context->PSSetShader(material->GetPixelShader()->GetPixelShader(), NULL, 0);
 
-			m_Context->PSSetShaderResources(0, 1, &diffuseSRV);
-			m_Context->PSSetShaderResources(1, 1, &normalSRV);
-			m_Context->PSSetShaderResources(2, 1, &specularSRV);
-			m_Context->PSSetShaderResources(3, 1, &metallicSRV);
-			m_Context->PSSetShaderResources(4, 1, &roughnessSRV);
-			m_Context->PSSetShaderResources(5, 1, &aoSRV);
-			m_Context->PSSetShaderResources(6, 1, &emissiveSRV);
+				ID3D11ShaderResourceView* diffuseSRV = material->GetDiffuseTexture() ? material->GetDiffuseTexture() : white;
+				ID3D11ShaderResourceView* normalSRV = material->GetNormalTexture() ? material->GetNormalTexture() : flatNormal;
+				ID3D11ShaderResourceView* specularSRV = material->GetSpecularTexture() ? material->GetSpecularTexture() : black;
+				ID3D11ShaderResourceView* metallicSRV = material->GetMetallicTexture() ? material->GetMetallicTexture() : black;
+				ID3D11ShaderResourceView* roughnessSRV = material->GetRoughnessTexture() ? material->GetRoughnessTexture() : white;
+				ID3D11ShaderResourceView* aoSRV = material->GetAOTexture() ? material->GetAOTexture() : white;
+				ID3D11ShaderResourceView* emissiveSRV = material->GetEmissiveTexture() ? material->GetEmissiveTexture() : black;
 
-			if (!mesh->GetPerObjectCB().IsBufferInitialized())
-				mesh->GetPerObjectCB().Initialize(m_Device.Get(), m_Context.Get());
+				m_Context->PSSetShaderResources(0, 1, &diffuseSRV);
+				m_Context->PSSetShaderResources(1, 1, &normalSRV);
+				m_Context->PSSetShaderResources(2, 1, &specularSRV);
+				m_Context->PSSetShaderResources(3, 1, &metallicSRV);
+				m_Context->PSSetShaderResources(4, 1, &roughnessSRV);
+				m_Context->PSSetShaderResources(5, 1, &aoSRV);
+				m_Context->PSSetShaderResources(6, 1, &emissiveSRV);
 
-			// Camera and World Matrix
-			auto& camera = EEContext::Get().GetCameraManager().GetCurrentCamera();
-			DirectX::XMMATRIX world = obj->GetTransform().GetMatrix();
-			mesh->UpdateBuffer(world, camera.GetViewMatrix(), camera.GetProjectionMatrix());
-			m_Context->VSSetConstantBuffers(0, 1, mesh->GetPerObjectCB().GetAddressOf());
+				if (!mesh->GetPerObjectCB().IsBufferInitialized())
+					mesh->GetPerObjectCB().Initialize(m_Device.Get(), m_Context.Get());
 
-			if (!material->GetConstantBuffer().IsBufferInitialized())
-				material->GetConstantBuffer().Initialize(m_Device.Get(), m_Context.Get());		
+				// Camera and World Matrix
+				auto& camera = EEContext::Get().GetCameraManager().GetCurrentCamera();
+				DirectX::XMMATRIX world = obj->GetTransform().GetMatrix();
+				mesh->UpdateBuffer(world, camera.GetViewMatrix(), camera.GetProjectionMatrix());
+				m_Context->VSSetConstantBuffers(0, 1, mesh->GetPerObjectCB().GetAddressOf());
 
-			camera.UpdateCB();
-			m_Context->PSSetConstantBuffers(1, 1, camera.GetCameraCB().GetAddressOf());
+				if (!material->GetConstantBuffer().IsBufferInitialized())
+					material->GetConstantBuffer().Initialize(m_Device.Get(), m_Context.Get());
 
-			material->GetConstantBuffer().data.alpha = 1.0f;//material->GetAlpha();
-			material->GetConstantBuffer().ApplyChanges();
-			m_Context->PSSetConstantBuffers(2, 1, material->GetConstantBuffer().GetAddressOf());
+				camera.UpdateCB();
+				m_Context->PSSetConstantBuffers(1, 1, camera.GetCameraCB().GetAddressOf());
 
-			ID3D11Buffer* vb = mesh->GetVertexBuffer();
-			m_Context->IASetVertexBuffers(0, 1, &vb, mesh->GetStridePtr(), &offset);
-			m_Context->IASetIndexBuffer(mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+				material->GetConstantBuffer().data.alpha = 1.0f;//material->GetAlpha();
+				material->GetConstantBuffer().ApplyChanges();
+				m_Context->PSSetConstantBuffers(2, 1, material->GetConstantBuffer().GetAddressOf());
 
-			m_Context->DrawIndexed((UINT)mesh->GetIndexCount(), 0, 0);
+				ID3D11Buffer* vb = mesh->GetVertexBuffer();
+				m_Context->IASetVertexBuffers(0, 1, &vb, mesh->GetStridePtr(), &offset);
+				m_Context->IASetIndexBuffer(mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+
+				m_Context->DrawIndexed((UINT)mesh->GetIndexCount(), 0, 0);
+			}
 		}
 
 		auto& noesisUI = EEContext::Get().GetNoesisUI();

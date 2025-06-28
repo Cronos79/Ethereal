@@ -103,12 +103,7 @@ namespace Ethereal
 			obj->DrawUI(deltaTime);
 		}
 		Ethereal::Camera& camera = Ethereal::EEContext::Get().GetCameraManager().GetCurrentCamera();
-		camera.UIControls(); // #TODO: Add bool to enable/disable camera UI controls
-
-		ImGui::Begin("Performance");
-		ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
-		ImGui::Text("Frame Time: %.3f ms", 1000.0f / ImGui::GetIO().Framerate);
-		ImGui::End();
+		camera.UIControls(); // #TODO: Add bool to enable/disable camera UI controls	
 	}
 
 	void Scene::Render(float deltaTime)
@@ -173,26 +168,34 @@ namespace Ethereal
 		return m_Name;
 	}
 
-	void Scene::SetUIPath(const std::string& path)
+	void Scene::AddNoesisView(const std::shared_ptr<NoesisView>& view)
 	{
-		m_UIPath = path;
+		m_NoesisViews.push_back(view);
 	}
 
-	const std::string& Scene::GetUIPath() const
+	void Scene::RemoveNoesisView(const std::shared_ptr<NoesisView>& view)
 	{
-		return m_UIPath;
+		m_NoesisViews.erase(std::remove(m_NoesisViews.begin(), m_NoesisViews.end(), view), m_NoesisViews.end());
+	}
+
+	std::vector<std::shared_ptr<Ethereal::NoesisView>>& Scene::GetNoesisViews()
+	{
+		return m_NoesisViews;
 	}
 
 	void Scene::OnActivate()
 	{
-		if (!GetUIPath().empty())
+		if (m_NoesisViews.size() > 0)
 		{
-			EEContext::Get().GetNoesisUI().LoadXamlView(GetUIPath());
+			for (const auto& view : m_NoesisViews)
+			{
+				EEContext::Get().GetNoesisUI().LoadXamlView(view->Path, view->Name, view->IsVisable);
+			}			
 		}
 	}
 
 	void Scene::OnDeactivate()
 	{
-		EEContext::Get().GetNoesisUI().UnloadXamlView();
+		EEContext::Get().GetNoesisUI().UnloadXamlViews();
 	}
 }

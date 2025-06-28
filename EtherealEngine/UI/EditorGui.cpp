@@ -1,47 +1,41 @@
 #include "UI/EditorGui.h"
 #include "Core/Logger.h"
 #include "imgui/imgui_internal.h"
+#include "Core/EngineUtils.h"
 
 namespace Ethereal
 {
 
 	bool EditorGui::Initialize()
 	{
+		m_BaseAssetPath = GetAssetsDirectory();
+		m_CurrentAssetPath = m_BaseAssetPath;
 		LOG_INFO("EditorGui Initialized");
 		return true;
 	}
 
 	void EditorGui::DrawUI(float deltaTime)
 	{
-		ImGuiViewport* viewport = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(viewport->Pos);
-		ImGui::SetNextWindowSize(viewport->Size);
-		ImGui::SetNextWindowViewport(viewport->ID);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		const ImVec2 vpSize = ImGui::GetIO().DisplaySize;
+		const ImVec2 vpPos = ImGui::GetMainViewport()->Pos;
+		const float bottomBarHeight = 200.0f;
+		const float rightBarWidth = 300.0f;
 
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-			ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-			ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
-			ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_MenuBar;
-
-		ImGui::Begin("DockSpace", nullptr, window_flags);
+		m_Width = vpSize.x;
+		m_Height = vpSize.y;
+		m_vpPos = vpPos;
 
 		DrawMainMenuBar(deltaTime);
+		DrawAssetBrowser(deltaTime, vpPos, vpSize, bottomBarHeight, rightBarWidth);
+		DrawInspector(deltaTime, vpPos, vpSize, bottomBarHeight, rightBarWidth);
 
-		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
-
-		// Setup the layout only once
-		SetupDockspaceLayout(dockspace_id);
-
-		ImGui::End();
-		ImGui::PopStyleVar(2);
-
-		// Draw all docked windows every frame
-		DrawViewport(deltaTime);
-		DrawAssetBrowser(deltaTime);
-		DrawInspector(deltaTime);
+		if (m_ShowFPS)
+		{
+			ImGui::Begin("Performance");
+			ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+			ImGui::Text("Frame Time: %.3f ms", 1000.0f / ImGui::GetIO().Framerate);
+			ImGui::End();
+		}
 	}
 
 	void EditorGui::Shutdown()
@@ -71,37 +65,72 @@ namespace Ethereal
 		}
 	}
 
-	void EditorGui::SetupDockspaceLayout(ImGuiID dockspace_id)
+	void EditorGui::DrawAssetBrowser(float deltaTime, ImVec2 vpPos, ImVec2 vpSize, float bottomBarHeight, float rightBarWidth)
 	{
-		static bool first_time = true;
-		if (first_time)
+		ImGui::SetNextWindowPos(ImVec2(vpPos.x, vpPos.y + vpSize.y - bottomBarHeight));
+		ImGui::SetNextWindowSize(ImVec2(vpSize.x - rightBarWidth, bottomBarHeight));
+
+		ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus;
+
+		ImGui::Begin("Asset Browser", nullptr, flags);
+
+		// Show current path
+		ImGui::Text("Path: %s", m_CurrentAssetPath.string().c_str());
+
+		// Go back to parent folder
+		if (m_CurrentAssetPath != m_BaseAssetPath)
 		{
-			first_time = false;
-
-			ImGui::DockBuilderRemoveNode(dockspace_id); // clear any previous layout
-			ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
-			ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->Size);
-
-			// Only dock the viewport window in the center
-			ImGui::DockBuilderDockWindow("Viewport", dockspace_id);
-
-			ImGui::DockBuilderFinish(dockspace_id);
+			if (ImGui::Button("<-- Back"))
+			{
+				m_CurrentAssetPath = m_CurrentAssetPath.parent_path();
+				ImGui::End();
+				return;
+			}
 		}
-	}
 
-	void EditorGui::DrawViewport(float deltaTime)
-	{
-		
-		ImGui::Begin("Viewport");	
+		// List directories and files
+		try
+		{
+			for (const auto& entry : std::filesystem::directory_iterator(m_CurrentAssetPath))
+			{
+				const auto& path = entry.path();
+				std::string name = path.filename().string();
+
+				if (entry.is_directory())
+				{
+					if (ImGui::Selectable((name + "/").c_str()))
+					{
+						m_CurrentAssetPath = path;
+						ImGui::End();
+						return; // Short-circuit to refresh new directory
+					}
+				}
+				else
+				{
+					ImGui::Text("%s", name.c_str());
+				}
+			}
+		}
+		catch (std::exception& e)
+		{
+			ImGui::Text("Error reading folder: %s", e.what());
+		}
 
 		ImGui::End();
 	}
 
-	void EditorGui::DrawAssetBrowser(float deltaTime)
+	void EditorGui::DrawInspector(float deltaTime, ImVec2 vpPos, ImVec2 vpSize, float bottomBarHeight, float rightBarWidth)
 	{
-		// Placeholder for asset browser UI
+		ImGui::SetNextWindowPos(ImVec2(vpPos.x + vpSize.x - rightBarWidth, vpPos.y + 17));
+		ImGui::SetNextWindowSize(ImVec2(rightBarWidth, vpSize.y - 17));
+
+		ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus;
+
 		ImGuiIO& io = ImGui::GetIO();
-		ImGui::Begin("Asset Browser");
+		ImGui::Begin("Inspector", nullptr, flags);
+		ImGui::Text("Inspector Placeholder");
 		ImGui::Text("MousePos: %.1f, %.1f", io.MousePos.x, io.MousePos.y);
 		ImGui::Text("DisplaySize: %.1f, %.1f", io.DisplaySize.x, io.DisplaySize.y);
 		ImGui::Text("FramebufferScale: %.2f, %.2f", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
@@ -109,12 +138,6 @@ namespace Ethereal
 		ImGui::End();
 	}
 
-
-	void EditorGui::DrawInspector(float deltaTime)
-	{
-		ImGui::Begin("Inspector");
-		ImGui::Text("Inspector Placeholder");
-		ImGui::End();
-	}
-
 }
+
+
