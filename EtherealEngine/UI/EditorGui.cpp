@@ -21,21 +21,9 @@ namespace Ethereal
 		const float bottomBarHeight = 200.0f;
 		const float rightBarWidth = 300.0f;
 
-		m_Width = vpSize.x;
-		m_Height = vpSize.y;
-		m_vpPos = vpPos;
-
 		DrawMainMenuBar(deltaTime);
-		DrawAssetBrowser(deltaTime, vpPos, vpSize, bottomBarHeight, rightBarWidth);
-		DrawInspector(deltaTime, vpPos, vpSize, bottomBarHeight, rightBarWidth);
-
-		if (m_ShowFPS)
-		{
-			ImGui::Begin("Performance");
-			ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
-			ImGui::Text("Frame Time: %.3f ms", 1000.0f / ImGui::GetIO().Framerate);
-			ImGui::End();
-		}
+		DrawBottomBar(deltaTime, vpPos, vpSize, bottomBarHeight, rightBarWidth);
+		DrawRightBar(deltaTime, vpPos, vpSize, bottomBarHeight, rightBarWidth);	
 	}
 
 	void EditorGui::Shutdown()
@@ -65,7 +53,7 @@ namespace Ethereal
 		}
 	}
 
-	void EditorGui::DrawAssetBrowser(float deltaTime, ImVec2 vpPos, ImVec2 vpSize, float bottomBarHeight, float rightBarWidth)
+	void EditorGui::DrawBottomBar(float deltaTime, ImVec2 vpPos, ImVec2 vpSize, float bottomBarHeight, float rightBarWidth)
 	{
 		ImGui::SetNextWindowPos(ImVec2(vpPos.x, vpPos.y + vpSize.y - bottomBarHeight));
 		ImGui::SetNextWindowSize(ImVec2(vpSize.x - rightBarWidth, bottomBarHeight));
@@ -120,10 +108,10 @@ namespace Ethereal
 		ImGui::End();
 	}
 
-	void EditorGui::DrawInspector(float deltaTime, ImVec2 vpPos, ImVec2 vpSize, float bottomBarHeight, float rightBarWidth)
+	void EditorGui::DrawRightBar(float deltaTime, ImVec2 vpPos, ImVec2 vpSize, float bottomBarHeight, float rightBarWidth)
 	{
-		ImGui::SetNextWindowPos(ImVec2(vpPos.x + vpSize.x - rightBarWidth, vpPos.y + 17));
-		ImGui::SetNextWindowSize(ImVec2(rightBarWidth, vpSize.y - 17));
+		ImGui::SetNextWindowPos(ImVec2(vpPos.x + vpSize.x - rightBarWidth, vpPos.y + m_MenuHeight));
+		ImGui::SetNextWindowSize(ImVec2(rightBarWidth, vpSize.y - m_MenuHeight));
 
 		ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
 			ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus;
@@ -134,7 +122,8 @@ namespace Ethereal
 		ImGui::Text("MousePos: %.1f, %.1f", io.MousePos.x, io.MousePos.y);
 		ImGui::Text("DisplaySize: %.1f, %.1f", io.DisplaySize.x, io.DisplaySize.y);
 		ImGui::Text("FramebufferScale: %.2f, %.2f", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
-		ImGui::Text("FPS: %.1f", io.Framerate);
+		ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+		ImGui::Text("Frame Time: %.3f ms", 1000.0f / ImGui::GetIO().Framerate);
 		ImGui::End();
 	}
 

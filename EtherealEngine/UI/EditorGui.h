@@ -14,14 +14,11 @@ namespace Ethereal
 		void Shutdown();
 	private:
 		void DrawMainMenuBar(float deltaTime);
-		void DrawAssetBrowser(float deltaTime, ImVec2 vpPos, ImVec2 vpSize, float bottomBarHeight, float rightBarWidth);
-		void DrawInspector(float deltaTime, ImVec2 vpPos, ImVec2 vpSize, float bottomBarHeight, float rightBarWidth);
+		void DrawBottomBar(float deltaTime, ImVec2 vpPos, ImVec2 vpSize, float bottomBarHeight, float rightBarWidth);
+		void DrawRightBar(float deltaTime, ImVec2 vpPos, ImVec2 vpSize, float bottomBarHeight, float rightBarWidth);
 
 	private:
-		bool m_ShowFPS = false;
-		int32_t m_Width = 1;
-		int32_t m_Height = 1;
-		ImVec2 m_vpPos;
+		int32_t m_MenuHeight = 17; // Default height of the menu bar
 		std::filesystem::path m_BaseAssetPath;
 		std::filesystem::path m_CurrentAssetPath;
 	};
