@@ -36,6 +36,9 @@ namespace Ethereal
 			return m_SceneManager.GetCurrentScene()->FindGameObjectByID(Id);
 		}
 
+	private:
+		void InitializeNoesis();
+
 	protected:
 		SceneManager& m_SceneManager;
 	};

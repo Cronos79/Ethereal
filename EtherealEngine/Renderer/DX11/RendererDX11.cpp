@@ -5,6 +5,9 @@
 #include "Core/EEContext.h"
 #include <d3d11_1.h> // For CD3D11_* helpers
 #include "Assets/Texture.h"
+#include "../Src/D3D11RenderDevice.h"
+
+#include <NsGui/IRenderer.h>
 
 namespace Ethereal
 {
@@ -355,8 +358,10 @@ namespace Ethereal
 
 			m_Context->DrawIndexed((UINT)mesh->GetIndexCount(), 0, 0);
 		}
+
+		auto& noesisUI = EEContext::Get().GetNoesisUI();
+		noesisUI.Render(); // Render Noesis UI
 	}
-	
 
 	void RendererDX11::EndFrame()
 	{

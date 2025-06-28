@@ -94,30 +94,32 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)EtherealEngine\ThirdParty\;$(SolutionDir)EtherealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Include;C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Src;C:\Projects\Noesis\Src\Packages\App\Shaders\Include;C:\Projects\Noesis\Src\Packages\App\Display\Include;C:\Projects\Noesis\Src\Packages\App\Win32Display\Src;C:\Projects\Noesis\Src\Packages\App\Theme\Include;C:\Projects\Noesis\Src\Packages\App\Providers\Include;C:\Projects\Noesis\Include;$(SolutionDir)EtherealEngine\ThirdParty\;$(SolutionDir)EtherealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;d3d12.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3d12.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;Noesis.lib;NoesisApp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)EtherealEngine\ThirdParty\Noesis;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugEditor|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>EDITOR_BUILD;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);ETHEREALENGINE_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EDITOR_BUILD;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);ETHEREALENGINE_EXPORTS;NS_APP_PROVIDERS_API</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)EtherealEngine\ThirdParty\;$(SolutionDir)EtherealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Include;C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Src;C:\Projects\Noesis\Src\Packages\App\Shaders\Include;C:\Projects\Noesis\Src\Packages\App\Display\Include;C:\Projects\Noesis\Src\Packages\App\Win32Display\Src;C:\Projects\Noesis\Src\Packages\App\Theme\Include;C:\Projects\Noesis\Src\Packages\App\Providers\Include;C:\Projects\Noesis\Include;$(SolutionDir)EtherealEngine\ThirdParty\;$(SolutionDir)EtherealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;d3d12.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3d12.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;Noesis.lib;NoesisApp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)EtherealEngine\ThirdParty\Noesis;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -130,13 +132,14 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)EtherealEngine\ThirdParty\;$(SolutionDir)EtherealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Include;C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Src;C:\Projects\Noesis\Src\Packages\App\Shaders\Include;C:\Projects\Noesis\Src\Packages\App\Display\Include;C:\Projects\Noesis\Src\Packages\App\Win32Display\Src;C:\Projects\Noesis\Src\Packages\App\Theme\Include;C:\Projects\Noesis\Src\Packages\App\Providers\Include;C:\Projects\Noesis\Include;$(SolutionDir)EtherealEngine\ThirdParty\;$(SolutionDir)EtherealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;d3d12.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3d12.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;Noesis.lib;NoesisApp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)EtherealEngine\ThirdParty\Noesis;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseEditor|x64'">
@@ -145,17 +148,18 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>EDITOR_BUILD;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);ETHEREALENGINE_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EDITOR_BUILD;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);ETHEREALENGINE_EXPORTS;NS_APP_PROVIDERS_API</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)EtherealEngine\ThirdParty\;$(SolutionDir)EtherealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Include;C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Src;C:\Projects\Noesis\Src\Packages\App\Shaders\Include;C:\Projects\Noesis\Src\Packages\App\Display\Include;C:\Projects\Noesis\Src\Packages\App\Win32Display\Src;C:\Projects\Noesis\Src\Packages\App\Theme\Include;C:\Projects\Noesis\Src\Packages\App\Providers\Include;C:\Projects\Noesis\Include;$(SolutionDir)EtherealEngine\ThirdParty\;$(SolutionDir)EtherealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;d3d12.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3d12.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;Noesis.lib;NoesisApp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)EtherealEngine\ThirdParty\Noesis;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -191,7 +195,9 @@
     <ClCompile Include="ThirdParty\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui_tables.cpp" />
     <ClCompile Include="ThirdParty\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="ThirdParty\Noesis\D3D11RenderDevice.cpp" />
     <ClCompile Include="UI\EditorGui.cpp" />
+    <ClCompile Include="UI\NoesisUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Assets\AssetFactory.h" />
@@ -241,6 +247,7 @@
     <ClInclude Include="ThirdParty\imgui\imstb_textedit.h" />
     <ClInclude Include="ThirdParty\imgui\imstb_truetype.h" />
     <ClInclude Include="UI\EditorGui.h" />
+    <ClInclude Include="UI\NoesisUI.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

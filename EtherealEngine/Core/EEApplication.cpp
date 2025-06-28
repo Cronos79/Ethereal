@@ -17,7 +17,7 @@ namespace Ethereal
   }
   void EEApplication::Initialize()
   {
-	  EEContext::Get().Initialize();
+	  EEContext::Get().Initialize();	 
 	  OnInitialize();
   }
   void EEApplication::Run()
@@ -31,6 +31,7 @@ namespace Ethereal
 	  while (EEContext::Get().IsRunning())
 	  {
 		  timer->Tick();
+		  EEContext::Get().SetDeltaTime(timer->GetDeltaTime());
 		  if (!EEContext::Get().GetWindow().ProcessMessages())
 		  {
 			  EEContext::Get().SetRunning(false);
@@ -39,7 +40,7 @@ namespace Ethereal
 		  OnHandleInput(timer->GetDeltaTime());
 		  OnUpdate(timer->GetDeltaTime());	
 		  m_SceneManager.GetCurrentScene()->Update(timer->GetDeltaTime());
-		  m_SceneManager.GetCurrentScene()->Render(timer->GetDeltaTime());
+		  m_SceneManager.GetCurrentScene()->Render(timer->GetDeltaTime());		 
 	  }
 	  renderer->Shutdown();
 	  Shutdown();
@@ -47,5 +48,6 @@ namespace Ethereal
   void EEApplication::Shutdown()
   {
 	  OnShutdown();
-  }
+  }  
+
 } // namespace Ethereal

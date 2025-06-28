@@ -12,6 +12,7 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/DX11/CameraManager.h"
 #include "SceneManager.h"
+#include "UI/NoesisUI.h"
 
 struct GameSettings
 {
@@ -146,7 +147,24 @@ namespace Ethereal
 		} // Get the camera manager object
 
 		SceneManager& GetSceneManager(); // Get the scene manager
-	// Get the scene manager object
+
+		NoesisUI& GetNoesisUI() const // Get the Noesis UI manager
+		{
+			if (!m_NoesisUI)
+			{
+				throw std::runtime_error("NoesisUI is not initialized. Please initialize it first.");
+			}
+			return *m_NoesisUI;
+		} // Get the Noesis UI object
+
+		void SetDeltaTime(float deltaTime) // Set the delta time for frame updates
+		{
+			m_DeltaTime = deltaTime;
+		} // Set the delta time for frame updates
+		float GetDeltaTime() const // Get the delta time for frame updates
+		{
+			return m_DeltaTime;
+		} // Get the delta time for frame updates
 
 	private:
 		std::unique_ptr<EEWindows> m_Window; // Pointer to the window object
@@ -158,5 +176,7 @@ namespace Ethereal
 		GameSettings m_GameSettings;
 		std::unique_ptr<CameraManager> m_CameraManager; // Camera manager for handling cameras
 		std::unique_ptr<SceneManager> m_SceneManager; // Scene manager for handling scenes
+		std::unique_ptr<NoesisUI> m_NoesisUI;
+		float m_DeltaTime = 0.0f; // Delta time for frame updates
 	};
 }

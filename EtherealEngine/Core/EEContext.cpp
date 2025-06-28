@@ -52,6 +52,7 @@ namespace Ethereal
 			{
 				m_SceneManager = std::make_unique<SceneManager>();
 			}
+			m_NoesisUI = std::make_unique<NoesisUI>();
 		}
 		catch (Ethereal::COMException* e)
 		{
