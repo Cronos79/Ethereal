@@ -31,6 +31,15 @@ namespace Ethereal
 		Noesis::Ptr<Noesis::IView> View;
 	};
 
+	class RendInst
+	{
+	public:
+		void Resize();
+
+	private:
+
+	};
+
 	class ETHEREAL_API NoesisUI
 	{
 	public:
@@ -43,6 +52,7 @@ namespace Ethereal
 		void LoadXamlView(const std::string& path, const std::string& name = "DefaultView", bool isVisible = false);
 		void UnloadXamlViews();
 		void Render();
+		void HandleInput(Noesis::IView* view);
 
 		Noesis::Ptr<Noesis::RenderDevice> GetRenderDevice() const
 		{

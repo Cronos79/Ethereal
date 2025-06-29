@@ -13,6 +13,7 @@ namespace Ethereal
 		virtual void Draw(const std::shared_ptr<GameObject>& obj) = 0;
 		virtual void EndFrame() = 0;
 		virtual void Shutdown() = 0;
+		virtual void Resize() = 0;
 
 		virtual void* GetDevice() const = 0;
 		virtual void* GetContext() const = 0;

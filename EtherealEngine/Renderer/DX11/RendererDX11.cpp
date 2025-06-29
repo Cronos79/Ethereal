@@ -383,4 +383,40 @@ namespace Ethereal
 	{
 	}
 
+	void RendererDX11::Resize()
+	{
+		int32_t width = EEContext::Get().GetWidth(); // Get the current window width
+		int32_t height = EEContext::Get().GetHeight(); // Get the current window height
+		if (m_SwapChain)
+		{
+			m_Context->OMSetRenderTargets(0, nullptr, nullptr); // Unbind render targets before resizing
+			m_RenderTargetView.Reset();
+			m_DepthStencilView.Reset();
+			m_DepthStencilBuffer.Reset();
+			HRESULT hr = m_SwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+			COM_ERROR_IF_FAILED(hr, "Failed to resize swap chain buffers");
+			Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
+			hr = m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backBuffer.GetAddressOf()));
+			COM_ERROR_IF_FAILED(hr, "Failed to get back buffer from swap chain after resize");
+			hr = m_Device->CreateRenderTargetView(backBuffer.Get(), NULL, &m_RenderTargetView);
+			COM_ERROR_IF_FAILED(hr, "Failed to create render target view after resize");
+			CD3D11_TEXTURE2D_DESC depthStencilDesc(
+				DXGI_FORMAT_D24_UNORM_S8_UINT,
+				width,
+				height,
+				1,
+				1,
+				D3D11_BIND_DEPTH_STENCIL
+			);
+			hr = m_Device->CreateTexture2D(&depthStencilDesc, NULL, &m_DepthStencilBuffer);
+			COM_ERROR_IF_FAILED(hr, "Failed to create depth stencil buffer after resize");
+			D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+			depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+			depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+			depthStencilViewDesc.Texture2D.MipSlice = 0;
+			depthStencilViewDesc.Flags = 0;
+			m_Device->CreateDepthStencilView(m_DepthStencilBuffer.Get(), &depthStencilViewDesc, &m_DepthStencilView);
+			m_Context->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
+		}
+	}
 }

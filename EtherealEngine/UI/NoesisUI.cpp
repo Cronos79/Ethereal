@@ -8,6 +8,8 @@
 #include <NsGui/Uri.h>
 #include <NoesisPCH.h> // make sure PCH is used if required by your Noesis setup
 #include <NsApp/Launcher.h>
+#include "Platform/EEWindows.h"
+#include "Platform/Mouse.h"
 
 using namespace Noesis;
 using namespace NoesisApp;
@@ -70,13 +72,9 @@ namespace Ethereal
 
 		const char* fonts[] = { "Fonts/Roboto-Regular.ttf", "Arial", "Segoe UI Emoji" };
 		GUI::SetFontFallbacks(fonts, 3);
-		GUI::SetFontDefaultProperties(15.0f, FontWeight_Normal, FontStretch_Normal, FontStyle_Normal);
+		GUI::SetFontDefaultProperties(15.0f, FontWeight_Normal, FontStretch_Normal, FontStyle_Normal);		
 
-		m_Display = NoesisApp::CreateDisplay();
-		m_Display->SetTitle("NoesisGUI Integration Sample");
-
-		InitializeRenderDevice();
-		
+		InitializeRenderDevice();	
 
 		m_Initialized = true;
 	}
@@ -124,13 +122,7 @@ namespace Ethereal
 
 	void NoesisUI::SetupDisplay(Noesis::IView* view)
 	{
-		// Gather window events and send to view
-	/*	auto ctx = m_Context;
-		m_Display->SizeChanged() += [view, ctx](NoesisApp::Display* display, uint32_t, uint32_t)
-			{
-				view->SetSize(display->GetClientWidth(), display->GetClientHeight());
-				ctx->Resize();
-			};*/
+		
 	}
 
 	void NoesisUI::LoadXamlView(const std::string& path, const std::string& name, bool isVisible)
@@ -185,7 +177,7 @@ namespace Ethereal
 			if (view.View && view.IsVisable)
 			{
 				view.View->Update(deltaTime);
-
+				HandleInput(view.View);
 				// Update UI render tree and draw internal textures
 				view.View->GetRenderer()->UpdateRenderTree();
 				view.View->GetRenderer()->RenderOffscreen();
@@ -194,4 +186,62 @@ namespace Ethereal
 			}
 		}	
 	}
+
+	void NoesisUI::HandleInput(Noesis::IView* view)
+	{
+		auto& mouse = EEContext::Get().GetWindow().GetMouse();
+		int x1 = mouse.GetPosX();
+		int y1 = mouse.GetPosY();
+		view->MouseMove(x1, y1);
+		while (auto e = mouse.Read())
+		{
+			auto evt = *e;
+			int x = evt.GetPosX();
+			int y = evt.GetPosY();
+
+			switch (evt.GetType())
+			{
+			case Mouse::Event::Type::LPress:
+				view->MouseButtonDown(x, y, Noesis::MouseButton_Left);
+				break;
+
+			case Mouse::Event::Type::LRelease:
+				view->MouseButtonUp(x, y, Noesis::MouseButton_Left);
+				break;
+
+			case Mouse::Event::Type::RPress:
+				view->MouseButtonDown(x, y, Noesis::MouseButton_Right);
+				break;
+
+			case Mouse::Event::Type::RRelease:
+				view->MouseButtonUp(x, y, Noesis::MouseButton_Right);
+				break;
+
+			case Mouse::Event::Type::WheelUp:
+				view->MouseWheel(x, y, +1.0f);
+				break;
+
+			case Mouse::Event::Type::WheelDown:
+				view->MouseWheel(x, y, -1.0f);
+				break;
+
+				// Optional:
+			case Mouse::Event::Type::Enter:
+			case Mouse::Event::Type::Leave:
+				// These might map to custom behaviors in Noesis, or be ignored
+				break;
+			}
+		}
+
+	}
+
+	void RendInst::Resize()
+	{
+		auto renderer = EEContext::Get().GetRenderer();
+		if (renderer)
+		{
+			renderer->Resize();
+		}
+	}
+
 }

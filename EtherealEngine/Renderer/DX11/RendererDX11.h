@@ -30,6 +30,7 @@ namespace Ethereal
 		void Draw(const std::shared_ptr<GameObject>& obj) override;
 		void EndFrame() override;
 		void Shutdown() override;
+		void Resize() override;
 
 		// Assessors
 		void* GetDevice() const override
