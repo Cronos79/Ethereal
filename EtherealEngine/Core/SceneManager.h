@@ -1,9 +1,10 @@
 #pragma once
+
 #include "EtherealIncludes.h"
 #include "Assets/Scene.h"
 #include <vector>
 #include <string>
-
+#include <memory>
 
 namespace Ethereal
 {
@@ -11,22 +12,30 @@ namespace Ethereal
 	{
 	public:
 		SceneManager();
-		virtual ~SceneManager();
+		~SceneManager();
+
 		void Initialize();
 
-		Scene* GetCurrentScene() const
-		{
-			return m_CurrentScene;
-		}
-		bool SetCurrentScene(Scene* scene);
-		bool SetCurrentScene(const std::string& sceneName);
-		void AddScene(Scene* scene, bool setCurrentScene = false);
-		void RemoveScene(Scene* scene);
+		// Access the current scene (non-owning pointer)
+		Scene* GetCurrentScene() const;
+
+		// Set the current scene
+		bool SetCurrentScene(std::shared_ptr<Scene> scene);                    // From raw pointer
+		bool SetCurrentScene(const std::string& sceneName);    // From name
+
+		// Add a scene
+		void AddScene(const std::shared_ptr<Scene>& scene, bool setCurrent = false);
+		void RemoveScene(Scene* scene);                        // Can still remove by raw ptr
 		void ClearScenes();
-		const std::vector<Scene*>& GetScenes();
+
+		// Get all scenes (shared_ptr list)
+		const std::vector<std::shared_ptr<Scene>>& GetScenes() const;
 
 	private:
-		Scene* m_CurrentScene = nullptr;
-		std::vector<Scene*> m_Scenes;
+		std::shared_ptr<Scene> FindScenePtr(Scene* scene) const;
+
+	private:
+		std::shared_ptr<Scene> m_CurrentScene;
+		std::vector<std::shared_ptr<Scene>> m_Scenes;
 	};
 }

@@ -3,6 +3,7 @@
 #include "imgui/imgui.h"
 #include <stdint.h>
 #include <filesystem>
+#include "Assets/GameObject.h"
 
 namespace Ethereal
 {
@@ -21,5 +22,8 @@ namespace Ethereal
 		int32_t m_MenuHeight = 17; // Default height of the menu bar
 		std::filesystem::path m_BaseAssetPath;
 		std::filesystem::path m_CurrentAssetPath;
+		std::filesystem::path m_SelectedAssetPath;
+		std::shared_ptr<GameObject> m_SelectedGameObject;
+		int m_CurrentSceneIndex = 0;
 	};
 }

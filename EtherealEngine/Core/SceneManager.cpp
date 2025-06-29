@@ -1,5 +1,5 @@
 #include "Core/SceneManager.h"
-#include "EEContext.h"
+#include "Core/EEContext.h"
 
 namespace Ethereal
 {
@@ -9,10 +9,20 @@ namespace Ethereal
 
 	SceneManager::~SceneManager()
 	{
-
+		ClearScenes();
 	}
 
-	bool SceneManager::SetCurrentScene(Scene* scene)
+	void SceneManager::Initialize()
+	{
+		// Optional: preload or load scenes here if needed
+	}
+
+	Scene* SceneManager::GetCurrentScene() const
+	{
+		return m_CurrentScene.get(); // Return raw pointer for convenience
+	}
+
+	bool SceneManager::SetCurrentScene(std::shared_ptr<Scene> scene)
 	{
 		if (scene == nullptr)
 		{
@@ -24,6 +34,11 @@ namespace Ethereal
 		}
 		m_CurrentScene = scene;
 		m_CurrentScene->OnActivate();
+		// If m_scenes already has scene dont add 
+		if (std::find(m_Scenes.begin(), m_Scenes.end(), scene) == m_Scenes.end())
+		{
+			m_Scenes.push_back(scene);
+		}
 		return true;
 	}
 
@@ -32,57 +47,80 @@ namespace Ethereal
 		auto scene = EEContext::Get().GetAssetManager().Get<Scene>(sceneName);
 		if (scene)
 		{
-			return SetCurrentScene(scene.get());
+			return SetCurrentScene(scene);
 		}
 		return false;
 	}
 
-	void SceneManager::AddScene(Scene* scene, bool setCurrentScene)
+	void SceneManager::AddScene(const std::shared_ptr<Scene>& scene, bool setCurrent)
 	{
-		if (scene == nullptr)
+		if (!scene)
+			return;
+
+		// Prevent duplicates
+		if (std::find(m_Scenes.begin(), m_Scenes.end(), scene) == m_Scenes.end())
 		{
-			return; // Avoid adding null scenes
+			m_Scenes.push_back(scene);
 		}
-		// Add the scene to m_Scenes
-		m_Scenes.push_back(scene);
-		if (m_Scenes.size() == 1 || setCurrentScene)
+
+		if (m_Scenes.size() == 1 || setCurrent)
 		{
-			SetCurrentScene(scene);
+			if (m_CurrentScene)
+				m_CurrentScene->OnDeactivate();
+
+			m_CurrentScene = scene;
+			m_CurrentScene->OnActivate();
 		}
 		else
 		{
-			scene->OnDeactivate(); // Deactivate the new scene if it's not the first one
+			scene->OnDeactivate();
 		}
 	}
 
 	void SceneManager::RemoveScene(Scene* scene)
 	{
-		auto it = std::remove(m_Scenes.begin(), m_Scenes.end(), scene);
+		auto it = std::remove_if(m_Scenes.begin(), m_Scenes.end(),
+			[scene](const std::shared_ptr<Scene>& s) { return s.get() == scene; });
+
 		if (it != m_Scenes.end())
 		{
+			// If it's the current scene, clear it
+			if (m_CurrentScene && m_CurrentScene.get() == scene)
+				m_CurrentScene = nullptr;
+
 			m_Scenes.erase(it, m_Scenes.end());
 		}
 	}
 
 	void SceneManager::ClearScenes()
 	{
-		for (Scene* scene : m_Scenes)
+		if (m_CurrentScene)
 		{
-			if (scene == m_CurrentScene)
-			{
-				m_CurrentScene = nullptr; // Clear current scene if it's being deleted
-			}
-			scene->OnDeactivate(); // Deactivate the scene before deletion
-			delete scene;
+			m_CurrentScene->OnDeactivate();
+			m_CurrentScene = nullptr;
 		}
-		m_Scenes.clear();
-		m_CurrentScene = nullptr;
+
+		for (auto& scene : m_Scenes)
+		{
+			if (scene)
+				scene->OnDeactivate();
+		}
+
+		m_Scenes.clear(); // shared_ptr handles destruction
 	}
 
-	const std::vector<Ethereal::Scene*>& SceneManager::GetScenes()
+	const std::vector<std::shared_ptr<Scene>>& SceneManager::GetScenes() const
 	{
 		return m_Scenes;
 	}
+
+	std::shared_ptr<Scene> SceneManager::FindScenePtr(Scene* rawScene) const
+	{
+		for (const auto& scene : m_Scenes)
+		{
+			if (scene.get() == rawScene)
+				return scene;
+		}
+		return nullptr;
+	}
 }
-
-

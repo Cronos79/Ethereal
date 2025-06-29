@@ -47,5 +47,6 @@ namespace Ethereal
 		std::unique_ptr<EditorGui> m_Editor;
 		std::shared_ptr<LightObject> m_CachedLight = nullptr;
 		std::vector<std::shared_ptr<NoesisView>> m_NoesisViews;
+		bool m_FirstRun = true;
 	};
 }

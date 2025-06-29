@@ -108,19 +108,7 @@ namespace Ethereal
 
 	void Scene::Render(float deltaTime)
 	{
-		static bool firstRun = true;
-		if (firstRun)
-		{
-#ifdef EDITOR_BUILD
-			m_Editor = std::make_unique<EditorGui>();
-			if (!m_Editor->Initialize())
-			{
-				LOG_ERROR("Failed to initialize editor GUI.");
-				return;
-			}
-#endif
-			firstRun = false;
-		}
+		
 		HandleInput(deltaTime);
 		Update(deltaTime);
 		auto renderer = EEContext::Get().GetRenderer();
@@ -134,7 +122,10 @@ namespace Ethereal
 		}
 		DrawUI(deltaTime);
 #ifdef EDITOR_BUILD
-		m_Editor->DrawUI(deltaTime);
+		if (m_Editor)
+		{
+			m_Editor->DrawUI(deltaTime);
+		}		
 #endif
 		renderer->EndFrame();
 	}
@@ -184,7 +175,12 @@ namespace Ethereal
 	}
 
 	void Scene::OnActivate()
-	{
+	{	
+#ifdef EDITOR_BUILD
+		m_Editor.reset();
+		m_Editor = std::make_unique<EditorGui>();
+		m_Editor->Initialize();
+#endif		
 		if (m_NoesisViews.size() > 0)
 		{
 			for (const auto& view : m_NoesisViews)
@@ -196,6 +192,11 @@ namespace Ethereal
 
 	void Scene::OnDeactivate()
 	{
+#ifdef EDITOR_BUILD
+		m_Editor.reset();
+		m_Editor = nullptr;
+#endif	
+		m_FirstRun = true;
 		EEContext::Get().GetNoesisUI().UnloadXamlViews();
 	}
 }

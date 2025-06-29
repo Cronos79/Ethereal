@@ -32,11 +32,11 @@ void GameApp::OnInitialize()
 		}
 	);
 	// Temp code *************************
-	EEContext::Get().GetAssetManager().LoadScene("MainMenuScene");
-	EEContext::Get().GetAssetManager().LoadScene("TestScene");
-	EEContext::Get().GetAssetManager().LoadScene("TestScene2");
-	auto scene = EEContext::Get().GetAssetManager().Get<Scene>("MainMenuScene");
-	m_SceneManager.AddScene(scene.get());
+	EEContext::Get().GetAssetManager().LoadScene("MainMenu");
+	EEContext::Get().GetAssetManager().LoadScene("TestRoom01");
+	EEContext::Get().GetAssetManager().LoadScene("TestRoom02");
+	auto scene = EEContext::Get().GetAssetManager().Get<Scene>("MainMenu");
+	m_SceneManager.AddScene(scene);
 	// Temp code *************************
 	GAME_LOG_INFO("GameApp initialized successfully.");
 }
@@ -58,16 +58,16 @@ void GameApp::OnHandleInput(float deltaTime)
 
 	if (keyboard.GetKeyPressed('1'))
 	{
-		EEContext::Get().GetAssetManager().LoadScene("TestScene");
-		auto scene = EEContext::Get().GetAssetManager().Get<Scene>("TestScene");
-		m_SceneManager.SetCurrentScene(scene.get());
+		EEContext::Get().GetAssetManager().LoadScene("TestRoom01");
+		auto scene = EEContext::Get().GetAssetManager().Get<Scene>("TestRoom01");
+		m_SceneManager.SetCurrentScene(scene);
 	}
 
 	if (keyboard.GetKeyPressed('2'))
 	{
-		EEContext::Get().GetAssetManager().LoadScene("TestScene2");
-		auto scene = EEContext::Get().GetAssetManager().Get<Scene>("TestScene2");
-		m_SceneManager.SetCurrentScene(scene.get());
+		EEContext::Get().GetAssetManager().LoadScene("TestRoom02");
+		auto scene = EEContext::Get().GetAssetManager().Get<Scene>("TestRoom02");
+		m_SceneManager.SetCurrentScene(scene);
 	}
 
 	float newMouseSensitivity = m_MouseSensitivity;
