@@ -18,6 +18,8 @@
 #include <NsRender/D3D11RenderDeviceApi.h>  // <-- Needed for D3D11CreateRenderTarget
 #include "D3D11RenderDevice.h"
 #include <vector>
+#include <NsRender/RenderContext.h>
+#include <NsApp/Display.h>
 
 namespace Ethereal
 {
@@ -37,6 +39,7 @@ namespace Ethereal
 
 		void Initialize();
 		bool SetLicense();
+		void InitializeRenderDevice();
 		void LoadXamlView(const std::string& path, const std::string& name = "DefaultView", bool isVisible = false);
 		void UnloadXamlViews();
 		void Render();
@@ -47,11 +50,12 @@ namespace Ethereal
 		}
 
 	private:
-		void InitializeRenderDevice();
+		void SetupDisplay(Noesis::IView* view);
 
 	private:	
 		std::vector<NoesisView> m_Views;
 		Noesis::Ptr<Noesis::RenderDevice> m_RenderDevice;
 		bool m_Initialized = false;
+		Noesis::Ptr<NoesisApp::Display> m_Display;
 	};
 }

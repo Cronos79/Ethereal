@@ -7,6 +7,7 @@
 
 #include <NsGui/Uri.h>
 #include <NoesisPCH.h> // make sure PCH is used if required by your Noesis setup
+#include <NsApp/Launcher.h>
 
 using namespace Noesis;
 using namespace NoesisApp;
@@ -29,11 +30,11 @@ namespace Ethereal
 	NoesisUI::~NoesisUI()
 	{
 		UnloadXamlViews();
-		if (m_RenderDevice)
+		 if (m_RenderDevice)
 		{
 			m_RenderDevice.Reset();
 			m_RenderDevice = nullptr;
-		}		
+		} 	
 		Noesis::GUI::Shutdown();
 	}
 
@@ -55,6 +56,9 @@ namespace Ethereal
 		SetLicense();
 		GUI::Init();
 
+		// Register app components. We need a few in this example, like Display and RenderContext
+		NoesisApp::Launcher::RegisterAppComponents();
+
 		// Set resource providers
 		auto xamlPath = (GetAssetsDirectory() / "UI").string();
 		auto fontPath = (GetAssetsDirectory() / "Fonts").string();
@@ -68,7 +72,12 @@ namespace Ethereal
 		GUI::SetFontFallbacks(fonts, 3);
 		GUI::SetFontDefaultProperties(15.0f, FontWeight_Normal, FontStretch_Normal, FontStyle_Normal);
 
+		m_Display = NoesisApp::CreateDisplay();
+		m_Display->SetTitle("NoesisGUI Integration Sample");
+
 		InitializeRenderDevice();
+		
+
 		m_Initialized = true;
 	}
 
@@ -113,13 +122,24 @@ namespace Ethereal
 		m_RenderDevice = NoesisApp::CreateRenderDevice(device, context);
 	}
 
+	void NoesisUI::SetupDisplay(Noesis::IView* view)
+	{
+		// Gather window events and send to view
+	/*	auto ctx = m_Context;
+		m_Display->SizeChanged() += [view, ctx](NoesisApp::Display* display, uint32_t, uint32_t)
+			{
+				view->SetSize(display->GetClientWidth(), display->GetClientHeight());
+				ctx->Resize();
+			};*/
+	}
+
 	void NoesisUI::LoadXamlView(const std::string& path, const std::string& name, bool isVisible)
 	{
 		if (!m_Initialized)
 		{
 			Initialize();
 		}
-		if (!m_RenderDevice)
+		if (m_RenderDevice == nullptr)
 		{
 			InitializeRenderDevice();
 		}
@@ -135,6 +155,7 @@ namespace Ethereal
 
 		nView.Name = name;
 		nView.IsVisable = isVisible;
+		SetupDisplay(nView.View);
 		m_Views.push_back(nView);
 	}
 
@@ -160,7 +181,7 @@ namespace Ethereal
 		}
 		auto deltaTime = EEContext::Get().GetDeltaTime();
 		for (auto& view : m_Views)
-		{
+		{	
 			if (view.View && view.IsVisable)
 			{
 				view.View->Update(deltaTime);
@@ -171,8 +192,6 @@ namespace Ethereal
 
 				view.View->GetRenderer()->Render();
 			}
-		}
-	
+		}	
 	}
-
 }

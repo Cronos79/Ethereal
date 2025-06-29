@@ -94,7 +94,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Include;C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Src;C:\Projects\Noesis\Include;C:\Projects\Noesis\Src\Packages\App\Providers\Include;C:\Projects\Noesis\Src\Packages\App\Theme\Include;C:\Projects\Noesis\Src\Packages\App\Win32Display\Src;C:\Projects\Noesis\Src\Packages\App\Display\Include;C:\Projects\Noesis\Src\Packages\App\Shaders\Include;$(SolutionDir)EtherealEngine\ThirdParty\;$(SolutionDir)KingdomOfEnoch;$(SolutionDir)EtherealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Projects\Noesis\Src\Packages\Render\RenderContext\Include;C:\Projects\Noesis\Src\Packages\App\Launcher\Include;C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Include;C:\Projects\Noesis\Src\Packages\App\Launcher\Include;C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Src;C:\Projects\Noesis\Include;C:\Projects\Noesis\Src\Packages\App\Providers\Include;C:\Projects\Noesis\Src\Packages\App\Theme\Include;C:\Projects\Noesis\Src\Packages\App\Win32Display\Src;C:\Projects\Noesis\Src\Packages\App\Display\Include;C:\Projects\Noesis\Src\Packages\App\Shaders\Include;$(SolutionDir)EtherealEngine\ThirdParty\;$(SolutionDir)KingdomOfEnoch;$(SolutionDir)EtherealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -112,7 +112,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Include;C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Src;C:\Projects\Noesis\Include;C:\Projects\Noesis\Src\Packages\App\Providers\Include;C:\Projects\Noesis\Src\Packages\App\Theme\Include;C:\Projects\Noesis\Src\Packages\App\Win32Display\Src;C:\Projects\Noesis\Src\Packages\App\Display\Include;C:\Projects\Noesis\Src\Packages\App\Shaders\Include;$(SolutionDir)EtherealEngine\ThirdParty\;$(SolutionDir)KingdomOfEnoch;$(SolutionDir)EtherealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Projects\Noesis\Src\Packages\Render\RenderContext\Include;C:\Projects\Noesis\Src\Packages\App\Launcher\Include;C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Include;C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Src;C:\Projects\Noesis\Include;C:\Projects\Noesis\Src\Packages\App\Providers\Include;C:\Projects\Noesis\Src\Packages\App\Theme\Include;C:\Projects\Noesis\Src\Packages\App\Win32Display\Src;C:\Projects\Noesis\Src\Packages\App\Display\Include;C:\Projects\Noesis\Src\Packages\App\Shaders\Include;$(SolutionDir)EtherealEngine\ThirdParty\;$(SolutionDir)KingdomOfEnoch;$(SolutionDir)EtherealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -132,7 +132,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Include;C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Src;C:\Projects\Noesis\Include;C:\Projects\Noesis\Src\Packages\App\Providers\Include;C:\Projects\Noesis\Src\Packages\App\Theme\Include;C:\Projects\Noesis\Src\Packages\App\Win32Display\Src;C:\Projects\Noesis\Src\Packages\App\Display\Include;C:\Projects\Noesis\Src\Packages\App\Shaders\Include;$(SolutionDir)EtherealEngine\ThirdParty\;$(SolutionDir)KingdomOfEnoch;$(SolutionDir)EtherealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Projects\Noesis\Src\Packages\Render\RenderContext\Include;C:\Projects\Noesis\Src\Packages\App\Launcher\Include;C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Include;C:\Projects\Noesis\Src\Packages\App\Launcher\Include;C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Src;C:\Projects\Noesis\Include;C:\Projects\Noesis\Src\Packages\App\Providers\Include;C:\Projects\Noesis\Src\Packages\App\Theme\Include;C:\Projects\Noesis\Src\Packages\App\Win32Display\Src;C:\Projects\Noesis\Src\Packages\App\Display\Include;C:\Projects\Noesis\Src\Packages\App\Shaders\Include;$(SolutionDir)EtherealEngine\ThirdParty\;$(SolutionDir)KingdomOfEnoch;$(SolutionDir)EtherealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -152,7 +152,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Include;C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Src;C:\Projects\Noesis\Include;C:\Projects\Noesis\Src\Packages\App\Providers\Include;C:\Projects\Noesis\Src\Packages\App\Theme\Include;C:\Projects\Noesis\Src\Packages\App\Win32Display\Src;C:\Projects\Noesis\Src\Packages\App\Display\Include;C:\Projects\Noesis\Src\Packages\App\Shaders\Include;$(SolutionDir)EtherealEngine\ThirdParty\;$(SolutionDir)KingdomOfEnoch;$(SolutionDir)EtherealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Projects\Noesis\Src\Packages\Render\RenderContext\Include;C:\Projects\Noesis\Src\Packages\App\Launcher\Include;C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Include;C:\Projects\Noesis\Src\Packages\Render\D3D11RenderDevice\Src;C:\Projects\Noesis\Include;C:\Projects\Noesis\Src\Packages\App\Providers\Include;C:\Projects\Noesis\Src\Packages\App\Theme\Include;C:\Projects\Noesis\Src\Packages\App\Win32Display\Src;C:\Projects\Noesis\Src\Packages\App\Display\Include;C:\Projects\Noesis\Src\Packages\App\Shaders\Include;$(SolutionDir)EtherealEngine\ThirdParty\;$(SolutionDir)KingdomOfEnoch;$(SolutionDir)EtherealEngine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
