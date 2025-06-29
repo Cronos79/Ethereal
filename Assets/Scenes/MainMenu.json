@@ -1,0 +1,10 @@
+{
+  "name": "MainMenu",
+  "noesisViews": [
+    {
+      "uiPath": "MainMenu/MainMenu.xaml",
+      "uiName": "MainMenu",
+      "isVisible": true
+    }
+  ]
+}

@@ -17,6 +17,7 @@
     "WhiteTexture": "Textures/White.png",
     "BlackTexture": "Textures/Black.png",
     "NormalTexture": "Textures/Normal.png",
-    "TestScene": "Scenes/TestRoom01.json",
-    "TestScene2": "Scenes/TestRoom02.json"
+    "MainMenu": "Scenes/MainMenu.json",
+    "TestRoom01": "Scenes/TestRoom01.json",
+    "TestRoom02": "Scenes/TestRoom02.json"
 }

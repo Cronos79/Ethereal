@@ -1,0 +1,5 @@
+<Project>
+  <Assembly>MainMenu</Assembly>
+  <DefaultDataNamespace>MainMenu</DefaultDataNamespace>
+  <StartupDocument>MainPage.xaml</StartupDocument>
+</Project>
