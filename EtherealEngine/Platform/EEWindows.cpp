@@ -214,6 +214,24 @@ namespace Ethereal
 			if (pEEWin)
 			{
 				unsigned char key = static_cast<unsigned char>(wParam);
+
+				// Fix for Shift, Ctrl, Alt (to detect left/right)
+				if (key == VK_SHIFT)
+				{
+					key = static_cast<unsigned char>(
+						MapVirtualKey((lParam >> 16) & 0xFF, MAPVK_VSC_TO_VK_EX));
+				}
+				else if (key == VK_CONTROL)
+				{
+					if (lParam & (1 << 24)) key = VK_RCONTROL;
+					else key = VK_LCONTROL;
+				}
+				else if (key == VK_MENU) // Alt key
+				{
+					if (lParam & (1 << 24)) key = VK_RMENU;
+					else key = VK_LMENU;
+				}
+
 				pEEWin->GetKeyboard().OnKeyDown(key);
 			} break;
 		case WM_SYSKEYUP:
@@ -221,6 +239,23 @@ namespace Ethereal
 			if (pEEWin)
 			{
 				unsigned char key = static_cast<unsigned char>(wParam);
+
+				if (key == VK_SHIFT)
+				{
+					key = static_cast<unsigned char>(
+						MapVirtualKey((lParam >> 16) & 0xFF, MAPVK_VSC_TO_VK_EX));
+				}
+				else if (key == VK_CONTROL)
+				{
+					if (lParam & (1 << 24)) key = VK_RCONTROL;
+					else key = VK_LCONTROL;
+				}
+				else if (key == VK_MENU)
+				{
+					if (lParam & (1 << 24)) key = VK_RMENU;
+					else key = VK_LMENU;
+				}
+
 				pEEWin->GetKeyboard().OnKeyUp(key);
 			} break;
 		case WM_CHAR:
